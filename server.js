@@ -1,4 +1,5 @@
 const express = require("express");
+const logger = require("./middleware/logger");
 const app = express();
 const PORT= 3000
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use("/gallery",     galleryRoutes)
 app.use("/ai",     aiRoutes)
 app.use("/admin",     adminRoutes)
 
+app.use(logger);
 const errorHandler = require("./middleware/errorHandler");
 app.use(errorHandler)
 app.listen(PORT, () => {
