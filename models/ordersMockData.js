@@ -48,10 +48,22 @@ const items_orders = [
   }
 ];
 
+/**
+ * Retrieves all summary orders for a specific user.
+ * @param {number|string} id - The unique identifier of the user.
+ * @returns {Array} An array of order objects belonging to the user.
+ */
 function getAllOrdersById(id){
     return orders.filter(o => o.userId === Number(id));
 }
 
+/**
+ * Retrieves specific item details for a particular order belonging to a user.
+ * This provides a more granular look at what products were purchased in a single transaction.
+ * @param {number|string} userId - The unique identifier of the user.
+ * @param {number|string} orderId - The unique identifier of the specific order.
+ * @returns {Array} An array of items matching both the user and order IDs.
+ */
 function getAllItemsOrdersById(userId,orderId){
     return items_orders.filter(i => i.userId === Number(userId) && i.orderId === Number(orderId));
 }
