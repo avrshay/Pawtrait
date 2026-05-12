@@ -5,7 +5,13 @@ const app = express();
 const PORT= 3000
 app.use(express.json());
 app.use(logger);
-app.use("/images", express.static(path.join(__dirname, "models", "images")));
+
+
+app.get("/", (req, res) => {
+  res.send("Welcome to Pawtrait API! The server is up and running.");
+});
+
+app.use("/models/images", express.static(path.join(__dirname, "models", "images")));
 
 const userRoutes     = require("./routes/users")
 const orderRoutes = require("./routes/orders")
@@ -22,6 +28,7 @@ app.use("/ai",     aiRoutes)
 app.use("/admin",     adminRoutes)
 
 const errorHandler = require("./middleware/errorHandler");
+
 app.use(errorHandler)
 app.listen(PORT, () => {
   console.log("Server running on http://localhost:3000");
