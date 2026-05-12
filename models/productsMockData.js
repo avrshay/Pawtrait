@@ -3,28 +3,28 @@ const Products = [
       product_id: 1,
       name: "designed_cup",
       original_pet_image_url: "http://localhost:3000/images/clients/dog1-original.jpg",
-      custom_product_image_url: "http://localhost:3000/images/products/cup-design-dog1.png",
+      custom_product_image_url: "http://localhost:3000/images/catalog/products/cup-design-dog1.png",
       price: 50,
     },
     {
       product_id: 2,
       name: "tote_bag",
       original_pet_image_url: "http://localhost:3000/images/clients/dog2-original.jpg",
-      custom_product_image_url: "http://localhost:3000/images/products/bag-design-dog2.png",
+      custom_product_image_url: "http://localhost:3000/images/catalog/products/bag-design-dog2.png",
       price: 35,
     },
     {
       product_id: 3,
       name: "soft_pillow",
       original_pet_image_url: "http://localhost:3000/images/clients/dog3-original.jpg",
-      custom_product_image_url: "http://localhost:3000/images/products/pillow-design-dog3.png",
+      custom_product_image_url: "http://localhost:3000/images/catalog/products/pillow-design-dog3.png",
       price: 65,
     },
     {
       product_id: 4,
       name: "baseball_cap",
       original_pet_image_url: "http://localhost:3000/images/clients/dog4-original.jpg",
-      custom_product_image_url: "http://localhost:3000/images/products/cap-design-dog4.png",
+      custom_product_image_url: "http://localhost:3000/images/catalog/products/cap-design-dog4.png",
       price: 55,
       
     }
@@ -42,25 +42,28 @@ function getProductById(id){
     return Products.find(p => p.product_id === Number(id));
 }
 
-//admin only functions:
 function createProduct(product){
-    if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || !product.price) {
-      return false;
+    if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || product.price === undefined || product.price === null) {
+      return null;
     }
-    Products.push(product);
+    const nextId = Products.length ? Math.max(...Products.map((p) => p.product_id)) + 1 : 1;
+    const newProduct = { ...product, product_id: nextId };
+    Products.push(newProduct);
+    return newProduct;
 }
 
-function updateProduct(id,product){
-    if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || !product.price) {
+function updateProduct(id, product){
+    if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || product.price === undefined || product.price === null) {
       return false;
     }
     const index = Products.findIndex(p => p.product_id === Number(id));
     if (index !== -1){
-        Products[index] = product;
+        Products[index] = { ...product, product_id: Number(id) };
         return true;
     }
     return false;
 }
+
 function deleteProduct(id){
     if (!id) {
         return false;
@@ -73,4 +76,4 @@ function deleteProduct(id){
     return false;
 }
 
-module.exports = {getAllProducts,getProductById,createProduct,updateProduct,deleteProduct} //Allows another file to use the products variable
+module.exports = { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct };
