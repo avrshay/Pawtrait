@@ -7,7 +7,7 @@ app.use(express.json());
 const userRoutes     = require("./routes/users")
 const orderRoutes = require("./routes/orders")
 const authRoutes     = require("./routes/auth")
-const galleryRoutes     = require("./routes/gallery")
+const galleryRoutes     = require("./routes/productsGallery.js")
 const aiRoutes     = require("./routes/ai")
 const adminRoutes     = require("./routes/admin")
 

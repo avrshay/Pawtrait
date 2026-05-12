@@ -2,29 +2,29 @@ const Products = [
     {
       product_id: 1,
       name: "designed_cup",
-      original_pet_image_url: "/images/clients/dog1-original.jpg",
-      custom_product_image_url: "/images/products/cup-design-dog1.png",
+      original_pet_image_url: "http://localhost:3000/images/clients/dog1-original.jpg",
+      custom_product_image_url: "http://localhost:3000/images/products/cup-design-dog1.png",
       price: 50,
     },
     {
       product_id: 2,
       name: "tote_bag",
-      original_pet_image_url: "/images/clients/dog2-original.jpg",
-      custom_product_image_url: "/images/products/bag-design-dog2.png",
+      original_pet_image_url: "http://localhost:3000/images/clients/dog2-original.jpg",
+      custom_product_image_url: "http://localhost:3000/images/products/bag-design-dog2.png",
       price: 35,
     },
     {
       product_id: 3,
       name: "soft_pillow",
-      original_pet_image_url: "/images/clients/dog3-original.jpg",
-      custom_product_image_url: "/images/products/pillow-design-dog3.png",
+      original_pet_image_url: "http://localhost:3000/images/clients/dog3-original.jpg",
+      custom_product_image_url: "http://localhost:3000/images/products/pillow-design-dog3.png",
       price: 65,
     },
     {
       product_id: 4,
       name: "baseball_cap",
-      original_pet_image_url: "/images/clients/dog4-original.jpg",
-      custom_product_image_url: "/images/products/cap-design-dog4.png",
+      original_pet_image_url: "http://localhost:3000/images/clients/dog4-original.jpg",
+      custom_product_image_url: "http://localhost:3000/images/products/cap-design-dog4.png",
       price: 55,
       
     }
@@ -36,15 +36,24 @@ function getAllProducts(){
 }
 
 function getProductById(id){
+    if (!id) {
+        return false;
+    }
     return Products.find(p => p.product_id === Number(id));
 }
 
 //admin only functions:
 function createProduct(product){
+    if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || !product.price) {
+      return false;
+    }
     Products.push(product);
 }
 
 function updateProduct(id,product){
+    if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || !product.price) {
+      return false;
+    }
     const index = Products.findIndex(p => p.product_id === Number(id));
     if (index !== -1){
         Products[index] = product;
@@ -53,6 +62,9 @@ function updateProduct(id,product){
     return false;
 }
 function deleteProduct(id){
+    if (!id) {
+        return false;
+    }
     const index = Products.findIndex(p => p.product_id === Number(id));
     if (index !== -1){
         Products.splice(index, 1);
