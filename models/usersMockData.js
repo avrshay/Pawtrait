@@ -52,7 +52,7 @@ function getUserByEmailAndPassword(email,password){
   if (!user){
     return null;
   }
-  const { userId, password, ...safeUser } = user; //return user without password
+  const { password: _, userId: __, ...safeUser } = user; //return user without password
   return safeUser;
 }
 
@@ -78,9 +78,9 @@ function createUser(firstName, lastName, userRole){
     userRole,
     createDate: new Date(),
     updateDate: new Date(),
-    "",
-    "",
-    "",
+    email: "",
+    phone_number: "",  
+    password: ""
   };
   users.push(newUser);
   return users.length;
