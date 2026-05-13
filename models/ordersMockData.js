@@ -22,27 +22,28 @@ const orders = [
     createDate: new Date()
   }
 ];
-// Order line items:
+// Order line items (each line requires a pet photo URL — upload handled client-side; server stores the reference).
 const items_orders = [
   {
     id: 1, //primary key
     orderId: 1, //foreign key to orders table
     productId: 1, //foreign key to products table
     quantity: 1,
-    
+    petImageUrl: "http://localhost:3000/images/clients/order1-line1-pet.jpg",
   },
   {
     id: 2,
     orderId: 2,
     productId: 2,
     quantity: 1,
-
+    petImageUrl: "http://localhost:3000/images/clients/order2-line1-pet.jpg",
   },
   {
     id: 3,
     orderId: 3,
     productId: 3,
     quantity: 2,
+    petImageUrl: "http://localhost:3000/images/clients/order3-line1-pet.jpg",
   }
 ];
 
@@ -79,9 +80,14 @@ function createOrder(order){
   return newOrder;
 }
 
-// Append a new order line; assigns the next line id. Requires orderId, productId, quantity (FKs + qty only).
+// Append a new order line; assigns the next line id. Requires orderId, productId, quantity, petImageUrl (non-empty string).
 function createItemOrder(itemOrder){
   if (!itemOrder.orderId || !itemOrder.productId || itemOrder.quantity == null) {
+    return null;
+  }
+  const petUrl =
+    itemOrder.petImageUrl != null ? String(itemOrder.petImageUrl).trim() : "";
+  if (!petUrl) {
     return null;
   }
   const q = Number(itemOrder.quantity);
@@ -89,7 +95,13 @@ function createItemOrder(itemOrder){
     return null;
   }
   const nextId = items_orders.length ? Math.max(...items_orders.map(i => i.id)) + 1 : 1;
-  const newItemOrder = { ...itemOrder, id: nextId, quantity: q };
+  const newItemOrder = {
+    orderId: Number(itemOrder.orderId),
+    productId: Number(itemOrder.productId),
+    quantity: q,
+    petImageUrl: petUrl,
+    id: nextId,
+  };
   items_orders.push(newItemOrder);
   return newItemOrder;
 }
@@ -113,9 +125,14 @@ function updateOrder(orderId, order){
   return false;
 }
 
-// Replace an existing line item when id exists; otherwise false.
+// Replace an existing line item when id exists; otherwise false. petImageUrl required (non-empty string).
 function updateItemOrder(id, itemOrder){
   if (!id || !itemOrder.orderId || !itemOrder.productId || itemOrder.quantity == null) {
+    return false;
+  }
+  const petUrl =
+    itemOrder.petImageUrl != null ? String(itemOrder.petImageUrl).trim() : "";
+  if (!petUrl) {
     return false;
   }
   const q = Number(itemOrder.quantity);
@@ -124,7 +141,13 @@ function updateItemOrder(id, itemOrder){
   }
   const index = items_orders.findIndex(i => i.id === Number(id));
   if (index !== -1){
-    items_orders[index] = { ...itemOrder, id: Number(id), quantity: q };
+    items_orders[index] = {
+      orderId: Number(itemOrder.orderId),
+      productId: Number(itemOrder.productId),
+      quantity: q,
+      petImageUrl: petUrl,
+      id: Number(id),
+    };
     return true;
   }
   return false;

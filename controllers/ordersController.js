@@ -12,7 +12,7 @@ function getOrdersOfUserById(req, res) {
 }
 
 // GET /orders/:id/:orderId — line items for one order of this user (auth: self or admin/manager).
-// Each item: { id, orderId, productId, quantity } with orderId FK → order, productId FK → catalog.
+// Each item: { id, orderId, productId, quantity, petImageUrl } with orderId FK → order, productId FK → catalog.
 function getItemsOfOrder(req, res) {
   const userId= req.params.id;
   if (!userId || !Number.isFinite(Number(userId))) {
@@ -30,7 +30,7 @@ function getItemsOfOrder(req, res) {
 }
 
 
-// POST /orders/:id — URL has only user id. Body: { items: [{ productId, quantity }] } (quantity required per line).
+// POST /orders/:id — Body: { items: [{ productId, quantity, petImageUrl }] } (petImageUrl = customer pet photo URL per line).
 // productId must exist in productsMockData. Status is "processing"; rolls back if any line fails.
 function createOrder(req, res) {
   const userId = req.params.id;
@@ -49,6 +49,13 @@ function createOrder(req, res) {
     const qty = line.quantity ?? line.amount;
     if (!Number.isFinite(Number(pid)) || !Number.isFinite(Number(qty)) || Number(qty) < 1) {
       return res.status(400).json({ error: "each item needs productId and a positive quantity" });
+    }
+    const petImageUrl =
+      line.petImageUrl != null ? String(line.petImageUrl).trim() : "";
+    if (!petImageUrl) {
+      return res.status(400).json({
+        error: "each item needs petImageUrl (URL or path to the customer's pet photo for that line)",
+      });
     }
     const product = products.getProductById(pid);
     if (!product) {
@@ -69,10 +76,12 @@ function createOrder(req, res) {
 
   for (const line of items) {
     const qty = Number(line.quantity ?? line.amount);
+    const petImageUrl = String(line.petImageUrl).trim();
     const itemRow = orders.createItemOrder({
       orderId: newOrder.orderId,
       productId: Number(line.productId),
       quantity: qty,
+      petImageUrl,
     });
     if (!itemRow) {
       orders.deleteItemsByOrderId(newOrder.orderId);

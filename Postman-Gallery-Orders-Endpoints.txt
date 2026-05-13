@@ -1,0 +1,186 @@
+================================================================================
+PAWTRAIT API — GALLERY & ORDERS (for Postman)
+Base URL: http://localhost:3000
+Content-Type (for POST/PUT): application/json
+================================================================================
+
+--------------------------------------------------------------------------------
+HEADERS (auth middleware — header names are lowercase in Express)
+--------------------------------------------------------------------------------
+
+Gallery — READ (GET list / GET one):
+  No headers required.
+
+--------------------------------------------------------------------------------
+ONLY-ADMIN / STAFF ENDPOINTS — does the request need x-user-id?
+--------------------------------------------------------------------------------
+
+These routes do NOT read or validate x-user-id for access control today. They only
+check x-user-role (and for orders PUT/DELETE, authorizeSelf skips the id check when
+role is admin or manager). So:
+
+  • Gallery POST / PUT / DELETE  →  REQUIRED:  x-user-role: admin
+                              →  NOT REQUIRED: x-user-id (middleware never checks it)
+
+  • Orders PUT / DELETE          →  REQUIRED:  x-user-role: admin   OR   manager
+                              →  NOT REQUIRED: x-user-id for admin/manager
+                                 (authorizeSelf passes without comparing x-user-id to :id)
+
+You may still add x-user-id in Postman for your own notes (e.g. which person is testing);
+the server ignores it on these endpoints unless you change middleware later.
+
+The URL path already identifies the resource (e.g. /orders/2/1 = user 2’s order 1);
+that is not the same as the x-user-id header, which is only enforced for role "user".
+
+Orders — READ + CREATE (GET list, GET items, POST new order) for a normal user:
+  x-user-role: user
+  x-user-id: <must match :id in the URL>   e.g. GET /orders/3  →  x-user-id: 3
+
+Orders — READ + CREATE as admin/manager (any :id in path):
+  x-user-role: admin   OR   manager
+  x-user-id: not required (authorizeSelf allows admin/manager without matching :id)
+
+--------------------------------------------------------------------------------
+GALLERY (mounted at /gallery)
+--------------------------------------------------------------------------------
+
+1) List all catalog / gallery products
+   Method: GET
+   URL:    http://localhost:3000/gallery
+   Body:   (none)
+
+2) Get one product by id
+   Method: GET
+   URL:    http://localhost:3000/gallery/1
+   Body:   (none)
+
+3) Create product (admin only)
+   Method: POST
+   URL:    http://localhost:3000/gallery
+   Headers (required):
+     x-user-role: admin
+   Headers (not used by auth — optional):
+     x-user-id: (omit or any value; server does not check it on gallery writes)
+   Body (raw JSON), example:
+   {
+     "name": "new_mug",
+     "original_pet_image_url": "http://localhost:3000/images/clients/dog1-original.jpg",
+     "custom_product_image_url": "http://localhost:3000/images/catalog/products/cup-design-dog1.png",
+     "price": 45
+   }
+
+4) Update product (admin only)
+   Method: PUT
+   URL:    http://localhost:3000/gallery/1
+   Headers (required):
+     x-user-role: admin
+   Headers (not used by auth — optional):
+     x-user-id: (omit or any value)
+   Body (raw JSON), example:
+   {
+     "name": "designed_cup",
+     "original_pet_image_url": "http://localhost:3000/images/clients/dog1-original.jpg",
+     "custom_product_image_url": "http://localhost:3000/images/catalog/products/cup-design-dog1.png",
+     "price": 55
+   }
+
+5) Delete product (admin only)
+   Method: DELETE
+   URL:    http://localhost:3000/gallery/1
+   Headers (required):
+     x-user-role: admin
+   Headers (not used by auth — optional):
+     x-user-id: (omit or any value)
+   Body:   (none)
+
+--------------------------------------------------------------------------------
+ORDERS (mounted at /orders)
+--------------------------------------------------------------------------------
+
+Path params:
+  :id       = user id (owner of the orders)
+  :orderId = order id
+
+6) List all orders for a user
+   Method: GET
+   URL:    http://localhost:3000/orders/2
+   Headers (example — regular user viewing own orders):
+     x-user-role: user
+     x-user-id:   2
+   Headers (example — admin):
+     x-user-role: admin
+   Body:   (none)
+
+7) List line items for one order (user must own that order unless admin/manager)
+   Method: GET
+   URL:    http://localhost:3000/orders/2/1
+   Headers (example — user 2 viewing own order 1):
+     x-user-role: user
+     x-user-id:   2
+   Headers (example — admin):
+     x-user-role: admin
+   Body:   (none)
+   Response lines include: id, orderId, productId, quantity, petImageUrl (customer pet photo for that line).
+
+8) Create a new order (checkout) for user :id
+   Method: POST
+   URL:    http://localhost:3000/orders/2
+   Headers (example — user creating for self):
+     x-user-role: user
+     x-user-id:   2
+   Headers (example — admin creating for user 2):
+     x-user-role: admin
+   Body (raw JSON), example:
+   {
+     "items": [
+       { "productId": 1, "quantity": 2, "petImageUrl": "http://localhost:3000/images/clients/my-pet.jpg" },
+       { "productId": 2, "quantity": 1, "petImageUrl": "http://localhost:3000/images/clients/my-pet2.jpg" }
+     ]
+   }
+   Notes:
+   - Each productId must exist in the gallery catalog (products mock data).
+   - Each line must include petImageUrl (non-empty string): URL/path to that line's pet photo (upload is client-side; API stores the reference).
+   - Order status is set to "processing" by the server; order row has no quantity field.
+   - Per-line quantity is stored on each order item.
+
+9) Update order header (admin or manager only — not user)
+   Method: PUT
+   URL:    http://localhost:3000/orders/2/1
+   Headers (required):
+     x-user-role: admin   OR   manager
+   Headers (not required for admin/manager — authorizeSelf does not compare x-user-id to :id):
+     x-user-id: (omit for staff; required only when using role "user", which is blocked here anyway)
+   Body (raw JSON) — all fields optional except merged row must keep valid status; example:
+   {
+     "status": "completed"
+   }
+   Other optional fields: "userId", "createDate" (ISO date string if used)
+
+10) Delete order and all its line items (admin or manager only — not user)
+    Method: DELETE
+    URL:    http://localhost:3000/orders/2/1
+    Headers (required):
+      x-user-role: admin   OR   manager
+    Headers (not required for admin/manager — same as PUT above):
+      x-user-id: (omit for staff)
+    Body:   (none)
+
+================================================================================
+QUICK COPY — URLS ONLY (replace host/port if needed)
+================================================================================
+
+GET    http://localhost:3000/gallery
+GET    http://localhost:3000/gallery/1
+POST   http://localhost:3000/gallery
+PUT    http://localhost:3000/gallery/1
+DELETE http://localhost:3000/gallery/1
+
+GET    http://localhost:3000/orders/2
+GET    http://localhost:3000/orders/2/1
+POST   http://localhost:3000/orders/2
+PUT    http://localhost:3000/orders/2/1
+DELETE http://localhost:3000/orders/2/1
+
+================================================================================
+END
+================================================================================
