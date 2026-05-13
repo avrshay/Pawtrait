@@ -1,9 +1,13 @@
 const path = require("path");
+
+//server setup
 const express = require("express");
-const logger = require("./middleware/logger");
 const app = express();
 const PORT= 3000
 app.use(express.json());
+
+//Logger middleware to log the request and response
+const logger = require("./middleware/logger");
 app.use(logger);
 
 
