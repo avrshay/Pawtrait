@@ -1,50 +1,48 @@
 // In-memory mock orders and line items (no DB; data resets when the server restarts).
 // Consumed by the orders routes/controllers for listing a user's orders and items in an order.
 
+// Order headers: 
 const orders = [
   {
     orderId: 1, //primary key
-    userId: 2, //forgein key to users table
-    amount: 60,
+    userId: 2, //foreign key to users table
     status: "processing", //enum: processing, completed, cancelled
     createDate: new Date()
   },
   {
     orderId: 2,
     userId: 2,
-    amount: 120,
     status: "completed",
     createDate: new Date()
   },
   {
     orderId: 3,
     userId: 3,
-    amount: 60,
     status: "processing",
     createDate: new Date()
   }
 ];
-// Line-item rows linked to orders (and products); shape mirrors future order_items / order lines table.
+// Order line items:
 const items_orders = [
   {
     id: 1, //primary key
-    orderId: 1, //forgein key to orders table
-    productId: 1, //forgein key to products table
-    amount: 1,
+    orderId: 1, //foreign key to orders table
+    productId: 1, //foreign key to products table
+    quantity: 1,
     
   },
   {
     id: 2,
     orderId: 2,
     productId: 2,
-    amount: 1,
+    quantity: 1,
 
   },
   {
     id: 3,
     orderId: 3,
     productId: 3,
-    amount: 2,
+    quantity: 2,
   }
 ];
 
@@ -56,12 +54,116 @@ function getAllOrdersById(id){
     return orders.filter(o => o.userId === Number(id));
 }
 
-// Line items filtered by userId and orderId (both required); empty array if either is missing.
+// Line items for an order that belongs to userId (validates ownership via orders table, then filters by orderId).
 function getAllItemsOrdersById(userId,orderId){
   if (!userId || !orderId) {
     return [];
   }
-  return items_orders.filter(i => i.userId === Number(userId) && i.orderId === Number(orderId));
+  const order = orders.find(
+    (o) => o.orderId === Number(orderId) && o.userId === Number(userId)
+  );
+  if (!order) {
+    return [];
+  }
+  return items_orders.filter((i) => i.orderId === Number(orderId));
 }
 
-module.exports = {getAllOrdersById,getAllItemsOrdersById} //Allows another file to use the users variable
+// Append a new order; assigns the next orderId. Requires userId and status only (no quantity on order row).
+function createOrder(order){
+  if (!order.userId || !order.status) {
+    return null;
+  }
+  const nextId = orders.length ? Math.max(...orders.map(o => o.orderId)) + 1 : 1;
+  const newOrder = { ...order, orderId: nextId };
+  orders.push(newOrder);
+  return newOrder;
+}
+
+// Append a new order line; assigns the next line id. Requires orderId, productId, quantity (FKs + qty only).
+function createItemOrder(itemOrder){
+  if (!itemOrder.orderId || !itemOrder.productId || itemOrder.quantity == null) {
+    return null;
+  }
+  const q = Number(itemOrder.quantity);
+  if (!Number.isFinite(q) || q < 1) {
+    return null;
+  }
+  const nextId = items_orders.length ? Math.max(...items_orders.map(i => i.id)) + 1 : 1;
+  const newItemOrder = { ...itemOrder, id: nextId, quantity: q };
+  items_orders.push(newItemOrder);
+  return newItemOrder;
+}
+
+// Replace an existing order row when orderId exists; merges with previous row (order has no amount field).
+function updateOrder(orderId, order){
+  if (!orderId || order.userId == null || order.status == null || String(order.status).trim() === "") {
+    return false;
+  }
+  const index = orders.findIndex(o => o.orderId === Number(orderId));
+  if (index !== -1){
+    const prev = orders[index];
+    orders[index] = {
+      ...prev,
+      ...order,
+      orderId: Number(orderId),
+      userId: Number(order.userId),
+    };
+    return true;
+  }
+  return false;
+}
+
+// Replace an existing line item when id exists; otherwise false.
+function updateItemOrder(id, itemOrder){
+  if (!id || !itemOrder.orderId || !itemOrder.productId || itemOrder.quantity == null) {
+    return false;
+  }
+  const q = Number(itemOrder.quantity);
+  if (!Number.isFinite(q) || q < 1) {
+    return false;
+  }
+  const index = items_orders.findIndex(i => i.id === Number(id));
+  if (index !== -1){
+    items_orders[index] = { ...itemOrder, id: Number(id), quantity: q };
+    return true;
+  }
+  return false;
+}
+
+// Remove an order by orderId; true if a row was removed.
+function deleteOrder(orderId){
+  if (!orderId) {
+    return false;
+  }
+  const index = orders.findIndex(o => o.orderId === Number(orderId));
+  if (index !== -1){
+    orders.splice(index, 1);
+    return true;
+  }
+  return false;
+}
+
+// Remove a line item by id; true if a row was removed.
+function deleteItemOrder(id){
+  if (!id) {
+    return false;
+  }
+  const index = items_orders.findIndex(i => i.id === Number(id));
+  if (index !== -1){
+    items_orders.splice(index, 1);
+    return true;
+  }
+  return false;
+}
+
+// Remove every line row for an order (e.g. rollback after failed checkout).
+function deleteItemsByOrderId(orderId){
+  const oid = Number(orderId);
+  for (let i = items_orders.length - 1; i >= 0; i--) {
+    if (items_orders[i].orderId === oid) {
+      items_orders.splice(i, 1);
+    }
+  }
+}
+
+module.exports = {getAllOrdersById,getAllItemsOrdersById,createOrder,createItemOrder,updateOrder,updateItemOrder,deleteOrder,deleteItemOrder,deleteItemsByOrderId} //Allows another file to use the users variable

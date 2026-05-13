@@ -1,8 +1,9 @@
 // In-memory product rows for the gallery / catalog (no database).
+// product_id is referenced as productId on order line items (foreign key from ordersMockData.items_orders).
 
 const Products = [
     {
-      product_id: 1,
+      product_id: 1, //primary key
       name: "designed_cup",
       original_pet_image_url: "http://localhost:3000/images/clients/dog1-original.jpg",
       custom_product_image_url: "http://localhost:3000/images/catalog/products/cup-design-dog1.png",
