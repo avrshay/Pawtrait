@@ -165,6 +165,44 @@ Path params:
       x-user-id: (omit for staff)
     Body:   (none)
 
+--------------------------------------------------------------------------------
+CART (mounted at /cart)
+--------------------------------------------------------------------------------
+Cart owner is always the numeric user in header x-user-id (no user_id in URL or POST body).
+
+Headers (all cart routes that need “whose cart”): x-user-role: user | admin | manager
+  and  x-user-id: <numeric user id whose cart you are reading / adding to / clearing>
+  (admin/manager: set x-user-id to the customer’s id when acting on their cart.)
+
+GET cart (joined product name, image URL, current price on each line):
+  GET http://localhost:3000/cart
+  Headers: x-user-role: user, x-user-id: 2
+  Response: { user_id, cartId, createDate, item_cart: [ { cart_item_id, id, orderId, productId, quantity, petImageUrl, createDate, product_name, product_image, price }, ... ] }
+  If user has no cart yet: cartId null, item_cart [].
+
+POST add line:
+  POST http://localhost:3000/cart
+  Headers: x-user-role: user, x-user-id: 2
+  Body JSON: { "productId": 1, "quantity": 1, "petImageUrl": "http://localhost:3000/images/clients/my-pet.jpg" }
+
+PUT quantity:
+  PUT http://localhost:3000/cart/1
+  Body JSON: { "quantity": 2 }
+
+DELETE one line:
+  DELETE http://localhost:3000/cart/1
+
+DELETE clear all lines for that user’s cart:
+  DELETE http://localhost:3000/cart/clear
+  Headers: x-user-id: 2 (and role header)
+
+  Common mistakes (you will see HTML "Cannot GET ..." from Express):
+  - Do NOT use GET on /cart/clear or /cart/clear/2. Clear is DELETE only; there is no
+    /:user_id on the path — use header x-user-id: 2 instead of .../clear/2.
+  - Do NOT use GET http://localhost:3000/cart/1 to "get user 1’s cart". There is no such
+    route. Use GET http://localhost:3000/cart with header x-user-id: 1. The path /cart/1
+    is only for PATCH/PUT/DELETE on line item id 1, not for loading the whole cart.
+
 ================================================================================
 QUICK COPY — URLS ONLY (replace host/port if needed)
 ================================================================================
@@ -180,6 +218,12 @@ GET    http://localhost:3000/orders/2/1
 POST   http://localhost:3000/orders/2
 PUT    http://localhost:3000/orders/2/1
 DELETE http://localhost:3000/orders/2/1
+
+GET    http://localhost:3000/cart
+POST   http://localhost:3000/cart
+PATCH  http://localhost:3000/cart/1
+DELETE http://localhost:3000/cart/1
+DELETE http://localhost:3000/cart/clear
 
 ================================================================================
 END

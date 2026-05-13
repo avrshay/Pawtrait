@@ -42,5 +42,16 @@ function authorizeSelf(req, res, next) {
   });
 }
 
+/** Cart routes identify the owner via x-user-id (who the cart belongs to). */
+function requireCartUserIdHeader(req, res, next) {
+  const uid = Number(req.headers["x-user-id"]);
+  if (!Number.isFinite(uid)) {
+    return res.status(400).json({
+      error: "x-user-id header is required (numeric cart owner)",
+    });
+  }
+  next();
+}
 
-module.exports = {authorize,authorizeSelf};
+
+module.exports = { authorize, authorizeSelf, requireCartUserIdHeader };
