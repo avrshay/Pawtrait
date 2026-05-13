@@ -1,3 +1,5 @@
+// In-memory product rows for the gallery / catalog (no database; resets when the server restarts).
+
 const Products = [
     {
       product_id: 1,
@@ -31,10 +33,12 @@ const Products = [
   ];
 
 
+// Returns the full Products array (same references the server holds in memory).
 function getAllProducts(){
     return Products;
 }
 
+// Returns one product object, or false when id is missing/invalid lookup path (caller treats false like "not found").
 function getProductById(id){
     if (!id) {
         return false;
@@ -42,6 +46,7 @@ function getProductById(id){
     return Products.find(p => p.product_id === Number(id));
 }
 
+// Validates required fields; assigns next product_id; returns the new row or null if validation failed.
 function createProduct(product){
     if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || product.price === undefined || product.price === null) {
       return null;
@@ -52,6 +57,7 @@ function createProduct(product){
     return newProduct;
 }
 
+// Replaces the row for id when validation passes and id exists; returns true/false (no row object).
 function updateProduct(id, product){
     if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || product.price === undefined || product.price === null) {
       return false;
@@ -64,6 +70,7 @@ function updateProduct(id, product){
     return false;
 }
 
+// Removes one row by id; returns true if something was deleted, false otherwise.
 function deleteProduct(id){
     if (!id) {
         return false;

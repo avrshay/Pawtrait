@@ -1,3 +1,6 @@
+// Mounted in server.js as app.use("/gallery", ...).
+// Full paths: GET /gallery, GET /gallery/:product_id, POST/PUT/DELETE /gallery (admin writes).
+
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");

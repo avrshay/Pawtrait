@@ -1,6 +1,8 @@
 const products = require("../models/productsMockData");
 
-//turn an HTTP request into a call to the model and a proper HTTP + JSON response
+// Maps HTTP requests to productsMockData and sends JSON + status codes (no assignment envelope format here).
+
+// GET /gallery — list all products; empty list is still 200 with [].
 function getAllProducts(req, res) {
     const allProducts = products.getAllProducts();
     if (allProducts.length === 0) {
@@ -10,6 +12,7 @@ function getAllProducts(req, res) {
    
 }
 
+// GET /gallery/:product_id — 400 for non-numeric id, 404 if no row, 200 with the product JSON.
 function getProductById(req, res) {
     const product_id = req.params.product_id;
     if (!product_id || !Number.isFinite(Number(product_id))) {
@@ -23,6 +26,7 @@ function getProductById(req, res) {
     
 }
 
+// POST /gallery (admin) — body must include name, both image URLs, price; 201 returns the created row including product_id.
 function createProduct(req, res) {
     const product = req.body;
     if (!product.name || !product.original_pet_image_url || !product.custom_product_image_url || product.price === undefined || product.price === null) {
@@ -34,6 +38,7 @@ function createProduct(req, res) {
     }
     res.status(201).json(newProduct);
 }
+// PUT /gallery/:product_id (admin) — body same shape as create; 404 if id missing in store; 200 returns fresh row from model.
 function updateProduct(req, res) {
     const product_id = req.params.product_id;
     if (!product_id || !Number.isFinite(Number(product_id))) {
@@ -49,6 +54,7 @@ function updateProduct(req, res) {
     }
     res.status(200).json(products.getProductById(product_id));
 }
+// DELETE /gallery/:product_id (admin) — 404 if nothing deleted; 200 returns { product_id }.
 function deleteProduct(req, res) {
     const product_id = req.params.product_id;
     if (!product_id || !Number.isFinite(Number(product_id))) {
