@@ -1,4 +1,4 @@
-// In-memory product rows for the gallery / catalog (no database; resets when the server restarts).
+// In-memory product rows for the gallery / catalog (no database).
 
 const Products = [
     {

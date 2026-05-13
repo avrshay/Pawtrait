@@ -1,6 +1,6 @@
 const products = require("../models/productsMockData");
 
-// Maps HTTP requests to productsMockData and sends JSON + status codes (no assignment envelope format here).
+// Maps HTTP requests to productsMockData and sends JSON + status codes.
 
 // GET /gallery — list all products; empty list is still 200 with [].
 function getAllProducts(req, res) {

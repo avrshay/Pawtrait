@@ -1,4 +1,4 @@
-// Mounted in server.js as app.use("/gallery", ...).
+// Mounted in server.js 
 // Full paths: GET /gallery, GET /gallery/:product_id, POST/PUT/DELETE /gallery (admin writes).
 
 const express = require("express");
