@@ -1,0 +1,424 @@
+{
+  "info": {
+    "_postman_id": "pawtrait-api-collection",
+    "name": "Pawtrait API",
+    "description": "Import and run against http://localhost:3000. Collection variable baseUrl is set for you.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:3000" }],
+  "item": [
+    {
+      "name": "Root",
+      "item": [
+        {
+          "name": "GET welcome",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"test@example.com\",\n  \"phone_number\": \"0500000000\",\n  \"password\": \"secret12\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "POST login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dan1@gmail.com\",\n  \"password\": \"Dan123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "POST login missing fields",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "GET all users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "GET user by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "url": "{{baseUrl}}/users/1"
+          }
+        },
+        {
+          "name": "GET user not found",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "url": "{{baseUrl}}/users/999"
+          }
+        },
+        {
+          "name": "POST create user",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"New\",\n  \"lastName\": \"Person\",\n  \"userRole\": \"user\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "PUT update user",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Dan\",\n  \"lastName\": \"Cohen\",\n  \"userRole\": \"admin\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/users/1"
+          }
+        },
+        {
+          "name": "DELETE user",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "url": "{{baseUrl}}/users/999"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "GET all orders (staff)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "url": "{{baseUrl}}/orders"
+          }
+        },
+        {
+          "name": "GET orders for user",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "3" }
+            ],
+            "url": "{{baseUrl}}/orders/3"
+          }
+        },
+        {
+          "name": "GET order line items",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "2" }
+            ],
+            "url": "{{baseUrl}}/orders/2/1"
+          }
+        },
+        {
+          "name": "POST create order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "3" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 1,\n      \"petImageUrl\": \"http://localhost:3000/images/clients/order1-line1-pet.jpg\"\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/orders/3"
+          }
+        },
+        {
+          "name": "PUT update order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/orders/2/1"
+          }
+        },
+        {
+          "name": "DELETE order",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "url": "{{baseUrl}}/orders/2/999"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "GET cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "3" }
+            ],
+            "url": "{{baseUrl}}/cart"
+          }
+        },
+        {
+          "name": "POST add cart item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "3" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": 1,\n  \"quantity\": 1,\n  \"petImageUrl\": \"http://localhost:3000/images/clients/dog1-original.jpg\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/cart"
+          }
+        },
+        {
+          "name": "PUT cart item quantity",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "3" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/cart/3"
+          }
+        },
+        {
+          "name": "DELETE cart item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "3" }
+            ],
+            "url": "{{baseUrl}}/cart/999"
+          }
+        },
+        {
+          "name": "DELETE clear cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "x-user-role", "value": "user" },
+              { "key": "x-user-id", "value": "3" }
+            ],
+            "url": "{{baseUrl}}/cart/clear"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gallery",
+      "item": [
+        {
+          "name": "GET all products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gallery"
+          }
+        },
+        {
+          "name": "GET product by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gallery/1"
+          }
+        },
+        {
+          "name": "GET product not found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gallery/999"
+          }
+        },
+        {
+          "name": "POST create product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"mug_custom\",\n  \"original_pet_image_url\": \"http://localhost:3000/images/clients/dog1-original.jpg\",\n  \"custom_product_image_url\": \"http://localhost:3000/images/catalog/products/cup-design-dog1.png\",\n  \"price\": 40\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/gallery"
+          }
+        },
+        {
+          "name": "PUT update product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"designed_cup\",\n  \"original_pet_image_url\": \"http://localhost:3000/images/clients/dog1-original.jpg\",\n  \"custom_product_image_url\": \"http://localhost:3000/images/catalog/products/cup-design-dog1.png\",\n  \"price\": 50\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/gallery/1"
+          }
+        },
+        {
+          "name": "DELETE product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "x-user-role", "value": "admin" },
+              { "key": "x-user-id", "value": "1" }
+            ],
+            "url": "{{baseUrl}}/gallery/999"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "POST start payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 3,\n  \"totalAmount\": 99.5\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/payments/start"
+          }
+        },
+        {
+          "name": "POST payment webhook",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"BIT-REPLACE\",\n  \"status\": \"success\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/payments/webhook"
+          }
+        },
+        {
+          "name": "POST webhook missing paymentId",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/payments/webhook"
+          }
+        }
+      ]
+    }
+  ]
+}
