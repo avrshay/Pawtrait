@@ -1,12 +1,14 @@
 // controllers/paymentController.js — mock Bit payment flow
 
 const paymentData = require("../models/paymentData");
+const { sendSuccess, sendError } = require("../middleware/apiResponse");
 
-// POST /payments/start
 function startPayment(req, res) {
   const { userId, totalAmount } = req.body || {};
   if (userId == null || totalAmount == null) {
-    return res.status(400).json({ message: "Missing payment details" });
+    return sendError(res, 400, "BAD_REQUEST", "Missing payment details", {
+      fields: ["userId", "totalAmount"],
+    });
   }
 
   const paymentId = `BIT-${Date.now()}`;
@@ -17,20 +19,19 @@ function startPayment(req, res) {
     status: "pending",
   });
 
-  return res.status(200).json({
+  return sendSuccess(res, {
     message: "Payment initiated",
     paymentId,
     bitPaymentUrl: `https://bit.co.il/pay?id=${encodeURIComponent(paymentId)}`,
   });
 }
 
-// POST /payments/webhook — no auth (provider callback)
 function handleWebhook(req, res) {
   const { paymentId, status } = req.body || {};
   const payment = paymentData.findByPaymentId(paymentId);
 
   if (!payment) {
-    return res.status(404).json({ message: "Payment not found" });
+    return sendError(res, 404, "NOT_FOUND", "Payment not found", { paymentId });
   }
 
   if (status === "success") {
@@ -38,7 +39,7 @@ function handleWebhook(req, res) {
     console.log(`Payment ${paymentId} marked completed (mock).`);
   }
 
-  return res.status(200).send("OK");
+  return sendSuccess(res, { acknowledged: true });
 }
 
 module.exports = { startPayment, handleWebhook };

@@ -1,7 +1,7 @@
 const carts = require("../models/cartsMockData");
 const products = require("../models/productsMockData");
+const { sendSuccess, sendError } = require("../middleware/apiResponse");
 
-// helper- Enrich a cart item with product details: return the item with product name, image, and price.
 function enrichLine(line) {
   const p = products.getProductById(line.productId);
   const base = { ...line };
@@ -21,7 +21,6 @@ function enrichLine(line) {
   };
 }
 
-// helper- Check if the current user has permission to access a cart item: return true if authorized, otherwise false.
 function canAccessCartItem(req, cart) {
   if (!cart) {
     return false;
@@ -34,15 +33,14 @@ function canAccessCartItem(req, cart) {
   return Number.isFinite(userId) && cart.user_id === userId;
 }
 
-// GET /cart — cart owner from x-user-id header.
 function getCart(req, res) {
   const user_id = req.headers["x-user-id"];
   if (!user_id || !Number.isFinite(Number(user_id))) {
-    return res.status(400).json({ error: "invalid x-user-id header" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid x-user-id header", { field: "x-user-id" });
   }
   const { cart, item_cart } = carts.getCartPayloadByUserId(user_id);
   if (!cart) {
-    return res.status(200).json({
+    return sendSuccess(res, {
       user_id: Number(user_id),
       cartId: null,
       createDate: null,
@@ -50,7 +48,7 @@ function getCart(req, res) {
     });
   }
   const joined = item_cart.map((line) => enrichLine(line));
-  return res.status(200).json({
+  return sendSuccess(res, {
     user_id: cart.user_id,
     cartId: cart.cartId,
     createDate: cart.createDate,
@@ -58,7 +56,6 @@ function getCart(req, res) {
   });
 }
 
-// POST /cart — body: { productId, quantity, petImageUrl }; cart owner from x-user-id header.
 function addItem(req, res) {
   const body = req.body || {};
   const user_id = req.headers["x-user-id"];
@@ -67,22 +64,27 @@ function addItem(req, res) {
   const petImageUrl = body.petImageUrl;
 
   if (!Number.isFinite(Number(user_id))) {
-    return res.status(400).json({ error: "invalid x-user-id header" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid x-user-id header", { field: "x-user-id" });
   }
   if (!Number.isFinite(Number(productId))) {
-    return res.status(400).json({ error: "productId is required" });
+    return sendError(res, 400, "BAD_REQUEST", "productId is required", { field: "productId" });
   }
   if (!Number.isFinite(Number(quantity)) || Number(quantity) < 1) {
-    return res.status(400).json({ error: "quantity must be a positive number" });
+    return sendError(res, 400, "BAD_REQUEST", "quantity must be a positive number", {
+      field: "quantity",
+    });
   }
-  const pet =
-    petImageUrl != null ? String(petImageUrl).trim() : "";
+  const pet = petImageUrl != null ? String(petImageUrl).trim() : "";
   if (!pet) {
-    return res.status(400).json({ error: "petImageUrl is required for each cart line" });
+    return sendError(res, 400, "BAD_REQUEST", "petImageUrl is required for each cart line", {
+      field: "petImageUrl",
+    });
   }
   const product = products.getProductById(productId);
   if (!product) {
-    return res.status(400).json({ error: `unknown productId: ${productId}` });
+    return sendError(res, 400, "BAD_REQUEST", `unknown productId: ${productId}`, {
+      field: "productId",
+    });
   }
 
   const line = carts.addCartItem(user_id, {
@@ -91,82 +93,64 @@ function addItem(req, res) {
     petImageUrl: pet,
   });
   if (!line) {
-    return res.status(500).json({ error: "could not add cart item" });
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not add cart item", {});
   }
-  return res.status(201).json(enrichLine(line));
+  return sendSuccess(res, enrichLine(line), 201);
 }
 
-
-// Update the quantity of a cart item for the given item id.
 function updateItemQuantity(req, res) {
   const item_id = req.params.item_id;
   if (!item_id || !Number.isFinite(Number(item_id))) {
-    return res.status(400).json({ error: "invalid item_id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid item_id", { field: "item_id" });
   }
   const ctx = carts.getCartItemWithOwner(item_id);
   if (!ctx || !ctx.row) {
-    return res.status(404).json({ error: "cart item not found" });
+    return sendError(res, 404, "NOT_FOUND", "cart item not found", { item_id });
   }
   if (!canAccessCartItem(req, ctx.cart)) {
-    return res.status(403).json({
-      success: false,
-      data: null,
-      error: {
-        code: "FORBIDDEN",
-        message: "You do not have permission to perform this action.",
-        details: {},
-      },
-    });
+    return sendError(res, 403, "FORBIDDEN", "You do not have permission to perform this action.", {});
   }
 
   const qty = req.body && req.body.quantity;
   if (!Number.isFinite(Number(qty)) || Number(qty) < 1) {
-    return res.status(400).json({ error: 'body must include quantity (positive number)' });
+    return sendError(res, 400, "BAD_REQUEST", "body must include quantity (positive number)", {
+      field: "quantity",
+    });
   }
 
   const updated = carts.updateCartItemQuantity(item_id, qty);
   if (!updated) {
-    return res.status(400).json({ error: "could not update quantity" });
+    return sendError(res, 400, "BAD_REQUEST", "could not update quantity", {});
   }
-  return res.status(200).json(enrichLine(updated));
+  return sendSuccess(res, enrichLine(updated));
 }
 
-// Delete a cart item for the given item id.
 function deleteItem(req, res) {
   const item_id = req.params.item_id;
   if (!item_id || !Number.isFinite(Number(item_id))) {
-    return res.status(400).json({ error: "invalid item_id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid item_id", { field: "item_id" });
   }
   const ctx = carts.getCartItemWithOwner(item_id);
   if (!ctx || !ctx.row) {
-    return res.status(404).json({ error: "cart item not found" });
+    return sendError(res, 404, "NOT_FOUND", "cart item not found", { item_id });
   }
   if (!canAccessCartItem(req, ctx.cart)) {
-    return res.status(403).json({
-      success: false,
-      data: null,
-      error: {
-        code: "FORBIDDEN",
-        message: "You do not have permission to perform this action.",
-        details: {},
-      },
-    });
+    return sendError(res, 403, "FORBIDDEN", "You do not have permission to perform this action.", {});
   }
   const ok = carts.deleteCartItem(item_id);
   if (!ok) {
-    return res.status(500).json({ error: "could not delete cart item" });
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not delete cart item", {});
   }
-  return res.status(200).json({ cart_item_id: Number(item_id), deleted: true });
+  return sendSuccess(res, { cart_item_id: Number(item_id), deleted: true });
 }
 
-// DELETE /cart/clear — clears lines for the user in x-user-id header.
 function clearCart(req, res) {
   const user_id = req.headers["x-user-id"];
   if (!user_id || !Number.isFinite(Number(user_id))) {
-    return res.status(400).json({ error: "invalid x-user-id header" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid x-user-id header", { field: "x-user-id" });
   }
   const removed = carts.clearCartByUserId(user_id);
-  return res.status(200).json({ user_id: Number(user_id), removed });
+  return sendSuccess(res, { user_id: Number(user_id), removed });
 }
 
 module.exports = {

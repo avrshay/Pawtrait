@@ -10,9 +10,12 @@ app.use(express.json());
 const logger = require("./middleware/logger");
 app.use(logger);
 
+const { sendSuccess } = require("./middleware/apiResponse");
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Pawtrait API! The server is up and running.");
+  return sendSuccess(res, {
+    message: "Welcome to Pawtrait API! The server is up and running.",
+  });
 });
 
 app.use("/models/images", express.static(path.join(__dirname, "models", "images")));
@@ -35,7 +38,16 @@ app.use("/payments", paymentRoutes)
 
 const errorHandler = require("./middleware/errorHandler");
 
-app.use(errorHandler)
-app.listen(PORT, () => {
-  console.log("Server running on http://localhost:3000");
-})
+app.use(errorHandler);
+
+const server = app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
+server.on("error", (err) => {
+  console.error("Could not start server:", err.message);
+  if (err.code === "EADDRINUSE") {
+    console.error(`Port ${PORT} is already in use. Stop the other process (e.g. old node server) or change PORT.`);
+  }
+  process.exit(1);
+});

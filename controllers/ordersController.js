@@ -1,65 +1,81 @@
 const orders = require("../models/ordersMockData");
 const products = require("../models/productsMockData");
+const { sendSuccess, sendError } = require("../middleware/apiResponse");
 
-// GET /orders/:id — all order headers for this user (auth: self or admin/manager).
 function getOrdersOfUserById(req, res) {
-  const id= req.params.id;
+  const id = req.params.id;
   if (!id || !Number.isFinite(Number(id))) {
-    return res.status(400).json({ error: "invalid user id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
   }
   const allOrders = orders.getAllOrdersById(id);
-  res.status(200).json(allOrders);
+  return sendSuccess(res, allOrders);
 }
 
-// GET /orders/:id/:orderId — line items for one order of this user (auth: self or admin/manager).
-// Each item: { id, orderId, productId, quantity, petImageUrl }.
 function getItemsOfOrder(req, res) {
-  const userId= req.params.id;
+  const userId = req.params.id;
   if (!userId || !Number.isFinite(Number(userId))) {
-    return res.status(400).json({ error: "invalid user id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
   }
   const orderId = req.params.orderId;
   if (!orderId || !Number.isFinite(Number(orderId))) {
-    return res.status(400).json({ error: "invalid order id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid order id", { field: "orderId" });
   }
-  const lines = orders.getAllItemsOrdersById(userId,orderId);
+  const lines = orders.getAllItemsOrdersById(userId, orderId);
   if (!Array.isArray(lines) || lines.length === 0) {
-    return res.status(404).json({ error: "no items found for this order or order not found" });
+    return sendError(
+      res,
+      404,
+      "NOT_FOUND",
+      "no items found for this order or order not found",
+      {}
+    );
   }
-  res.status(200).json(lines);
+  return sendSuccess(res, lines);
 }
 
-
-// POST /orders/:id — Body: { items: [{ productId, quantity, petImageUrl }] } (petImageUrl = customer pet photo URL per line).
-// productId must exist in productsMockData. Status is "processing"; rolls back if any line fails.
 function createOrder(req, res) {
   const userId = req.params.id;
   if (!userId || !Number.isFinite(Number(userId))) {
-    return res.status(400).json({ error: "invalid user id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
   }
 
   const body = req.body || {};
   const items = body.items;
   if (!Array.isArray(items) || items.length === 0) {
-    return res.status(400).json({ error: "items must be a non-empty array" });
+    return sendError(res, 400, "BAD_REQUEST", "items must be a non-empty array", {
+      field: "items",
+    });
   }
 
   for (const line of items) {
     const pid = line.productId;
     const qty = line.quantity ?? line.amount;
     if (!Number.isFinite(Number(pid)) || !Number.isFinite(Number(qty)) || Number(qty) < 1) {
-      return res.status(400).json({ error: "each item needs productId and a positive quantity" });
+      return sendError(
+        res,
+        400,
+        "BAD_REQUEST",
+        "each item needs productId and a positive quantity",
+        { field: "items" }
+      );
     }
     const petImageUrl =
       line.petImageUrl != null ? String(line.petImageUrl).trim() : "";
     if (!petImageUrl) {
-      return res.status(400).json({
-        error: "each item needs petImageUrl (URL or path to the customer's pet photo for that line)",
-      });
+      return sendError(
+        res,
+        400,
+        "BAD_REQUEST",
+        "each item needs petImageUrl (URL or path to the customer's pet photo for that line)",
+        { field: "items.petImageUrl" }
+      );
     }
     const product = products.getProductById(pid);
     if (!product) {
-      return res.status(400).json({ error: `unknown productId: ${pid}` });
+      return sendError(res, 400, "BAD_REQUEST", `unknown productId: ${pid}`, {
+        field: "items.productId",
+        productId: pid,
+      });
     }
   }
 
@@ -71,7 +87,7 @@ function createOrder(req, res) {
   });
 
   if (!newOrder) {
-    return res.status(400).json({ error: "could not create order" });
+    return sendError(res, 400, "BAD_REQUEST", "could not create order", {});
   }
 
   for (const line of items) {
@@ -86,26 +102,26 @@ function createOrder(req, res) {
     if (!itemRow) {
       orders.deleteItemsByOrderId(newOrder.orderId);
       orders.deleteOrder(newOrder.orderId);
-      return res.status(500).json({ error: "failed to persist line items" });
+      return sendError(res, 500, "INTERNAL_SERVER_ERROR", "failed to persist line items", {});
     }
   }
 
-  return res.status(201).json(newOrder);
+  return sendSuccess(res, newOrder, 201);
 }
 
-// PUT /orders/:id/:orderId — update order header only (userId, status, createDate). No quantity on order.
-// Quantities live on line items (separate endpoints / model functions if you add them later).
 function updateOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
   if (!userId || !Number.isFinite(Number(userId)) || !orderId || !Number.isFinite(Number(orderId))) {
-    return res.status(400).json({ error: "invalid user id or order id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid user id or order id", {
+      fields: ["id", "orderId"],
+    });
   }
 
   const list = orders.getAllOrdersById(userId);
   const existing = list.find((o) => o.orderId === Number(orderId));
   if (!existing) {
-    return res.status(404).json({ error: "order not found" });
+    return sendError(res, 404, "NOT_FOUND", "order not found", { orderId });
   }
 
   const body = req.body || {};
@@ -117,70 +133,75 @@ function updateOrder(req, res) {
   };
 
   if (merged.userId == null || !Number.isFinite(Number(merged.userId))) {
-    return res.status(400).json({ error: "invalid userId in body" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid userId in body", { field: "userId" });
   }
   if (merged.status == null || String(merged.status).trim() === "") {
-    return res.status(400).json({ error: "status is required" });
+    return sendError(res, 400, "BAD_REQUEST", "status is required", { field: "status" });
   }
 
   const ok = orders.updateOrder(orderId, merged);
   if (!ok) {
-    return res.status(400).json({ error: "update failed" });
+    return sendError(res, 400, "BAD_REQUEST", "update failed", {});
   }
 
   const updatedList = orders.getAllOrdersById(userId);
   if (!updatedList) {
-    return res.status(404).json({ error: "orders not found" });
+    return sendError(res, 404, "NOT_FOUND", "orders not found", {});
   }
   if (!Array.isArray(updatedList) || updatedList.length === 0) {
-    return res.status(404).json({ error: "no items found for this order" });
+    return sendError(res, 404, "NOT_FOUND", "no items found for this order", {});
   }
   const updated = updatedList.find((o) => o.orderId === Number(orderId));
   if (!updated) {
-    return res.status(404).json({ error: "order not found" });
+    return sendError(res, 404, "NOT_FOUND", "order not found", { orderId });
   }
   if (!updated.userId || !Number.isFinite(Number(updated.userId))) {
-    return res.status(400).json({ error: "invalid userId in body" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid userId in body", { field: "userId" });
   }
   if (updated.status == null || String(updated.status).trim() === "") {
-    return res.status(400).json({ error: "status is required" });
-  } 
-  if (updated.createDate == null || !Date.parse(updated.createDate)) {
-    return res.status(400).json({ error: "createDate is required" });
+    return sendError(res, 400, "BAD_REQUEST", "status is required", { field: "status" });
   }
-  return res.status(200).json(updated);
+  if (updated.createDate == null || !Date.parse(updated.createDate)) {
+    return sendError(res, 400, "BAD_REQUEST", "createDate is required", { field: "createDate" });
+  }
+  return sendSuccess(res, updated);
 }
 
-// DELETE /orders/:id/:orderId — remove order and all its line items (must belong to user :id).
 function deleteOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
   if (!userId || !Number.isFinite(Number(userId)) || !orderId || !Number.isFinite(Number(orderId))) {
-    return res.status(400).json({ error: "invalid user id or order id" });
+    return sendError(res, 400, "BAD_REQUEST", "invalid user id or order id", {});
   }
 
   const list = orders.getAllOrdersById(userId);
   const existing = list.find((o) => o.orderId === Number(orderId));
   if (!existing) {
-    return res.status(404).json({ error: "order not found" });
+    return sendError(res, 404, "NOT_FOUND", "order not found", { orderId });
   }
 
   orders.deleteItemsByOrderId(orderId);
   const removed = orders.deleteOrder(orderId);
   if (!removed) {
-    return res.status(500).json({ error: "failed to delete order" });
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "failed to delete order", {});
   }
 
-  return res.status(200).json({ orderId: Number(orderId) });
+  return sendSuccess(res, { orderId: Number(orderId) });
 }
 
-// GET /orders — admin/manager: all order headers (empty array if none).
 function getAllOrder(req, res) {
   const allOrders = orders.getAllOrder();
   if (!Array.isArray(allOrders)) {
-    return res.status(500).json({ error: "could not load orders" });
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not load orders", {});
   }
-  res.status(200).json(allOrders);
+  return sendSuccess(res, allOrders);
 }
 
-module.exports = { getOrdersOfUserById,getItemsOfOrder,createOrder,updateOrder,deleteOrder,getAllOrder };
+module.exports = {
+  getOrdersOfUserById,
+  getItemsOfOrder,
+  createOrder,
+  updateOrder,
+  deleteOrder,
+  getAllOrder,
+};

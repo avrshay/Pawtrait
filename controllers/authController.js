@@ -1,17 +1,23 @@
 const users = require("../models/usersMockData");
+const { sendSuccess, sendError } = require("../middleware/apiResponse");
 
 function register(req, res) {
-  const { firstName, lastName, email,phone_number, password } = req.body;
-  users.RegisterUser(firstName, lastName, email,phone_number, password);
-  res.status(201).json({firstName: firstName,lastName: lastName,error: null});
+  const { firstName, lastName, email, phone_number, password } = req.body;
+  users.RegisterUser(firstName, lastName, email, phone_number, password);
+  return sendSuccess(
+    res,
+    { firstName, lastName },
+    201
+  );
 }
 
 function login(req, res) {
   const { email, password } = req.body;
-  const user= users.getUserByEmailAndPassword(email, password);
+  const user = users.getUserByEmailAndPassword(email, password);
   if (!user) {
-    return res.status(404).json({ error: "Invalid details" });
+    return sendError(res, 404, "NOT_FOUND", "Invalid details", { field: "credentials" });
   }
-  res.status(200).json(user);
+  return sendSuccess(res, user);
 }
-module.exports = { register,login };
+
+module.exports = { register, login };

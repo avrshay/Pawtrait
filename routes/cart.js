@@ -31,6 +31,7 @@ router.post(
 router.put(
   "/:item_id",
   auth.authorize(["user", "admin", "manager"]),
+  auth.requireCartUserIdHeader,
   cartController.updateItemQuantity
 );
 
@@ -38,6 +39,7 @@ router.put(
 router.delete(
   "/:item_id",
   auth.authorize(["user", "admin", "manager"]),
+  auth.requireCartUserIdHeader,
   cartController.deleteItem
 );
 

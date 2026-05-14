@@ -1,36 +1,33 @@
+const { sendError } = require("./apiResponse");
 
 function validateCreateUser(req, res, next) {
-  const { firstName, lastName,userRole } = req.body
-  if (!firstName ||!lastName|| typeof firstName !== "string"|| typeof lastName !== "string") {
-    return res.status(400).json({ data: null, error: "Invalid name" })
+  const { firstName, lastName, userRole } = req.body;
+  if (!firstName || !lastName || typeof firstName !== "string" || typeof lastName !== "string") {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid name", { fields: ["firstName", "lastName"] });
   }
-  if (!userRole|| typeof userRole !== "string"||!["user","manager", "admin"].includes(userRole)) {
-    return res.status(400).json({ data: null, error: "Invalid userRole" })
+  if (!userRole || typeof userRole !== "string" || !["user", "manager", "admin"].includes(userRole)) {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid userRole", { field: "userRole" });
   }
-  next()
+  next();
 }
 
 function validateRegister(req, res, next) {
-  const { firstName, lastName,email,phone_number, password } = req.body
-  if (!firstName ||!lastName|| typeof firstName !== "string"|| typeof lastName !== "string") {
-    return res.status(400).json({ data: null, error: "Invalid name" })
+  const { firstName, lastName, email, phone_number, password } = req.body;
+  if (!firstName || !lastName || typeof firstName !== "string" || typeof lastName !== "string") {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid name", { fields: ["firstName", "lastName"] });
   }
-  if (!email||typeof email !== "string"||!email.includes("@")) {
-    return res.status(400).json({
-      error: "Invalid Email"
-    });
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid Email", { field: "email" });
   }
   if (!phone_number || typeof phone_number !== "string") {
-    return res.status(400).json({
-      error: "Invalid phone number"
-    });
+    return sendError(res, 400, "BAD_REQUEST", "Invalid phone number", { field: "phone_number" });
   }
   if (!password || password.length < 6) {
-    return res.status(400).json({
-      error: "Password must be at least 6 characters"
+    return sendError(res, 400, "BAD_REQUEST", "Password must be at least 6 characters", {
+      field: "password",
     });
   }
-  next()
+  next();
 }
 
-module.exports = { validateCreateUser, validateRegister}
+module.exports = { validateCreateUser, validateRegister };
