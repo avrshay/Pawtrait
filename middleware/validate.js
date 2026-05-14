@@ -22,7 +22,7 @@ function validateRegister(req, res, next) {
   if (!phone_number || typeof phone_number !== "string") {
     return sendError(res, 400, "BAD_REQUEST", "Invalid phone number", { field: "phone_number" });
   }
-  if (!password || password.length < 6) {
+  if (!password || typeof password !== "string" || password.length < 6) {
     return sendError(res, 400, "BAD_REQUEST", "Password must be at least 6 characters", {
       field: "password",
     });

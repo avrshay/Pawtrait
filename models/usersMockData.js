@@ -66,7 +66,7 @@ function RegisterUser(firstName, lastName, email,phone_number, password){
     updateDate: new Date(),
     email,
     phone_number,
-    password,
+    password
   };
   users.push(newUser);
 }
