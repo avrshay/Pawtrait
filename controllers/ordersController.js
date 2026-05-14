@@ -12,7 +12,7 @@ function getOrdersOfUserById(req, res) {
 }
 
 // GET /orders/:id/:orderId — line items for one order of this user (auth: self or admin/manager).
-// Each item: { id, orderId, productId, quantity, petImageUrl } with orderId FK → order, productId FK → catalog.
+// Each item: { id, orderId, productId, quantity, petImageUrl }.
 function getItemsOfOrder(req, res) {
   const userId= req.params.id;
   if (!userId || !Number.isFinite(Number(userId))) {
@@ -174,4 +174,13 @@ function deleteOrder(req, res) {
   return res.status(200).json({ orderId: Number(orderId) });
 }
 
-module.exports = { getOrdersOfUserById,getItemsOfOrder,createOrder,updateOrder,deleteOrder };
+// GET /orders — admin/manager: all order headers (empty array if none).
+function getAllOrder(req, res) {
+  const allOrders = orders.getAllOrder();
+  if (!Array.isArray(allOrders)) {
+    return res.status(500).json({ error: "could not load orders" });
+  }
+  res.status(200).json(allOrders);
+}
+
+module.exports = { getOrdersOfUserById,getItemsOfOrder,createOrder,updateOrder,deleteOrder,getAllOrder };

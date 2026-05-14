@@ -5,6 +5,8 @@ const router = express.Router();
 const ordersController= require("../controllers/ordersController")
 const auth = require("../middleware/auth");
 
+// GET /orders — admin/manager: all order 
+router.get("/", auth.authorize(["admin", "manager"]), ordersController.getAllOrder);
 // List orders for user :id
 router.get("/:id", auth.authorizeSelf, auth.authorize(["user", "admin", "manager"]), ordersController.getOrdersOfUserById);
 // Line items for one order

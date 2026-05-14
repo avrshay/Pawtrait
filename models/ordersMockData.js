@@ -22,7 +22,7 @@ const orders = [
     createDate: new Date()
   }
 ];
-// Order line items (each line requires a pet photo URL — upload handled client-side; server stores the reference).
+// Order line items:
 const items_orders = [
   {
     id: 1, //primary key
@@ -46,6 +46,7 @@ const items_orders = [
     petImageUrl: "http://localhost:3000/images/clients/order3-line1-pet.jpg",
   }
 ];
+
 
 // All order headers for a given user id; empty array if id is missing.
 function getAllOrdersById(id){
@@ -104,6 +105,11 @@ function createItemOrder(itemOrder){
   };
   items_orders.push(newItemOrder);
   return newItemOrder;
+}
+
+//admin/manager can see all orders
+function getAllOrder(){
+  return orders;
 }
 
 // Replace an existing order row when orderId exists; merges with previous row (order has no amount field).
@@ -189,4 +195,15 @@ function deleteItemsByOrderId(orderId){
   }
 }
 
-module.exports = {getAllOrdersById,getAllItemsOrdersById,createOrder,createItemOrder,updateOrder,updateItemOrder,deleteOrder,deleteItemOrder,deleteItemsByOrderId} //Allows another file to use the users variable
+module.exports = {
+  getAllOrdersById,
+  getAllItemsOrdersById,
+  getAllOrder,
+  createOrder,
+  createItemOrder,
+  updateOrder,
+  updateItemOrder,
+  deleteOrder,
+  deleteItemOrder,
+  deleteItemsByOrderId,
+};

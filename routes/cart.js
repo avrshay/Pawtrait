@@ -3,7 +3,7 @@ const router = express.Router();
 const cartController = require("../controllers/cartController");
 const auth = require("../middleware/auth");
 
-// Literal path before /:item_id so "clear" is not parsed as an item id.
+// Delete the cart for the given user id.
 router.delete(
   "/clear",
   auth.authorize(["user", "admin", "manager"]),
@@ -11,6 +11,7 @@ router.delete(
   cartController.clearCart
 );
 
+// Get the cart and all items in the cart for the given user id.
 router.get(
   "/",
   auth.authorize(["user", "admin", "manager"]),
@@ -18,6 +19,7 @@ router.get(
   cartController.getCart
 );
 
+// Add a new item to the cart for the given user id.
 router.post(
   "/",
   auth.authorize(["user", "admin", "manager"]),
@@ -25,18 +27,14 @@ router.post(
   cartController.addItem
 );
 
-router.patch(
-  "/:item_id",
-  auth.authorize(["user", "admin", "manager"]),
-  cartController.updateItemQuantity
-);
-
+// Update the quantity of a cart item for the given item id.
 router.put(
   "/:item_id",
   auth.authorize(["user", "admin", "manager"]),
   cartController.updateItemQuantity
 );
 
+// Delete a cart item for the given item id.
 router.delete(
   "/:item_id",
   auth.authorize(["user", "admin", "manager"]),

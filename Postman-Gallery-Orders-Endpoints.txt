@@ -101,6 +101,17 @@ Path params:
   :id       = user id (owner of the orders)
   :orderId = order id
 
+5b) List all orders (admin / manager dashboard)
+   Method: GET
+   URL:    http://localhost:3000/orders
+   Headers (required):
+     x-user-role: admin   OR   manager
+   Headers (optional for staff):
+     x-user-id: (omit)
+   Body:   (none)
+   Response: JSON array of order headers { orderId, userId, status, createDate } for every user.
+   Note: Regular users (role user) get 403 on this route. Register GET "/" before GET "/:id" in code.
+
 6) List all orders for a user
    Method: GET
    URL:    http://localhost:3000/orders/2
@@ -213,6 +224,7 @@ POST   http://localhost:3000/gallery
 PUT    http://localhost:3000/gallery/1
 DELETE http://localhost:3000/gallery/1
 
+GET    http://localhost:3000/orders
 GET    http://localhost:3000/orders/2
 GET    http://localhost:3000/orders/2/1
 POST   http://localhost:3000/orders/2
