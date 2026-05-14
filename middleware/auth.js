@@ -1,6 +1,7 @@
 const { sendError } = require("./apiResponse");
 const users = require("../models/usersMockData");
 
+//authorize the user by the role
 function authorize(allowedRoles) {
   return (req, res, next) => {
     const role = req.headers["x-user-role"];
@@ -12,6 +13,7 @@ function authorize(allowedRoles) {
   };
 }
 
+//authorize the user by the role and the id
 function authorizeSelf(req, res, next) {
   const role = req.headers["x-user-role"];
   if (["admin", "manager"].includes(role)) {

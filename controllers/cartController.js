@@ -82,8 +82,9 @@ function addItem(req, res) {
   }
   const product = products.getProductById(productId);
   if (!product) {
-    return sendError(res, 400, "BAD_REQUEST", `unknown productId: ${productId}`, {
+    return sendError(res, 404, "NOT_FOUND", `product not found: ${productId}`, {
       field: "productId",
+      productId,
     });
   }
 
@@ -120,7 +121,7 @@ function updateItemQuantity(req, res) {
 
   const updated = carts.updateCartItemQuantity(item_id, qty);
   if (!updated) {
-    return sendError(res, 400, "BAD_REQUEST", "could not update quantity", {});
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not update quantity", {});
   }
   return sendSuccess(res, enrichLine(updated));
 }

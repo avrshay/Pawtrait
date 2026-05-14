@@ -35,7 +35,7 @@ function getItemsOfOrder(req, res) {
 
 function createOrder(req, res) {
   const userId = req.params.id;
-  if (!userId || !Number.isFinite(Number(userId))) {
+  if (!userId || !Number.isFinite(Number(userId)) || Number(userId) < 1) {
     return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
   }
 
@@ -72,7 +72,7 @@ function createOrder(req, res) {
     }
     const product = products.getProductById(pid);
     if (!product) {
-      return sendError(res, 400, "BAD_REQUEST", `unknown productId: ${pid}`, {
+      return sendError(res, 404, "NOT_FOUND", `product not found: ${pid}`, {
         field: "items.productId",
         productId: pid,
       });
@@ -87,7 +87,7 @@ function createOrder(req, res) {
   });
 
   if (!newOrder) {
-    return sendError(res, 400, "BAD_REQUEST", "could not create order", {});
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not create order", {});
   }
 
   for (const line of items) {
@@ -141,28 +141,17 @@ function updateOrder(req, res) {
 
   const ok = orders.updateOrder(orderId, merged);
   if (!ok) {
-    return sendError(res, 400, "BAD_REQUEST", "update failed", {});
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "update failed", {});
   }
 
-  const updatedList = orders.getAllOrdersById(userId);
-  if (!updatedList) {
-    return sendError(res, 404, "NOT_FOUND", "orders not found", {});
-  }
-  if (!Array.isArray(updatedList) || updatedList.length === 0) {
-    return sendError(res, 404, "NOT_FOUND", "no items found for this order", {});
-  }
-  const updated = updatedList.find((o) => o.orderId === Number(orderId));
+  const allHeaders = orders.getAllOrder();
+  const updated = Array.isArray(allHeaders)
+    ? allHeaders.find((o) => o.orderId === Number(orderId))
+    : null;
   if (!updated) {
-    return sendError(res, 404, "NOT_FOUND", "order not found", { orderId });
-  }
-  if (!updated.userId || !Number.isFinite(Number(updated.userId))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid userId in body", { field: "userId" });
-  }
-  if (updated.status == null || String(updated.status).trim() === "") {
-    return sendError(res, 400, "BAD_REQUEST", "status is required", { field: "status" });
-  }
-  if (updated.createDate == null || !Date.parse(updated.createDate)) {
-    return sendError(res, 400, "BAD_REQUEST", "createDate is required", { field: "createDate" });
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "order not found after update", {
+      orderId: Number(orderId),
+    });
   }
   return sendSuccess(res, updated);
 }

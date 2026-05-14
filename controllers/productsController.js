@@ -33,7 +33,7 @@ function createProduct(req, res) {
   }
   const newProduct = products.createProduct(product);
   if (!newProduct) {
-    return sendError(res, 400, "BAD_REQUEST", "failed to create product", {});
+    return sendError(res, 500, "INTERNAL_SERVER_ERROR", "failed to create product", {});
   }
   return sendSuccess(res, newProduct, 201);
 }

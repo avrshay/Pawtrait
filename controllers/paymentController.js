@@ -19,15 +19,22 @@ function startPayment(req, res) {
     status: "pending",
   });
 
-  return sendSuccess(res, {
-    message: "Payment initiated",
-    paymentId,
-    bitPaymentUrl: `https://bit.co.il/pay?id=${encodeURIComponent(paymentId)}`,
-  });
+  return sendSuccess(
+    res,
+    {
+      message: "Payment initiated",
+      paymentId,
+      bitPaymentUrl: `https://bit.co.il/pay?id=${encodeURIComponent(paymentId)}`,
+    },
+    201
+  );
 }
 
 function handleWebhook(req, res) {
   const { paymentId, status } = req.body || {};
+  if (paymentId == null || String(paymentId).trim() === "") {
+    return sendError(res, 400, "BAD_REQUEST", "paymentId is required", { field: "paymentId" });
+  }
   const payment = paymentData.findByPaymentId(paymentId);
 
   if (!payment) {
