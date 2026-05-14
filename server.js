@@ -23,6 +23,7 @@ const cartRoutes = require("./routes/cart")
 const authRoutes     = require("./routes/auth")
 const galleryRoutes     = require("./routes/productsGallery.js")
 const aiRoutes     = require("./routes/ai")
+const paymentRoutes = require("./routes/paymentRoutes")
 
 app.use("/users",     userRoutes)
 app.use("/orders", orderRoutes)
@@ -30,6 +31,7 @@ app.use("/cart", cartRoutes)
 app.use("/auth",     authRoutes)
 app.use("/gallery",     galleryRoutes)
 app.use("/ai",     aiRoutes)
+app.use("/payments", paymentRoutes)
 
 const errorHandler = require("./middleware/errorHandler");
 

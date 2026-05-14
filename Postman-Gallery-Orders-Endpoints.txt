@@ -1,44 +1,28 @@
 ================================================================================
-PAWTRAIT API — GALLERY & ORDERS (for Postman)
+PAWTRAIT API — POSTMAN REFERENCE (matches current Express routes)
 Base URL: http://localhost:3000
 Content-Type (for POST/PUT): application/json
 ================================================================================
 
 --------------------------------------------------------------------------------
-HEADERS (auth middleware — header names are lowercase in Express)
+HEADERS (auth middleware)
 --------------------------------------------------------------------------------
 
-Gallery — READ (GET list / GET one):
-  No headers required.
+Send **x-user-role** and **x-user-id** as real **HTTP headers** (Postman → Headers tab),
+not only as URL query parameters. The server reads **req.headers["x-user-role"]** etc.
+
+Gallery GET routes do not require headers.
 
 --------------------------------------------------------------------------------
-ONLY-ADMIN / STAFF ENDPOINTS — does the request need x-user-id?
+ONLY-ADMIN / STAFF — is x-user-id required?
 --------------------------------------------------------------------------------
 
-These routes do NOT read or validate x-user-id for access control today. They only
-check x-user-role (and for orders PUT/DELETE, authorizeSelf skips the id check when
-role is admin or manager). So:
+  • Gallery POST / PUT / DELETE  →  x-user-role: admin only (no x-user-id check)
+  • Orders PUT / DELETE          →  x-user-role: admin OR manager (authorizeSelf skips id match for staff)
+  • Orders GET / (all orders)    →  admin OR manager only
 
-  • Gallery POST / PUT / DELETE  →  REQUIRED:  x-user-role: admin
-                              →  NOT REQUIRED: x-user-id (middleware never checks it)
-
-  • Orders PUT / DELETE          →  REQUIRED:  x-user-role: admin   OR   manager
-                              →  NOT REQUIRED: x-user-id for admin/manager
-                                 (authorizeSelf passes without comparing x-user-id to :id)
-
-You may still add x-user-id in Postman for your own notes (e.g. which person is testing);
-the server ignores it on these endpoints unless you change middleware later.
-
-The URL path already identifies the resource (e.g. /orders/2/1 = user 2’s order 1);
-that is not the same as the x-user-id header, which is only enforced for role "user".
-
-Orders — READ + CREATE (GET list, GET items, POST new order) for a normal user:
-  x-user-role: user
-  x-user-id: <must match :id in the URL>   e.g. GET /orders/3  →  x-user-id: 3
-
-Orders — READ + CREATE as admin/manager (any :id in path):
-  x-user-role: admin   OR   manager
-  x-user-id: not required (authorizeSelf allows admin/manager without matching :id)
+The URL path identifies the resource (e.g. /orders/2/1 = user 2, order 1). For role
+**user**, **x-user-id** must match **:id** on routes that use authorizeSelf.
 
 --------------------------------------------------------------------------------
 GALLERY (mounted at /gallery)
@@ -106,11 +90,9 @@ Path params:
    URL:    http://localhost:3000/orders
    Headers (required):
      x-user-role: admin   OR   manager
-   Headers (optional for staff):
-     x-user-id: (omit)
    Body:   (none)
    Response: JSON array of order headers { orderId, userId, status, createDate } for every user.
-   Note: Regular users (role user) get 403 on this route. Register GET "/" before GET "/:id" in code.
+   Note: role "user" receives 403 on this route.
 
 6) List all orders for a user
    Method: GET
@@ -177,6 +159,31 @@ Path params:
     Body:   (none)
 
 --------------------------------------------------------------------------------
+PAYMENTS (mounted at /payments in server.js — requires routes/paymentRoutes.js to register routes)
+--------------------------------------------------------------------------------
+
+Ensure **routes/paymentRoutes.js** mounts **POST /start** and **POST /webhook** on this router
+(an empty routes file will break `require` or yield 404 for all /payments paths).
+
+Current controllers/paymentController.js behavior:
+
+POST /payments/start
+  • No auth middleware in routes unless you add it in paymentRoutes.js.
+  • Body (JSON) — both required or 400 { "message": "Missing payment details" }:
+      { "userId": 2, "totalAmount": 165 }
+    (cartItems in body is not used by the controller.)
+  • Response: 200 JSON — message, paymentId, bitPaymentUrl (mock Bit URL).
+  • If start fails at runtime, align models/paymentData.js with the controller (controller
+    expects an array-like store with .push / .find, or change the controller to use addPending).
+
+POST /payments/webhook
+  • No auth (intended for provider → server callbacks).
+  • Body (JSON): { "paymentId": "<string from start response>", "status": "success" }
+  • Unknown paymentId → 404 JSON { "message": "Payment not found" }.
+  • Known payment + status "success" → sets that payment’s status to "completed" and logs;
+    it does not yet create an order or clear the cart (see TODO comments in controller).
+
+--------------------------------------------------------------------------------
 CART (mounted at /cart)
 --------------------------------------------------------------------------------
 Cart owner is always the numeric user in header x-user-id (no user_id in URL or POST body).
@@ -196,12 +203,14 @@ POST add line:
   Headers: x-user-role: user, x-user-id: 2
   Body JSON: { "productId": 1, "quantity": 1, "petImageUrl": "http://localhost:3000/images/clients/my-pet.jpg" }
 
-PUT quantity:
+PUT update line quantity (routes/cart.js registers PUT only for /:item_id):
   PUT http://localhost:3000/cart/1
+  Headers: x-user-role, x-user-id (must own the line’s cart unless admin/manager)
   Body JSON: { "quantity": 2 }
 
 DELETE one line:
   DELETE http://localhost:3000/cart/1
+  Headers: x-user-role, x-user-id (see cartController ownership rules)
 
 DELETE clear all lines for that user’s cart:
   DELETE http://localhost:3000/cart/clear
@@ -212,7 +221,22 @@ DELETE clear all lines for that user’s cart:
     /:user_id on the path — use header x-user-id: 2 instead of .../clear/2.
   - Do NOT use GET http://localhost:3000/cart/1 to "get user 1’s cart". There is no such
     route. Use GET http://localhost:3000/cart with header x-user-id: 1. The path /cart/1
-    is only for PATCH/PUT/DELETE on line item id 1, not for loading the whole cart.
+    is only for PUT/DELETE on line item id 1, not for loading the whole cart.
+
+--------------------------------------------------------------------------------
+USERS (mounted at /users)
+--------------------------------------------------------------------------------
+  GET    /users              — admin, manager
+  GET    /users/:id          — authorizeSelf + admin/manager
+  POST   /users              — admin, manager + validateCreateUser body
+  PUT    /users/:id          — authorizeSelf + admin/manager
+  DELETE /users/:id          — admin only
+
+--------------------------------------------------------------------------------
+AUTH (mounted at /auth)
+--------------------------------------------------------------------------------
+  POST /auth/register  — body per validateRegister (firstName, lastName, email, phone_number, password)
+  POST /auth/login     — see authController for expected body
 
 ================================================================================
 QUICK COPY — URLS ONLY (replace host/port if needed)
@@ -231,11 +255,18 @@ POST   http://localhost:3000/orders/2
 PUT    http://localhost:3000/orders/2/1
 DELETE http://localhost:3000/orders/2/1
 
+POST   http://localhost:3000/payments/start
+POST   http://localhost:3000/payments/webhook
+
 GET    http://localhost:3000/cart
 POST   http://localhost:3000/cart
-PATCH  http://localhost:3000/cart/1
+PUT    http://localhost:3000/cart/1
 DELETE http://localhost:3000/cart/1
 DELETE http://localhost:3000/cart/clear
+
+POST   http://localhost:3000/auth/register
+POST   http://localhost:3000/auth/login
+GET    http://localhost:3000/users
 
 ================================================================================
 END
