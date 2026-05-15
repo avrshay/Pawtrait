@@ -73,7 +73,8 @@ Headers: `x-user-role` (and `x-user-id` when role is `user` and the route checks
 | GET | `/users` | `admin`, `manager` | none |
 | GET | `/users/:id` | `admin`, `manager`, or `user` with same id | none |
 | POST | `/users` | `admin`, `manager` | `firstName`, `lastName`, `userRole` (`user` \| `manager` \| `admin`) |
-| PUT | `/users/:id` | same as GET by id | same as POST |
+| PUT | `/users/:id` | `admin`, `manager` | `firstName`, `lastName`, `userRole` (`user` \| `manager` \| `admin`) |
+| PUT | `/users/profile/:id` | `admin`, `manager`, or `user` with same id |`firstName`, `lastName`, 'email', `phone_number`|
 | DELETE | `/users/:id` | `admin` only | none |
 
 ---
@@ -86,7 +87,7 @@ Headers: `x-user-role`, and `x-user-id` when role is `user` (must match `:id` wh
 |--------|------|-----|------|
 | GET | `/orders` | `admin`, `manager` | none |
 | GET | `/orders/:id` | `user` (self), `admin`, `manager` | none |
-| GET | `/orders/:id/:orderId` | same | none |
+| GET | `/orders/:id/:orderId` | `user` (self), `admin`, `manager` | none |
 | POST | `/orders/:id` | same | `items`: array of `{ "productId": number, "quantity" or "amount": number, "petImageUrl": string }` |
 | PUT | `/orders/:id/:orderId` | `admin`, `manager` | optional: `userId`, `status`, `createDate` (merged with existing order; `status` must stay non-empty) |
 | DELETE | `/orders/:id/:orderId` | `admin`, `manager` | none |
