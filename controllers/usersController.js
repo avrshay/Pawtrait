@@ -45,6 +45,20 @@ function updateUser(req, res) {
   return sendSuccess(res, { userId: Number(id) });
 }
 
+function updateDetails(req, res) {
+  const id = req.params.id;
+  if (invalidUserIdParam(id)) {
+    return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
+  }
+  const existing = users.geyUserById(id);
+  if (!existing) {
+    return sendError(res, 404, "NOT_FOUND", "user not found", { id: Number(id) });
+  }
+  const {firstName,lastName,email,phone_number} = req.body;
+  users.updateDetailsById(id,firstName,lastName,email,phone_number);
+  return sendSuccess(res, { userId: Number(id) });
+}
+
 function deleteUser(req, res) {
   const id = req.params.id;
   if (invalidUserIdParam(id)) {

@@ -96,6 +96,20 @@ function updateById(id,firstName, lastName, userRole){
   user.updateDate = new Date();
   return true
 }
+
+function updateDetailsById(id,firstName,lastName,email,phone_number){
+  const user = users.find(u => u.userId === Number(id));
+  if (!user) {
+    return false;
+  }
+  user.firstName = firstName;
+  user.lastName = lastName;
+  user.email = email;
+  user.phone_number = phone_number;
+  user.updateDate = new Date();
+  return true;
+}
+
 function deleteById(id){
   const index = users.findIndex(u => u.userId === Number(id));
   if (index !== -1){
