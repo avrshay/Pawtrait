@@ -72,4 +72,4 @@ function deleteUser(req, res) {
   return sendSuccess(res, { userId: Number(id) });
 }
 
-module.exports = { getAll, getById, newUser, updateUser, deleteUser };
+module.exports = { getAll, getById, newUser, updateUser, deleteUser,updateDetails };

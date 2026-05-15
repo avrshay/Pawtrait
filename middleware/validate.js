@@ -30,4 +30,18 @@ function validateRegister(req, res, next) {
   next();
 }
 
-module.exports = { validateCreateUser, validateRegister };
+function validateUpdate(req, res, next) {
+  const { firstName, lastName, email,phone_number } = req.body;
+  if (!firstName || !lastName || typeof firstName !== "string" || typeof lastName !== "string") {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid name", { fields: ["firstName", "lastName"] });
+  }
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid Email", { field: "email" });
+  }
+  if (!phone_number || typeof phone_number !== "string") {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid phone number", { field: "phone_number" });
+  }
+  next();
+}
+
+module.exports = { validateCreateUser, validateRegister , validateUpdate};

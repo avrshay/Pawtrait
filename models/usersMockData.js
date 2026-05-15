@@ -117,4 +117,4 @@ function deleteById(id){
   }
 }
 
-module.exports = {getAllUsers,geyUserById,getUserByEmailAndPassword,RegisterUser,createUser,updateById,deleteById} //Allows another file to use the users variable
+module.exports = {getAllUsers,geyUserById,getUserByEmailAndPassword,RegisterUser,createUser,updateById,deleteById,updateDetailsById} //Allows another file to use the users variable
