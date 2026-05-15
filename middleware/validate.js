@@ -44,4 +44,17 @@ function validateUpdate(req, res, next) {
   next();
 }
 
-module.exports = { validateCreateUser, validateRegister , validateUpdate};
+function validateLogin(req, res, next) {
+  const { email,password } = req.body;
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    return sendError(res, 400, "BAD_REQUEST", "Invalid Email", { field: "email" });
+  }
+  if (!password || typeof password !== "string" || password.length < 6) {
+    return sendError(res, 400, "BAD_REQUEST", "Password must be at least 6 characters", {
+      field: "password",
+    });
+  }
+  next();
+}
+
+module.exports = { validateCreateUser, validateRegister , validateUpdate,validateLogin};
