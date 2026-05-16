@@ -30,6 +30,7 @@ const items_orders = [
     productId: 1, //foreign key to products table
     quantity: 1,
     petImageUrl: "http://localhost:3000/images/clients/order1-line1-pet.jpg",
+    aiDesignImageUrl: "",
   },
   {
     id: 2,
@@ -37,6 +38,7 @@ const items_orders = [
     productId: 2,
     quantity: 1,
     petImageUrl: "http://localhost:3000/images/clients/order2-line1-pet.jpg",
+    aiDesignImageUrl: "http://localhost:3000/images/catalog/products/bag-design-dog2.png",
   },
   {
     id: 3,
@@ -44,6 +46,7 @@ const items_orders = [
     productId: 3,
     quantity: 2,
     petImageUrl: "http://localhost:3000/images/clients/order3-line1-pet.jpg",
+    aiDesignImageUrl: "",
   }
 ];
 
@@ -101,6 +104,7 @@ function createItemOrder(itemOrder){
     productId: Number(itemOrder.productId),
     quantity: q,
     petImageUrl: petUrl,
+    aiDesignImageUrl: "",
     id: nextId,
   };
   items_orders.push(newItemOrder);
@@ -147,16 +151,53 @@ function updateItemOrder(id, itemOrder){
   }
   const index = items_orders.findIndex(i => i.id === Number(id));
   if (index !== -1){
+    const prev = items_orders[index];
     items_orders[index] = {
       orderId: Number(itemOrder.orderId),
       productId: Number(itemOrder.productId),
       quantity: q,
       petImageUrl: petUrl,
+      aiDesignImageUrl:
+        itemOrder.aiDesignImageUrl != null
+          ? String(itemOrder.aiDesignImageUrl)
+          : prev.aiDesignImageUrl != null
+            ? String(prev.aiDesignImageUrl)
+            : "",
       id: Number(id),
     };
     return true;
   }
   return false;
+}
+
+function getOrderById(orderId) {
+  if (orderId == null) {
+    return null;
+  }
+  return orders.find((o) => o.orderId === Number(orderId)) || null;
+}
+
+function getItemsByOrderId(orderId) {
+  if (orderId == null) {
+    return [];
+  }
+  return items_orders.filter((i) => i.orderId === Number(orderId));
+}
+
+function setAiDesignImageUrl(lineItemId, url) {
+  const id = Number(lineItemId);
+  if (!Number.isFinite(id)) {
+    return null;
+  }
+  const index = items_orders.findIndex((i) => i.id === id);
+  if (index === -1) {
+    return null;
+  }
+  items_orders[index] = {
+    ...items_orders[index],
+    aiDesignImageUrl: url != null ? String(url) : "",
+  };
+  return items_orders[index];
 }
 
 // Remove an order by orderId; true if a row was removed.
@@ -199,6 +240,9 @@ module.exports = {
   getAllOrdersById,
   getAllItemsOrdersById,
   getAllOrder,
+  getOrderById,
+  getItemsByOrderId,
+  setAiDesignImageUrl,
   createOrder,
   createItemOrder,
   updateOrder,

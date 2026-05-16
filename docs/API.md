@@ -128,8 +128,8 @@ No auth headers.
 
 | Method | Path | Body |
 |--------|------|------|
-| POST | `/payments/start` | `userId`, `totalAmount` |
-| POST | `/payments/webhook` | `paymentId` (required), optional `status` — use a `paymentId` returned from `/payments/start` to test success |
+| POST | `/payments/start` | `userId`, `totalAmount`, `orderId` (order must belong to that user) |
+| POST | `/payments/webhook` | `paymentId` (required), optional `status` — on `success`, AI runs for that payment’s order line items (`aiDesignImageUrl` starts empty) |
 
 ---
 

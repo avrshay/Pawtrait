@@ -386,7 +386,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 3,\n  \"totalAmount\": 99.5\n}",
+              "raw": "{\n  \"userId\": 3,\n  \"totalAmount\": 99.5,\n  \"orderId\": 3\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": "{{baseUrl}}/payments/start"

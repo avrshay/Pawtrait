@@ -1,13 +1,29 @@
 // controllers/paymentController.js — mock Bit payment flow
 
 const paymentData = require("../models/paymentData");
+const orders = require("../models/ordersMockData");
+const aiController = require("./aiController");
 const { sendSuccess, sendError } = require("../middleware/apiResponse");
 
+//startPayment function to initiate a payment
 function startPayment(req, res) {
-  const { userId, totalAmount } = req.body || {};
-  if (userId == null || totalAmount == null) {
+  const { userId, totalAmount, orderId } = req.body || {};
+  if (userId == null || totalAmount == null || orderId == null) {
     return sendError(res, 400, "BAD_REQUEST", "Missing payment details", {
-      fields: ["userId", "totalAmount"],
+      fields: ["userId", "totalAmount", "orderId"],
+    });
+  }
+  if (!Number.isFinite(Number(orderId)) || Number(orderId) < 1) {
+    return sendError(res, 400, "BAD_REQUEST", "invalid orderId", { field: "orderId" });
+  }
+
+  const order = orders.getOrderById(orderId);
+  if (!order) {
+    return sendError(res, 404, "NOT_FOUND", "order not found", { orderId: Number(orderId) });
+  }
+  if (order.userId !== Number(userId)) {
+    return sendError(res, 400, "BAD_REQUEST", "order does not belong to this user", {
+      field: "orderId",
     });
   }
 
@@ -15,6 +31,7 @@ function startPayment(req, res) {
   paymentData.addPending({
     paymentId,
     userId: Number(userId),
+    orderId: Number(orderId),
     amount: Number(totalAmount),
     status: "pending",
   });
@@ -30,6 +47,7 @@ function startPayment(req, res) {
   );
 }
 
+//handleWebhook function to handle the webhook from the payment gateway
 function handleWebhook(req, res) {
   const { paymentId, status } = req.body || {};
   if (paymentId == null || String(paymentId).trim() === "") {
@@ -42,8 +60,12 @@ function handleWebhook(req, res) {
   }
 
   if (status === "success") {
+    const wasPending = payment.status !== "completed";
     payment.status = "completed";
     console.log(`Payment ${paymentId} marked completed (mock).`);
+    if (wasPending && payment.orderId != null) {
+      aiController.enqueueOrderAiProcessing(payment.orderId);
+    }
   }
 
   return sendSuccess(res, { acknowledged: true });
