@@ -4,22 +4,13 @@ const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 function getOrdersOfUserById(req, res) {
   const id = req.params.id;
-  if (!id || !Number.isFinite(Number(id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
-  }
   const allOrders = orders.getAllOrdersById(id);
   return sendSuccess(res, allOrders);
 }
 
 function getItemsOfOrder(req, res) {
   const userId = req.params.id;
-  if (!userId || !Number.isFinite(Number(userId))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
-  }
   const orderId = req.params.orderId;
-  if (!orderId || !Number.isFinite(Number(orderId))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid order id", { field: "orderId" });
-  }
   const lines = orders.getAllItemsOrdersById(userId, orderId);
   if (!Array.isArray(lines) || lines.length === 0) {
     return sendError(
@@ -35,9 +26,6 @@ function getItemsOfOrder(req, res) {
 
 function createOrder(req, res) {
   const userId = req.params.id;
-  if (!userId || !Number.isFinite(Number(userId)) || Number(userId) < 1) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid user id", { field: "id" });
-  }
 
   const body = req.body || {};
   const items = body.items;
@@ -112,11 +100,6 @@ function createOrder(req, res) {
 function updateOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
-  if (!userId || !Number.isFinite(Number(userId)) || !orderId || !Number.isFinite(Number(orderId))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid user id or order id", {
-      fields: ["id", "orderId"],
-    });
-  }
 
   const list = orders.getAllOrdersById(userId);
   const existing = list.find((o) => o.orderId === Number(orderId));
@@ -159,9 +142,6 @@ function updateOrder(req, res) {
 function deleteOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
-  if (!userId || !Number.isFinite(Number(userId)) || !orderId || !Number.isFinite(Number(orderId))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid user id or order id", {});
-  }
 
   const list = orders.getAllOrdersById(userId);
   const existing = list.find((o) => o.orderId === Number(orderId));

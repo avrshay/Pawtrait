@@ -35,9 +35,6 @@ function canAccessCartItem(req, cart) {
 
 function getCart(req, res) {
   const user_id = req.headers["x-user-id"];
-  if (!user_id || !Number.isFinite(Number(user_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid x-user-id header", { field: "x-user-id" });
-  }
   const { cart, item_cart } = carts.getCartPayloadByUserId(user_id);
   if (!cart) {
     return sendSuccess(res, {
@@ -61,25 +58,8 @@ function addItem(req, res) {
   const user_id = req.headers["x-user-id"];
   const productId = body.productId;
   const quantity = body.quantity;
-  const petImageUrl = body.petImageUrl;
+  const petImageUrl = String(body.petImageUrl).trim();
 
-  if (!Number.isFinite(Number(user_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid x-user-id header", { field: "x-user-id" });
-  }
-  if (!Number.isFinite(Number(productId))) {
-    return sendError(res, 400, "BAD_REQUEST", "productId is required", { field: "productId" });
-  }
-  if (!Number.isFinite(Number(quantity)) || Number(quantity) < 1) {
-    return sendError(res, 400, "BAD_REQUEST", "quantity must be a positive number", {
-      field: "quantity",
-    });
-  }
-  const pet = petImageUrl != null ? String(petImageUrl).trim() : "";
-  if (!pet) {
-    return sendError(res, 400, "BAD_REQUEST", "petImageUrl is required for each cart line", {
-      field: "petImageUrl",
-    });
-  }
   const product = products.getProductById(productId);
   if (!product) {
     return sendError(res, 404, "NOT_FOUND", `product not found: ${productId}`, {
@@ -91,7 +71,7 @@ function addItem(req, res) {
   const line = carts.addCartItem(user_id, {
     productId,
     quantity,
-    petImageUrl: pet,
+    petImageUrl,
   });
   if (!line) {
     return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not add cart item", {});
@@ -101,9 +81,6 @@ function addItem(req, res) {
 
 function updateItemQuantity(req, res) {
   const item_id = req.params.item_id;
-  if (!item_id || !Number.isFinite(Number(item_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid item_id", { field: "item_id" });
-  }
   const ctx = carts.getCartItemWithOwner(item_id);
   if (!ctx || !ctx.row) {
     return sendError(res, 404, "NOT_FOUND", "cart item not found", { item_id });
@@ -112,13 +89,7 @@ function updateItemQuantity(req, res) {
     return sendError(res, 403, "FORBIDDEN", "You do not have permission to perform this action.", {});
   }
 
-  const qty = req.body && req.body.quantity;
-  if (!Number.isFinite(Number(qty)) || Number(qty) < 1) {
-    return sendError(res, 400, "BAD_REQUEST", "body must include quantity (positive number)", {
-      field: "quantity",
-    });
-  }
-
+  const qty = req.body.quantity;
   const updated = carts.updateCartItemQuantity(item_id, qty);
   if (!updated) {
     return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not update quantity", {});
@@ -128,9 +99,6 @@ function updateItemQuantity(req, res) {
 
 function deleteItem(req, res) {
   const item_id = req.params.item_id;
-  if (!item_id || !Number.isFinite(Number(item_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid item_id", { field: "item_id" });
-  }
   const ctx = carts.getCartItemWithOwner(item_id);
   if (!ctx || !ctx.row) {
     return sendError(res, 404, "NOT_FOUND", "cart item not found", { item_id });
@@ -147,9 +115,6 @@ function deleteItem(req, res) {
 
 function clearCart(req, res) {
   const user_id = req.headers["x-user-id"];
-  if (!user_id || !Number.isFinite(Number(user_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid x-user-id header", { field: "x-user-id" });
-  }
   const removed = carts.clearCartByUserId(user_id);
   return sendSuccess(res, { user_id: Number(user_id), removed });
 }

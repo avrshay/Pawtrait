@@ -8,9 +8,6 @@ function getAllProducts(req, res) {
 
 function getProductById(req, res) {
   const product_id = req.params.product_id;
-  if (!product_id || !Number.isFinite(Number(product_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid product_id", { field: "product_id" });
-  }
   const product = products.getProductById(product_id);
   if (!product) {
     return sendError(res, 404, "NOT_FOUND", "product not found", { product_id });
@@ -40,9 +37,6 @@ function createProduct(req, res) {
 
 function updateProduct(req, res) {
   const product_id = req.params.product_id;
-  if (!product_id || !Number.isFinite(Number(product_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid product_id", { field: "product_id" });
-  }
   const product = req.body;
   if (
     !product.name ||
@@ -64,9 +58,6 @@ function updateProduct(req, res) {
 
 function deleteProduct(req, res) {
   const product_id = req.params.product_id;
-  if (!product_id || !Number.isFinite(Number(product_id))) {
-    return sendError(res, 400, "BAD_REQUEST", "invalid product_id", { field: "product_id" });
-  }
   const deletedProduct = products.deleteProduct(product_id);
   if (!deletedProduct) {
     return sendError(res, 404, "NOT_FOUND", "product not found", { product_id });

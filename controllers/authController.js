@@ -12,17 +12,7 @@ function register(req, res) {
 }
 
 function login(req, res) {
-  const { email, password } = req.body || {};
-  if (
-    email == null ||
-    password == null ||
-    String(email).trim() === "" ||
-    String(password).trim() === ""
-  ) {
-    return sendError(res, 400, "BAD_REQUEST", "email and password are required", {
-      fields: ["email", "password"],
-    });
-  }
+  const { email, password } = req.body;
   const user = users.getUserByEmailAndPassword(email, password);
   if (!user) {
     return sendError(res, 400, "BAD_REQUEST", "Invalid email or password", { field: "credentials" });

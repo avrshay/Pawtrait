@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const cartController = require("../controllers/cartController");
 const auth = require("../middleware/auth");
+const validate = require("../middleware/validate");
 
 // Delete the cart for the given user id.
 router.delete(
@@ -24,6 +25,7 @@ router.post(
   "/",
   auth.authorize(["user", "admin", "manager"]),
   auth.requireCartUserIdHeader,
+  validate.validateCartAddItem,
   cartController.addItem
 );
 
@@ -32,6 +34,8 @@ router.put(
   "/:item_id",
   auth.authorize(["user", "admin", "manager"]),
   auth.requireCartUserIdHeader,
+  validate.validateCartItemIdParam,
+  validate.validateCartUpdateQuantity,
   cartController.updateItemQuantity
 );
 
@@ -40,6 +44,7 @@ router.delete(
   "/:item_id",
   auth.authorize(["user", "admin", "manager"]),
   auth.requireCartUserIdHeader,
+  validate.validateCartItemIdParam,
   cartController.deleteItem
 );
 
