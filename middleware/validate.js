@@ -1,4 +1,4 @@
-const { sendError } = require("./apiResponse");
+const { sendError } = require("./errorHandler");
 
 function validateCreateUser(req, res, next) {
   const { firstName, lastName, userRole } = req.body;

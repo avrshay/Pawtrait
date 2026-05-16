@@ -10,7 +10,7 @@ app.use(express.json());
 const logger = require("./middleware/logger");
 app.use(logger);
 
-const { sendSuccess } = require("./middleware/apiResponse");
+const { sendSuccess } = require("./middleware/errorHandler");
 
 app.get("/", (req, res) => {
   return sendSuccess(res, {
@@ -25,7 +25,6 @@ const orderRoutes = require("./routes/orders")
 const cartRoutes = require("./routes/cart")
 const authRoutes     = require("./routes/auth")
 const galleryRoutes     = require("./routes/productsGallery.js")
-const aiRoutes     = require("./routes/ai")
 const paymentRoutes = require("./routes/paymentRoutes")
 
 app.use("/users",     userRoutes)
@@ -33,12 +32,7 @@ app.use("/orders", orderRoutes)
 app.use("/cart", cartRoutes)
 app.use("/auth",     authRoutes)
 app.use("/gallery",     galleryRoutes)
-app.use("/ai",     aiRoutes)
 app.use("/payments", paymentRoutes)
-
-const errorHandler = require("./middleware/errorHandler");
-
-app.use(errorHandler);
 
 const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -1,17 +1,34 @@
-const { sendError } = require("./apiResponse");
+//send a success envelope” / “send an error envelope.
+//functions you call when you already have res.
 
-function errorHandler(err, req, res, next) {
-  if (!err) {
-    return next();
+function sendSuccess(res, data, statusCode = 200) {
+  const payload = {
+    success: true,
+    data: data === undefined ? null : data,
+    error: null,
+  };
+  if (res.headersSent) {
+    return res;
   }
-  const status = err.status || err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  let code = "INTERNAL_SERVER_ERROR";
-  if (status === 404) code = "NOT_FOUND";
-  else if (status === 403) code = "FORBIDDEN";
-  else if (status === 400) code = "BAD_REQUEST";
-  else if (status < 500) code = "BAD_REQUEST";
-  return sendError(res, status, code, message, {});
+  return res.status(statusCode).json(payload);
 }
 
-module.exports = errorHandler;
+function sendError(res, statusCode, code, message, details = {}) {
+  const d =
+    details && typeof details === "object" && !Array.isArray(details) ? details : {};
+  const payload = {
+    success: false,
+    data: null,
+    error: {
+      code: String(code || "ERROR"),
+      message: String(message || "Error"),
+      details: d,
+    },
+  };
+  if (res.headersSent) {
+    return res;
+  }
+  return res.status(statusCode).json(payload);
+}
+
+module.exports = { sendSuccess, sendError };

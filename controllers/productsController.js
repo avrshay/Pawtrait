@@ -1,5 +1,5 @@
 const products = require("../models/productsMockData");
-const { sendSuccess, sendError } = require("../middleware/apiResponse");
+const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 function getAllProducts(req, res) {
   const allProducts = products.getAllProducts();

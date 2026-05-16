@@ -1,5 +1,5 @@
 const users = require("../models/usersMockData");
-const { sendSuccess, sendError } = require("../middleware/apiResponse");
+const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 function invalidUserIdParam(id) {
   if (id === undefined || id === null || String(id).trim() === "") {

@@ -1,4 +1,4 @@
-const { sendError } = require("./apiResponse");
+const { sendError } = require("./errorHandler");
 const users = require("../models/usersMockData");
 
 //authorize the user by the role

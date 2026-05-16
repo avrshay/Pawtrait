@@ -3,7 +3,7 @@
 const paymentData = require("../models/paymentData");
 const orders = require("../models/ordersMockData");
 const aiController = require("./aiController");
-const { sendSuccess, sendError } = require("../middleware/apiResponse");
+const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 //startPayment function to initiate a payment
 function startPayment(req, res) {

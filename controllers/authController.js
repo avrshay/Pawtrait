@@ -1,5 +1,5 @@
 const users = require("../models/usersMockData");
-const { sendSuccess, sendError } = require("../middleware/apiResponse");
+const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 function register(req, res) {
   const { firstName, lastName, email, phone_number, password } = req.body;

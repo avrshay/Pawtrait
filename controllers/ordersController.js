@@ -1,6 +1,6 @@
 const orders = require("../models/ordersMockData");
 const products = require("../models/productsMockData");
-const { sendSuccess, sendError } = require("../middleware/apiResponse");
+const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 function getOrdersOfUserById(req, res) {
   const id = req.params.id;
