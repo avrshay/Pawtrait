@@ -141,36 +141,30 @@ No auth headers.
 
 ---
 
-## Example success (GET `/gallery` — list)
+## Example success (GET `gallery/1`)
 
-```json
 {
-  "success": true,
-  "data": [
-    {
-      "product_id": 1,
-      "name": "designed_cup",
-      "original_pet_image_url": "http://localhost:3000/images/clients/dog1-original.jpg",
-      "custom_product_image_url": "http://localhost:3000/images/catalog/products/cup-design-dog1.png",
-      "price": 50
-    }
-  ],
-  "error": null
+    "success": true,
+    "data": {
+        "product_id": 1,
+        "name": "designed_cup",
+        "original_pet_image_url": "http://localhost:3000/images/clients/dog1-original.jpg",
+        "custom_product_image_url": "http://localhost:3000/images/catalog/products/cup-design-dog1.png",
+        "price": 50
+    },
+    "error": null
 }
-```
 
-## Example error (validation)
+## Example error (GET `gallery/8`)
 
-```json
 {
-  "success": false,
-  "data": null,
-  "error": {
-    "code": "BAD_REQUEST",
-    "message": "Invalid name",
-    "details": {
-      "fields": ["firstName", "lastName"]
+    "success": false,
+    "data": null,
+    "error": {
+        "code": "BAD_REQUEST",
+        "message": "invalid product_id",
+        "details": {
+            "field": "product_id"
+        }
     }
-  }
 }
-```
