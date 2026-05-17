@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "635f6252-70f9-4c35-ad3b-417a6563ae6b",
-    "name": "pawtrait API Copy",
+    "_postman_id": "991001f8-e779-4fc5-abf8-433b9b4b0dfe",
+    "name": "pawtrait API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "53429298",
-    "_collection_link": "https://go.postman.co/collection/53429298-635f6252-70f9-4c35-ad3b-417a6563ae6b?source=collection_link"
+    "_exporter_id": "53429302",
+    "_collection_link": "https://go.postman.co/collection/53429302-991001f8-e779-4fc5-abf8-433b9b4b0dfe?source=collection_link"
   },
   "item": [
     {
@@ -572,7 +572,7 @@
       "name": "gallery",
       "item": [
         {
-          "name": "gallery products",
+          "name": "gallery products - success",
           "request": {
             "method": "GET",
             "header": [],
@@ -591,7 +591,7 @@
           "response": []
         },
         {
-          "name": "one product by id",
+          "name": "one product by id -success",
           "request": {
             "method": "GET",
             "header": [],
@@ -611,7 +611,27 @@
           "response": []
         },
         {
-          "name": "Create product (admin)",
+          "name": "one product by id -failure",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/gallery/10\n",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "gallery",
+                "10\n"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create product (admin) -success",
           "request": {
             "method": "POST",
             "header": [
@@ -645,7 +665,41 @@
           "response": []
         },
         {
-          "name": "Update product (admin)",
+          "name": "Create product (user) - failure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"new_mug\",\r\n    \"original_pet_image_url\": \"http://localhost:3000/images/clients/dog1-original.jpg\",\r\n    \"custom_product_image_url\": \"http://localhost:3000/images/catalog/products/cup-design-dog1.png\",\r\n    \"price\": 45\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/gallery",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "gallery"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update product (admin) - success",
           "request": {
             "method": "PUT",
             "header": [
@@ -680,7 +734,42 @@
           "response": []
         },
         {
-          "name": "Delete product (admin)",
+          "name": "Update product (user) - failure",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n     \"name\": \"designed_cup\",\r\n     \"original_pet_image_url\": \"http://localhost:3000/images/clients/dog1-original.jpg\",\r\n     \"custom_product_image_url\": \"http://localhost:3000/images/catalog/products/cup-design-dog1.png\",\r\n     \"price\": 55\r\n   }\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/gallery/1\n",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "gallery",
+                "1\n"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete product (admin) - success",
           "request": {
             "method": "DELETE",
             "header": [
@@ -711,6 +800,38 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Delete product (user) - failure",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/gallery/1?=",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "gallery",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -718,7 +839,7 @@
       "name": "orders",
       "item": [
         {
-          "name": "Create a new order (checkout) for user :id",
+          "name": "Create a new order (checkout) for user :id -success",
           "request": {
             "method": "POST",
             "header": [
@@ -758,7 +879,47 @@
           "response": []
         },
         {
-          "name": "List line items for one order",
+          "name": "Create a new order (checkout) for user :id -failure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "20",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n     \"items\": [\r\n       { \"productId\": 1, \"quantity\": 2, \"petImageUrl\": \"http://localhost:3000/images/clients/my-pet.jpg\" },\r\n       { \"productId\": 2, \"quantity\": 1, \"petImageUrl\": \"http://localhost:3000/images/clients/my-pet2.jpg\" }\r\n     ]\r\n   }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/2\n",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "2\n"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List line items for one order - success",
           "request": {
             "method": "GET",
             "header": [
@@ -790,7 +951,39 @@
           "response": []
         },
         {
-          "name": "List all orders for a user",
+          "name": "List line items for one order - failure",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "20",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/2/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "2",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List all orders for a user - success",
           "request": {
             "method": "GET",
             "header": [
@@ -821,7 +1014,38 @@
           "response": []
         },
         {
-          "name": "Update order header (admin)",
+          "name": "List all orders for a user - failure",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/20\n",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "20\n"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update order header (admin) - success",
           "request": {
             "method": "PUT",
             "header": [
@@ -857,7 +1081,43 @@
           "response": []
         },
         {
-          "name": "Delete order and all its line items (admin)",
+          "name": "Update order header (user) - failure",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n     \"status\": \"completed\"\r\n   }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/2/1\n",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "2",
+                "1\n"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete order and all its line items (admin)  - success",
           "request": {
             "method": "DELETE",
             "header": [
@@ -884,96 +1144,18 @@
           "response": []
         },
         {
-          "name": "admin-get all",
+          "name": "Delete order and all its line items (user)  - failure",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": ""
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get all orders of user success",
-          "request": {
-            "method": "GET",
+            "method": "DELETE",
             "header": [
               {
                 "key": "x-user-role",
                 "value": "user",
                 "type": "text"
-              },
-              {
-                "key": "x-user-id",
-                "value": "2",
-                "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:3000/orders/2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "3000",
-              "path": [
-                "orders",
-                "2"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get all orders of user failure",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "x-user-role",
-                "value": "user",
-                "type": "text"
-              },
-              {
-                "key": "x-user-id",
-                "value": "3",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:3000/orders/2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "3000",
-              "path": [
-                "orders",
-                "2"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get specific order items success",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "x-user-role",
-                "value": "user",
-                "type": "text"
-              },
-              {
-                "key": "x-user-id",
-                "value": "2",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:3000/orders/2/1",
+              "raw": "http://localhost:3000/orders/2/1\n",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -982,14 +1164,107 @@
               "path": [
                 "orders",
                 "2",
-                "1"
+                "1\n"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Get specific order items failure",
+          "name": "Get all orders of user success - success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all orders of user success - failure",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all orders of user failure - success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all orders of user failure - failure",
           "request": {
             "method": "GET",
             "header": [
@@ -1001,6 +1276,69 @@
               {
                 "key": "x-user-id",
                 "value": "3",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get specific order items - success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/2/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "2",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get specific order items - failure",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
                 "type": "text"
               }
             ],
@@ -1026,7 +1364,7 @@
       "name": "carts",
       "item": [
         {
-          "name": "GET cart",
+          "name": "GET cart - success",
           "request": {
             "method": "GET",
             "header": [
@@ -1056,7 +1394,7 @@
           "response": []
         },
         {
-          "name": "add line",
+          "name": "add line - success",
           "request": {
             "method": "POST",
             "header": [
@@ -1095,10 +1433,60 @@
           "response": []
         },
         {
-          "name": "PUT quantity",
+          "name": "add line -failure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"user_id\": 2, \"productId\": 10, \"quantity\": 1, \"petImageUrl\": \"http://localhost:3000/images/clients/my-pet.jpg\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/cart",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT quantity - success",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2",
+                "type": "text"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{ \"quantity\": 2 }",
@@ -1124,7 +1512,47 @@
           "response": []
         },
         {
-          "name": "DELETE one line",
+          "name": "PUT quantity - false",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"quantity\": 2 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/cart/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "cart",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE one line - success",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1155,7 +1583,38 @@
           "response": []
         },
         {
-          "name": "clear all lines for user",
+          "name": "DELETE one line - false",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "user",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "3",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/cart/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "cart",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "clear all lines for user - success",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1191,7 +1650,36 @@
       "name": "payment",
       "item": [
         {
-          "name": "start",
+          "name": "start - success",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"userId\": 3,\r\n  \"totalAmount\": 130,\r\n  \"orderId\": 3\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/payments/start",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "payments",
+                "start"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "start - false",
           "request": {
             "method": "POST",
             "header": [],
@@ -1220,13 +1708,42 @@
           "response": []
         },
         {
-          "name": "status from bit",
+          "name": "status from bit - success",
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{ \"paymentId\": \"BIT-1778761094807\", \"status\": \"success\" }",
+              "raw": "{ \"paymentId\": \"BIT-1779009010058\", \"status\": \"success\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/payments/webhook",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "payments",
+                "webhook"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "status from bit - false",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"paymentId\": \"BIT-\", \"status\": \"success\" }",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1251,7 +1768,7 @@
       ]
     },
     {
-      "name": "landing page",
+      "name": "landing page - success",
       "request": {
         "method": "GET",
         "header": [],
