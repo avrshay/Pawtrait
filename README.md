@@ -107,6 +107,12 @@ node server.js
 - **Base URL:** `http://localhost:3000`
 - **API base path:** `/` — try `GET http://localhost:3000/` for a welcome JSON message.
 
+## How to test
+
+1. Start the server (see above).
+2. In Postman: **Import** → `docs/Pawtrait.postman_collection.json` (uses `http://localhost:3000`).
+3. For protected routes, set headers `x-user-role` and `x-user-id` as described in `docs/API.md`.
+
 ## API reference
 
 See **`docs/API.md`** for every route, headers, body fields, and example success and error JSON.
