@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
 
-import Navbar from "./components/Navbar";
 
+//import the pages:
 import Gallery from "./pages/Gallery";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
@@ -15,15 +16,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 
-// App shell: sidebar on the left, routed page content on the right.
-// Each route maps to a backend resource (see the service files in ./services).
+
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <main className="main-content">
-        <Routes>
-          <Route path="/"                   element={<Gallery />} />
+      <Layout> //the layout component
+        <Routes> 
+          <Route path="/"                   element={<Gallery />} /> //the home page
           <Route path="/gallery/:productId" element={<ProductDetails />} />
           <Route path="/cart"               element={<Cart />} />
           <Route path="/orders"             element={<Orders />} />
@@ -36,7 +35,7 @@ export default function App() {
           <Route path="/register"           element={<Register />} />
           <Route path="*"                   element={<NotFound />} />
         </Routes>
-      </main>
+      </Layout>
     </BrowserRouter>
   );
 }
