@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout> //the layout component
+      <Layout title="Pawtrait">
         <Routes> 
           <Route path="/"                   element={<Gallery />} /> //the home page
           <Route path="/gallery/:productId" element={<ProductDetails />} />
