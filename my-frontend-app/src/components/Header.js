@@ -1,39 +1,27 @@
-import { useLocation } from "react-router-dom";
 import { getCurrentUser } from "../services/authService";
 
-// Maps a URL path to the title shown in the header bar.
-const TITLES = {
-  "/": "Gallery",
-  "/cart": "Cart",
-  "/orders": "My Orders",
-  "/checkout": "Checkout",
-  "/profile": "Profile",
-  "/admin/users": "Users (Admin)",
-  "/login": "Login",
-  "/register": "Register",
-};
-
-function titleForPath(pathname) {
-  if (TITLES[pathname]) return TITLES[pathname];
-  if (pathname.startsWith("/gallery/")) return "Product";
-  if (pathname.startsWith("/orders/")) return "Order";
-  if (pathname.startsWith("/admin/users/")) return "User";
-  return "Pawtrait";
-}
-
-// Top bar of the content area: the current page title on the left and the
-// logged-in user's role on the right. An explicit `title` prop overrides the
-// title auto-detected from the route.
-export default function Header({ title }) {
-  const { pathname } = useLocation();
+// Top bar of the content area
+// logged-in user's first name, or "Guest" when nobody is logged in.
+export default function Header({ username = "Guest"}) {
   const user = getCurrentUser();
-  const heading = title || titleForPath(pathname);
-  const role = user && user.userRole ? user.userRole : "Guest";
+
+  const name = username || (user && user.firstName) || "Guest";
+
+  const hour = new Date().getHours();
+  const timeGreeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <header className="header">
-      <h1 className="header__title">{heading}</h1>
-      <span className="header__role">Role: {role}</span>
+    <header className="Header">
+      <h1 className="header-greeting">
+        {name === "Guest" ? (
+          "Welcome to Pawtrait Studio!"
+        ) : (
+          <>
+            {timeGreeting}, <span className="user-name">{name}</span>!
+          </>
+        )}
+      </h1>
     </header>
   );
 }

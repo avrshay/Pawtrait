@@ -3,7 +3,7 @@ import Layout from "./components/Layout";
 
 
 //import the pages:
-import Gallery from "./pages/Gallery";
+import Gallery from "./pages/Dashboard";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
@@ -22,7 +22,7 @@ export default function App() {
     <BrowserRouter>
       <Layout title="Pawtrait">
         <Routes> 
-          <Route path="/"                   element={<Gallery />} /> //the home page
+          <Route path="/"                   element={<Gallery />} />
           <Route path="/gallery/:productId" element={<ProductDetails />} />
           <Route path="/cart"               element={<Cart />} />
           <Route path="/orders"             element={<Orders />} />

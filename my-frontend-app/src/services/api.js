@@ -1,4 +1,3 @@
-// Base client for the Pawtrait backend (Assignment 2), served at http://localhost:3000.
 // Every backend response uses the envelope: { success, data, error }.
 
 export const BASE_URL = "http://localhost:3000";
@@ -18,7 +17,6 @@ export function getAuthHeaders() {
   }
 }
 
-// Thin fetch wrapper: prefixes BASE_URL, sends/parses JSON, optionally attaches
 // auth headers, and unwraps the { success, data, error } envelope (throws on error).
 export async function apiRequest(path, { method = "GET", body, auth = false, headers = {} } = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -35,7 +33,7 @@ export async function apiRequest(path, { method = "GET", body, auth = false, hea
   try {
     payload = await res.json();
   } catch {
-    // response had no JSON body
+    // response had no body
   }
 
   if (!res.ok || (payload && payload.success === false)) {

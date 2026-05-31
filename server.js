@@ -6,6 +6,17 @@ const app = express();
 const PORT= 3000
 app.use(express.json());
 
+// CORS: allow the React frontend to call this API.
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, x-user-id, x-user-role");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 //Logger middleware to log the request and response
 const logger = require("./middleware/logger");
 app.use(logger);
@@ -18,7 +29,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/models/images", express.static(path.join(__dirname, "models", "images")));
+app.use("/images", express.static(path.join(__dirname, "models", "images")));
 
 const userRoutes     = require("./routes/users")
 const orderRoutes = require("./routes/orders")

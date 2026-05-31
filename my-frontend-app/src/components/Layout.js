@@ -9,12 +9,12 @@ import Footer from "./Footer";
 //   - Footer: the bottom bar of the content area.
 // The title is the title of the page that is being shown.
 // The children is the actual page body (whatever route is being shown).
-export default function Layout({ title, children }) {
+export default function Layout({ username , children }) {
   return ( //return the layout component
     <div className="layout">
-      <Navbar />
       <div className="layout__main">
-        <Header title={title} />
+        <Header username ={username } />
+        <Navbar />
         <main className="main-content">{children}</main>
         <Footer />
       </div>
