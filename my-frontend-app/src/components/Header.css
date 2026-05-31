@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+
+/* Top app bar — matches the gallery mockup header: white bar, 2px black bottom rule. */
+.Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 40px;
+  background: #ffffff;
+  border-bottom: 2px solid #000000;
+  font-family: 'Inter', sans-serif;
+}
+
+.header-greeting {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #000000;
+}
+
+.user-name {
+  color: #5e5e5e;
+}

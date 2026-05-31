@@ -1,3 +1,5 @@
+import "./Card.css";
+
 //This is the card component that is used to display the products in the gallery page.
 export default function Card({ product }) { //Props: product object that is passed to the card component.
   return (

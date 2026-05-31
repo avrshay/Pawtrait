@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+
+/* Footer bar — matches the gallery mockup footer: white bar, 2px black top rule,
+   mono brand on the left, caption copyright on the right. */
+.Footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 28px 40px;
+  background: #ffffff;
+  border-top: 2px solid #000000;
+  font-family: 'Inter', sans-serif;
+}
+
+.footer__brand {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #000000;
+}
+
+.footer__copy {
+  font-size: 14px;
+  color: #5e5e5e;
+}

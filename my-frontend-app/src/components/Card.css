@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+
+/* Product card — blueprint / brutalist look: white card, hard 2px black borders,
+   two images side by side (pet original + custom product), subtle hover offset. */
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  width: 280px;
+  background: #ffffff;
+  border: 2px solid #000000;
+  font-family: 'Inter', sans-serif;
+  color: #1a1c1c;
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translate(2px, -2px);
+}
+
+.card img {
+  flex: 0 0 50%;
+  width: 50%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-bottom: 2px solid #000000;
+}
+
+.card img:first-of-type {
+  border-right: 2px solid #000000;
+}
+
+.card h3 {
+  flex: 0 0 100%;
+  margin: 0;
+  padding: 16px 16px 4px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.card p {
+  flex: 0 0 100%;
+  margin: 0;
+  padding: 0 16px 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Render the price with a leading currency mark. */
+.card p::before {
+  content: "$";
+}
