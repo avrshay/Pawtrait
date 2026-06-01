@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Card from "../components/Card";
 import { getAllProducts } from "../services/galleryService";
 
@@ -58,7 +59,14 @@ export default function Dashboard() {
             <p>No products match this price range.</p>
           ) : (
             visibleProducts.map((product) => (
-              <Card key={product.product_id} product={product} /> //render the card component for each product
+              //wrap each card in a Link so clicking it opens the product details page
+              <Link
+                key={product.product_id}
+                to={`/gallery/${product.product_id}`}
+                className="card-link"
+              >
+                <Card product={product} />
+              </Link>
             ))
           )}
         </div>
