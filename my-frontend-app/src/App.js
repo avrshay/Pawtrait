@@ -14,6 +14,7 @@ import Users from "./pages/Users";
 import UserDetails from "./pages/UserDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import PersonalArea from "./pages/PersonalArea";
 import NotFound from "./pages/NotFound";
 
 
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/admin/users/:id"    element={<UserDetails />} />
           <Route path="/login"              element={<Login />} />
           <Route path="/register"           element={<Register />} />
+          <Route path="/personalArea"       element={<PersonalArea />} />
           <Route path="*"                   element={<NotFound />} />
         </Routes>
       </Layout>

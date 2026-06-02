@@ -9,7 +9,7 @@ export function getAuthHeaders() {
     const stored = JSON.parse(localStorage.getItem("pawtrait_user"));
     if (!stored) return {};
     const headers = {};
-    if (stored.id != null) headers["x-user-id"] = String(stored.id);
+    if (stored.userId != null) headers["x-user-id"] = String(stored.userId);
     if (stored.userRole) headers["x-user-role"] = stored.userRole;
     return headers;
   } catch {

@@ -14,7 +14,7 @@ export default function Layout({ username , children }) {
     <div className="layout">
       <div className="layout__main">
         <Header username ={username } />
-        <Navbar />
+        <Navbar user ={username }/>
         <main className="main-content">{children}</main>
         <Footer />
       </div>

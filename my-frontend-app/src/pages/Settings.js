@@ -1,6 +1,6 @@
 import { useState,useEffect  } from "react";
-import { getUserById ,updateProfile } from "../services/usersService";
-import { getCurrentUser } from "../services/authService";
+import { updateProfile } from "../services/usersService";
+import { getCurrentUser,saveCurrentUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 
 // PUT /users/profile/:id — the logged-in user editing their own details.
@@ -20,12 +20,10 @@ useEffect(() => {
   async function loadUser() {
     try {
        setLoading(true);
-      const data = await getUserById(currentUser.userId);
-
-      setFirstName(data.firstName);
-      setLastName(data.lastName);
-      setEmail(data.email);
-      setPhone_number(data.phone_number);
+      setFirstName(currentUser.firstName);
+      setLastName(currentUser.lastName);
+      setEmail(currentUser.email);
+      setPhone_number(currentUser.phone_number);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -59,16 +57,22 @@ async function handleUpdate(e) {
     setError("Invalid Email");
     return;
   }
+  setLoading(true);
 
   try {
-    setLoading(true);
     await updateProfile(currentUser.userId, {
       firstName,
       lastName,
       email,
       phone_number,
     });
-
+    saveCurrentUser({
+      ...currentUser,
+      firstName,
+      lastName,
+      email,
+      phone_number
+    });
     setStatus("Profile updated successfully");
   } catch (err) {
     setError(err.message);
