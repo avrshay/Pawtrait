@@ -3,10 +3,10 @@ const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 function register(req, res) {
   const { firstName, lastName, email, phone_number, password } = req.body;
-  users.RegisterUser(firstName, lastName, email, phone_number, password);
+  const user=users.RegisterUser(firstName, lastName, email, phone_number, password);
   return sendSuccess(
     res,
-    { firstName, lastName },
+    user,
     201
   );
 }

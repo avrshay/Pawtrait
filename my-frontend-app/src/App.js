@@ -9,7 +9,7 @@ import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import OrderDetails from "./pages/OrderDetails";
 import Checkout from "./pages/Checkout";
-import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import Users from "./pages/Users";
 import UserDetails from "./pages/UserDetails";
 import Login from "./pages/Login";
@@ -28,7 +28,7 @@ export default function App() {
           <Route path="/orders"             element={<Orders />} />
           <Route path="/orders/:orderId"    element={<OrderDetails />} />
           <Route path="/checkout"           element={<Checkout />} />
-          <Route path="/profile"            element={<Profile />} />
+          <Route path="/settings"            element={<Settings />} />
           <Route path="/admin/users"        element={<Users />} />
           <Route path="/admin/users/:id"    element={<UserDetails />} />
           <Route path="/login"              element={<Login />} />

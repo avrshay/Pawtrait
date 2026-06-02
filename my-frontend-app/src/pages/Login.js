@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { login, saveCurrentUser } from "../services/authService";
-
+import { useNavigate } from "react-router-dom";
 
 // POST /auth/login.
 export default function Login() {
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); //in order to updaue user about the state
@@ -31,8 +31,7 @@ export default function Login() {
         saveCurrentUser(user);
 
         alert("התחברת בהצלחה 🎉");
-
-        // בהמשך נעשה redirect
+        navigate("/"); // redirect
       } catch (err) {
         setError(err.message);
       } finally {
@@ -44,19 +43,19 @@ return (
     <h1>Login</h1>
     <form onSubmit={handleLogin}>
     <input
-      type="email"
+      type="text"
       placeholder="Email"
       value={email}
       onChange={(e) => setEmail(e.target.value)} //Any changes the user types will be reflected on the screen.
     />
 
     <input
-      type="password"
+      type="text"
       placeholder="Password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
     />
-    <button type="sumbit" disabled={loading}>  
+    <button type="submit" disabled={loading}>  
       {loading ? "connect..." : "Login"} 
     </button>
     </form>
