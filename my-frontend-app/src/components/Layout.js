@@ -12,9 +12,9 @@ import Footer from "./Footer";
 export default function Layout({ username , children }) {
   return ( //return the layout component
     <div className="layout">
+      <Navbar user={username} />
       <div className="layout__main">
-        <Header username ={username } />
-        <Navbar user ={username }/>
+        <Header username={username} />
         <main className="main-content">{children}</main>
         <Footer />
       </div>

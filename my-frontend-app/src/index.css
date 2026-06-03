@@ -1,3 +1,5 @@
+@import './components/Navbar.css';
+
 * {
   box-sizing: border-box;
 }

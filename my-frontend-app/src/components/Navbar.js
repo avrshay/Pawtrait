@@ -35,14 +35,26 @@ export default function Navbar() {
   // Logged in user
   return (
     <nav className="navbar">
-      <ul className="navbar-links">
+         <div className="navbar-user">
+  
+          <button onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+              <ul className="navbar-links">
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/cart">My cart</Link>
+        </li>
         <li>
           <Link to="/settings">Settings</Link>
         </li>
-
         <li>
-          <Link to="/personalArea">Personal Area</Link>
+          <Link to="/personalArea">My Orders</Link>
         </li>
+        
 
         {(user.userRole === "admin" || user.userRole === "manager") && (
           <li>
@@ -51,13 +63,7 @@ export default function Navbar() {
         )}
       </ul>
 
-      <div className="navbar-user">
-        <span>Hello, {user.firstName}</span>
-
-        <button onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+   
     </nav>
   );
 }

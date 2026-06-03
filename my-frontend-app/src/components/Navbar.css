@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+
+/* Left sidebar — matches the Stitch mockup: fixed column, white, 2px black border. */
+.navbar {
+  flex: 0 0 256px;
+  width: 256px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 8px;
+  background: #ffffff;
+  border-right: 2px solid #000000;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.navbar-user {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid #000000;
+}
+
+.navbar-user button {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  cursor: pointer;
+}
+
+.navbar-user button:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+.navbar-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.navbar-links li {
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links a {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #000000;
+  border: 2px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.navbar-links a:hover {
+  background: #e3e2e2;
+  border-color: #000000;
+}
+
+.navbar-links a.active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
