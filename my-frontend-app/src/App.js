@@ -6,8 +6,6 @@ import Layout from "./components/Layout";
 import Gallery from "./pages/Dashboard";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
-import Orders from "./pages/Orders";
-import OrderDetails from "./pages/OrderDetails";
 import Checkout from "./pages/Checkout";
 import Settings from "./pages/Settings";
 import Users from "./pages/Users";
@@ -25,9 +23,7 @@ export default function App() {
         <Routes> 
           <Route path="/"                   element={<Gallery />} />
           <Route path="/gallery/:productId" element={<ProductDetails />} />
-          <Route path="/cart"               element={<Cart />} />
-          <Route path="/orders"             element={<Orders />} />
-          <Route path="/orders/:orderId"    element={<OrderDetails />} />
+          <Route path="/cart"               element={<Cart />} />      
           <Route path="/checkout"           element={<Checkout />} />
           <Route path="/settings"            element={<Settings />} />
           <Route path="/admin/users"        element={<Users />} />

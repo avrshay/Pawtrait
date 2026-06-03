@@ -122,9 +122,14 @@ export default function Cart() {
       />
 
       {items.length > 0 && (
-        <button type="button" onClick={handleClearCart}>
-          Clear cart
-        </button>
+        <>
+          <button type="button" onClick={handleClearCart}>
+            Clear cart
+          </button>
+          <button type="button" onClick={() => navigate("/checkout")}>
+            Go to checkout
+          </button>
+        </>
       )}
     </section>
   );

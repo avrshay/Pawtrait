@@ -81,13 +81,35 @@ export default function PersonalArea() {
       {/* ITEMS TABLE (only when order selected) */}
       {selectedOrderId && (
         <>
-          <h3>Order #{selectedOrderId} Items</h3>
-
+        
           {loadingItems && <p>Loading items...</p>}
 
           <Table
-            data={items}
-            columns={["productId", "quantity", "petImageUrl","aiDesignImageUrl"]}
+            data={items.map((line) => ({
+              ...line,
+              pet: line.petImageUrl ? (
+                <img
+                  src={line.petImageUrl}
+                  alt="Your pet"
+                  className="cart-pet-image"
+                  style={{ maxWidth: 100, maxHeight: 100, objectFit: "cover" }}
+                />
+              ) : (
+                "—"
+              ),
+              aiDesign:
+                line.aiDesignImageUrl && String(line.aiDesignImageUrl).trim() ? (
+                  <img
+                    src={line.aiDesignImageUrl}
+                    alt="AI design"
+                    className="cart-pet-image"
+                    style={{ maxWidth: 100, maxHeight: 100, objectFit: "cover" }}
+                  />
+                ) : (
+                  "—"
+                ),
+            }))}
+            columns={["productId", "quantity", "pet", "aiDesign"]}
           />
         </>
       )}
