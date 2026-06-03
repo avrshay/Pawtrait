@@ -79,6 +79,7 @@ export default function ProductDetails() {
   // POST /cart — add this product with the chosen pet image and quantity.
   async function handleAddToCart() {
     if (!getCurrentUser()) {
+      alert("You must be logged in to add items to your cart");
       navigate("/login"); //guest: redirect to login
       return;
     }

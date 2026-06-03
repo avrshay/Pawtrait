@@ -31,7 +31,7 @@ export default function Login() {
 
         saveCurrentUser(user);
 
-        alert("התחברת בהצלחה 🎉");
+        alert("Logged in successfully! 🎉");
         navigate("/"); // redirect
       } catch (err) {
         setError(err.message);
