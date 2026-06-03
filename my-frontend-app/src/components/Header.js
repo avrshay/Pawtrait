@@ -1,9 +1,18 @@
+import { useEffect, useState } from "react";
 import { getCurrentUser } from "../services/authService";
 
 // Top bar of the content area
 // logged-in user's first name, or "Guest" when nobody is logged in.
-export default function Header({ username = "Guest"}) {
-  const user = getCurrentUser();
+export default function Header({ username }) {
+  const [user, setUser] = useState(getCurrentUser); //re-read when login/logout happens
+
+  useEffect(() => {
+    function syncUser() {
+      setUser(getCurrentUser());
+    }
+    window.addEventListener("pawtrait-auth-change", syncUser);
+    return () => window.removeEventListener("pawtrait-auth-change", syncUser);
+  }, []);
 
   const name = username || (user && user.firstName) || "Guest";
 

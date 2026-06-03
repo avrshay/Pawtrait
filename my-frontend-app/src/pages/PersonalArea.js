@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getCurrentUser } from "../services/authService";
 import { getOrdersOfUser, getOrderItems } from "../services/ordersService";
 import Table from "../components/Table";
+import BackButton from "../components/back-button";
+
 
 export default function PersonalArea() {
   const user = getCurrentUser();
@@ -48,6 +50,7 @@ export default function PersonalArea() {
 
   return (
     <section>
+      <BackButton label="← Back" />
       <h1>Personal Area</h1>
 
       {/* USER INFO */}

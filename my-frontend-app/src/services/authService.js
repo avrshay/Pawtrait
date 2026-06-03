@@ -13,9 +13,15 @@ export function login({ email, password }) {
   return apiRequest("/auth/login", { method: "POST", body: { email, password } });
 }
 
+// Tell Header, Navbar, etc. to re-read localStorage after login or logout.
+function notifyAuthChange() {
+  window.dispatchEvent(new Event("pawtrait-auth-change"));
+}
+
 // Local session helpers (the backend has no token; we store the returned user).
 export function saveCurrentUser(user) {
   localStorage.setItem("pawtrait_user", JSON.stringify(user));
+  notifyAuthChange();
 }
 
 export function getCurrentUser() {
@@ -28,4 +34,5 @@ export function getCurrentUser() {
 
 export function logout() {
   localStorage.removeItem("pawtrait_user");
+  notifyAuthChange();
 }

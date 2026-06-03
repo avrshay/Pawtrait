@@ -2,6 +2,8 @@ import { useState,useEffect  } from "react";
 import { updateProfile } from "../services/usersService";
 import { getCurrentUser,saveCurrentUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/back-button";
+
 
 // PUT /users/profile/:id — the logged-in user editing their own details.
 export default function Settings() {
@@ -83,6 +85,7 @@ async function handleUpdate(e) {
 }
 return (
   <section>
+    <BackButton label="← Back" />
     <h1>Profile Settings</h1>
 
     {loading && <p>Loading...</p>}

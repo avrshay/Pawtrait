@@ -1,12 +1,21 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getCurrentUser, logout } from "../services/authService";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const user = getCurrentUser();
+  const [user, setUser] = useState(getCurrentUser); //re-read when login/logout happens
+
+  useEffect(() => {
+    function syncUser() {
+      setUser(getCurrentUser());
+    }
+    window.addEventListener("pawtrait-auth-change", syncUser);
+    return () => window.removeEventListener("pawtrait-auth-change", syncUser);
+  }, []);
 
   function handleLogout() {
-    logout(); //  delete localStorage
+    logout();
     navigate("/login");
   }
 
@@ -35,7 +44,7 @@ export default function Navbar() {
           <Link to="/personalArea">Personal Area</Link>
         </li>
 
-        {(user.role === "admin" || user.role === "manager") && (
+        {(user.userRole === "admin" || user.userRole === "manager") && (
           <li>
             <Link to="/admin">Admin Dashboard</Link>
           </li>
