@@ -4,7 +4,8 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const PORT= 3000
-app.use(express.json());
+// Allow larger JSON bodies for pet image upload (base64); cart requests stay small (URL only).
+app.use(express.json({ limit: "12mb" }));
 
 // CORS: allow the React frontend to call this API.
 app.use((req, res, next) => {
@@ -37,6 +38,7 @@ const cartRoutes = require("./routes/cart")
 const authRoutes     = require("./routes/auth")
 const galleryRoutes     = require("./routes/productsGallery.js")
 const paymentRoutes = require("./routes/paymentRoutes")
+const uploadRoutes = require("./routes/petImageUpload")
 
 app.use("/users",     userRoutes)
 app.use("/orders", orderRoutes)
@@ -44,6 +46,7 @@ app.use("/cart", cartRoutes)
 app.use("/auth",     authRoutes)
 app.use("/gallery",     galleryRoutes)
 app.use("/payments", paymentRoutes)
+app.use("/upload", uploadRoutes)
 
 const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
