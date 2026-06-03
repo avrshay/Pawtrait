@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { login, saveCurrentUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/back-button";
 
 // POST /auth/login.
 export default function Login() {
@@ -40,6 +41,7 @@ export default function Login() {
     }
 return (
   <section>
+    <BackButton label="← Back" />
     <h1>Login</h1>
     <form onSubmit={handleLogin}>
     <input
