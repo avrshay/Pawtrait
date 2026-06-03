@@ -17,17 +17,34 @@ export function getAuthHeaders() {
   }
 }
 
+// Turn browser network errors into a clearer message for the UI.
+export function getErrorMessage(err) {
+  const msg = err?.message || String(err);
+  if (
+    msg === "Failed to fetch" ||
+    /networkerror|failed to fetch|load failed|network request failed/i.test(msg)
+  ) {
+    return "Connection problem with the server. Make sure the backend is running :)";
+  }
+  return msg;
+}
+
 // auth headers, and unwraps the { success, data, error } envelope (throws on error).
 export async function apiRequest(path, { method = "GET", body, auth = false, headers = {} } = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      ...(auth ? getAuthHeaders() : {}),
-      ...headers,
-    },
-    body: body != null ? JSON.stringify(body) : undefined,
-  });
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        ...(auth ? getAuthHeaders() : {}),
+        ...headers,
+      },
+      body: body != null ? JSON.stringify(body) : undefined,
+    });
+  } catch (err) {
+    throw new Error(getErrorMessage(err));
+  }
 
   let payload = null;
   try {
