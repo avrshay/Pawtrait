@@ -24,6 +24,21 @@ function getItemsOfOrder(req, res) {
   return sendSuccess(res, lines);
 }
 
+function getOrderById(req, res) {
+  const orderId = req.params.id;
+  const order = orders.getOrder(orderId);
+  if (!order) {
+    return sendError(
+      res,
+      404,
+      "NOT_FOUND",
+      "order not found",
+      {  }
+    );
+  }
+  return sendSuccess(res, order);
+}
+
 function createOrder(req, res) {
   const userId = req.params.id;
 

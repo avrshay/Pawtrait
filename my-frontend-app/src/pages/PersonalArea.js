@@ -21,7 +21,7 @@ export default function PersonalArea() {
         setOrders([]);
         setLoadingOrders(true);
         const data = await getOrdersOfUser(user.userId);
-        setOrders(data);
+        setOrders(data||[]);
       } catch (err) {
         setOrdersError(err.message);
       } finally {
@@ -53,7 +53,7 @@ export default function PersonalArea() {
       <BackButton label="← Back" />
       <h1>Personal Area</h1>
 
-      {/* USER INFO */}
+      {/* USER  */}
       <div>
         <h3>User Info</h3>
         <p>First Name: {user.firstName}</p>
@@ -62,7 +62,7 @@ export default function PersonalArea() {
         <p>Phone: {user.phone_number}</p>
       </div>
 
-      {/* ORDERS TABLE */}
+      {/* ORDERS  */}
       <h3>My Orders</h3>
 
       {loadingOrders && <p>Loading orders...</p>}
@@ -78,7 +78,7 @@ export default function PersonalArea() {
         )}
       />
 
-      {/* ITEMS TABLE (only when order selected) */}
+      {/* ITEMS (only when order selected) */}
       {selectedOrderId && (
         <>
         

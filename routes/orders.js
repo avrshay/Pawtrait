@@ -8,6 +8,7 @@ const validate = require("../middleware/validate");
 
 // GET /orders — admin/manager: all order 
 router.get("/", auth.authorize(["admin", "manager"]), ordersController.getAllOrder);
+router.get("/:orderId",auth.authorize(["admin", "manager"]), getOrderById);
 // List orders for user :id
 router.get("/:id", auth.authorizeSelf, auth.authorize(["user", "admin", "manager"]), validate.validateUserIdParam, ordersController.getOrdersOfUserById);
 // Line items for one order

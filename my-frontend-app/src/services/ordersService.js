@@ -10,6 +10,9 @@ export function getOrdersOfUser(userId) {
   return apiRequest(`/orders/${userId}`, { auth: true });
 }
 
+export function getOrderById(orderId) {
+  return apiRequest(`/orders/${orderId}`, { auth: true });
+}
 // GET /orders/:id/:orderId — line items of one order.
 export function getOrderItems(userId, orderId) {
   return apiRequest(`/orders/${userId}/${orderId}`, { auth: true });

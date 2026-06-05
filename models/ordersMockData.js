@@ -58,7 +58,12 @@ function getAllOrdersById(id){
     }
     return orders.filter(o => o.userId === Number(id));
 }
-
+function getOrder(id){
+    if (!id) {
+      return [];
+    }
+    return orders.filter(o => o.orderId === Number(id));
+}
 // Line items for an order that belongs to userId (validates ownership via orders table, then filters by orderId).
 function getAllItemsOrdersById(userId,orderId){
   if (!userId || !orderId) {
