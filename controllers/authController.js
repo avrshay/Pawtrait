@@ -4,11 +4,10 @@ const { sendSuccess, sendError } = require("../middleware/errorHandler");
 function register(req, res) {
   const { firstName, lastName, email, phone_number, password } = req.body;
   const user=users.RegisterUser(firstName, lastName, email, phone_number, password);
-  return sendSuccess(
-    res,
-    user,
-    201
-  );
+  if (!user) {
+    return sendError(res,400,"BAD_REQUEST","Email already exists",{ field: "email" });
+  }
+  return sendSuccess(res,user,201);
 }
 
 function login(req, res) {

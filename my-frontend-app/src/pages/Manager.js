@@ -36,6 +36,7 @@ export default function ManagerDashboard() {
         columns={["orderId", "status", "createDate"]}
         renderActions={() => (
           <>
+            <button>View</button>
             <button>Edit</button>
           </>
         )}

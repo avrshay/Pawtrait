@@ -48,7 +48,7 @@ function geyUserById(id){
 }
 
 function getUserByEmailAndPassword(email,password){
-  const user = users.find(u => u.email === email && u.password === password);
+  const user = users.find(u => u.email === email && u.password === password); 
   if (!user){
     return null;
   }
@@ -57,6 +57,11 @@ function getUserByEmailAndPassword(email,password){
 }
 
 function RegisterUser(firstName, lastName, email,phone_number, password){
+
+  const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase()); // not impossible some users wuth the same email
+  if (existingUser) {
+    return null;
+  }
   const newUser = {
     userId: users.length+1,
     firstName,
@@ -71,6 +76,7 @@ function RegisterUser(firstName, lastName, email,phone_number, password){
   users.push(newUser);
   return geyUserById(users.length);
 }
+
 function createUser(firstName, lastName, userRole){
   const newUser = {
     userId: users.length+1,

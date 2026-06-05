@@ -13,8 +13,8 @@ router.get("/", productsController.getAllProducts);
 router.get("/:product_id", validate.validateProductIdParam, productsController.getProductById);
 
 // Admin only (header x-user-role: admin): manage catalog entries
-router.post("/", auth.authorize(["admin"]), productsController.createProduct);
-router.put("/:product_id", auth.authorize(["admin"]), validate.validateProductIdParam, productsController.updateProduct);
+router.post("/", auth.authorize(["admin",,"manager"]), productsController.createProduct);
+router.put("/:product_id", auth.authorize(["admin","manager"]), validate.validateProductIdParam, productsController.updateProduct);
 router.delete("/:product_id", auth.authorize(["admin"]), validate.validateProductIdParam, productsController.deleteProduct);
 
 module.exports = router;

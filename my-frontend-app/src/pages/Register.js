@@ -48,7 +48,6 @@ export default function Register() {
 
         saveCurrentUser(user);
 
-        alert("נרשמת בהצלחה 🎉");
         navigate("/"); // redirect
 
       } catch (err) {

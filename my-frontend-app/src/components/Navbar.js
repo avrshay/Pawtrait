@@ -4,66 +4,101 @@ import { getCurrentUser, logout } from "../services/authService";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(getCurrentUser); //re-read when login/logout happens
+  const [user, setUser] = useState(getCurrentUser());
 
   useEffect(() => {
     function syncUser() {
       setUser(getCurrentUser());
     }
     window.addEventListener("pawtrait-auth-change", syncUser);
-    return () => window.removeEventListener("pawtrait-auth-change", syncUser);
+
+    return () => {
+      window.removeEventListener("pawtrait-auth-change", syncUser);
+    };
   }, []);
 
   function handleLogout() {
     logout();
-    navigate("/login");
+    navigate("/");
   }
 
-  // Guest
-  if (!user) {
-    return (
-      <nav className="navbar">
+  return (
+    <nav className="navbar">
+
+      <div className="navbar-logo">
+        <img src="/logo192.png" alt="PawTrait Logo" />
+        <h2>PawTrait</h2>
+      </div>
+
+      {!user && (
         <ul className="navbar-links">
           <li>
             <Link to="/login">Login</Link>
           </li>
-        </ul>
-      </nav>
-    );
-  }
 
-  // Logged in user
-  return (
-    <nav className="navbar">
-         <div className="navbar-user">
-  
-          <button onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-              <ul className="navbar-links">
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/cart">My cart</Link>
-        </li>
-        <li>
-          <Link to="/settings">Settings</Link>
-        </li>
-        <li>
-          <Link to="/personalArea">My Orders</Link>
-        </li>
-        
-
-        {(user.userRole === "admin" || user.userRole === "manager") && (
           <li>
-            <Link to="/admin">Admin Dashboard</Link>
+            <Link to="/register">Register</Link>
           </li>
-        )}
-      </ul>
+        </ul>
+      )}
 
-   
+      {user && (
+        <>
+          <div className="navbar-user">
+            <p>
+              {user.firstName} {user.lastName}
+            </p>
+
+          </div>
+
+          <ul className="navbar-links">
+
+            {user.userRole === "user" && (
+              <>
+                <li>
+                  <Link to="/">Gallery</Link>
+                </li>
+
+                <li>
+                  <Link to="/cart">My Cart</Link>
+                </li>
+
+                <li>
+                  <Link to="/personal-area">My Orders</Link>
+                </li>
+              </>
+            )}
+
+            {user.userRole === "manager" && (
+              <li>
+                <Link to="/manager">
+                  Manager Dashboard
+                </Link>
+              </li>
+            )}
+
+            {user.userRole === "admin" && (
+              <li>
+                <Link to="/admin">
+                  Admin Dashboard
+                </Link>
+              </li>
+            )}
+
+            <li>
+              <Link to="/settings">
+                Settings
+              </Link>
+            </li>
+          </ul>
+
+          <div className="navbar-logout">
+            <button onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        </>
+      )}
     </nav>
   );
 }

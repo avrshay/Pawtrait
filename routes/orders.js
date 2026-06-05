@@ -17,6 +17,6 @@ router.post("/:id", auth.authorizeSelf, auth.authorize(["user", "admin", "manage
 // Update order header — staff only
 router.put("/:id/:orderId", auth.authorizeSelf, auth.authorize(["admin", "manager"]), validate.validateOrderRouteParams, ordersController.updateOrder);
 // Delete order — staff only
-router.delete("/:id/:orderId", auth.authorizeSelf, auth.authorize(["admin", "manager"]), validate.validateOrderRouteParams, ordersController.deleteOrder);
+router.delete("/:id/:orderId", auth.authorizeSelf, auth.authorize(["admin"]), validate.validateOrderRouteParams, ordersController.deleteOrder);
 
 module.exports = router;

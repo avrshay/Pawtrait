@@ -30,9 +30,16 @@ export default function Login() {
         const user = await login({ email, password });
 
         saveCurrentUser(user);
+        if (user.userRole === "admin") { // redirect
+          navigate("/admin");
+        } 
+        else if (user.userRole === "manager") {
+          navigate("/manager");
+        } 
+        else {
+          navigate("/");
+        }
 
-        alert("Logged in successfully! 🎉");
-        navigate("/"); // redirect
       } catch (err) {
         setError(err.message);
       } finally {
