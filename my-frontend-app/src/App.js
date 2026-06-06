@@ -33,6 +33,7 @@ export default function App() {
           <Route path="/admin/users/:id"    element={<EditUser />} />
           <Route path="/login"              element={<Login />} />
           <Route path="/admin"              element={<Admin />} />
+          <Route path="/manager"            element={<Admin />} />
           <Route path="/register"           element={<Register />} />
           <Route path="/personal-area"      element={<PersonalArea />} />
           <Route path="/admin/orders/:orderId" element={<EditOrder/>} />
