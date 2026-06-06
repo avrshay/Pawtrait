@@ -12,6 +12,7 @@ export default function Register() {
   const [phone_number, setPhone_number] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); //in order to updaue user about the state
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
   async function  handleRegister(e) {
@@ -48,17 +49,23 @@ export default function Register() {
         const user = await register({ firstName, lastName,email,phone_number,password });
 
         saveCurrentUser(user);
-
-        navigate("/"); // redirect
+        setLoading(false);
+        setSuccess(true);
+        setTimeout(() => navigate("/"), 1200);
 
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     }
 return (
   <section>
+    {success && (
+      <div className="auth-overlay">
+        <div className="auth-overlay__spinner" />
+        <p className="auth-overlay__text">Welcome to Pawtrait! 🐾</p>
+      </div>
+    )}
     <BackButton label="← Back" />
     <h1>Register</h1>
     <form onSubmit={handleRegister}>
@@ -87,7 +94,7 @@ return (
       onChange={(e) => setPhone_number(e.target.value)} //Any changes the user types will be reflected on the screen.
     />
     <input
-      type="text"
+      type="password"
       placeholder="Password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}

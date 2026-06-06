@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); //in order to updaue user about the state
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
   async function  handleLogin(e) {
@@ -30,21 +31,29 @@ export default function Login() {
         const user = await login({ email, password });
 
         saveCurrentUser(user);
-        if (user.userRole === "admin"||user.userRole === "manager") { // redirect
-          navigate("/admin");
-        } 
-        else {
-          navigate("/");
-        }
+        setLoading(false);
+        setSuccess(true);
+        setTimeout(() => {
+          if (user.userRole === "admin" || user.userRole === "manager") {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
+        }, 1200);
 
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     }
 return (
   <section>
+    {success && (
+      <div className="auth-overlay">
+        <div className="auth-overlay__spinner" />
+        <p className="auth-overlay__text">Welcome back! 🐾</p>
+      </div>
+    )}
     <BackButton label="← Back" />
     <h1>Login</h1>
     <form onSubmit={handleLogin}>
@@ -56,7 +65,7 @@ return (
     />
 
     <input
-      type="text"
+      type="password"
       placeholder="Password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}

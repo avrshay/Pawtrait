@@ -435,5 +435,40 @@ section > h1 {
   margin-bottom: 32px;
 }
 
+/* ── Auth loading overlay ─────────────────────────────────────── */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 248, 242, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 9999;
+}
+
+.auth-overlay__spinner {
+  width: 56px;
+  height: 56px;
+  border: 5px solid var(--primary-fixed);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: auth-spin 0.75s linear infinite;
+}
+
+.auth-overlay__text {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.01em;
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ── Utility ──────────────────────────────────────────────────── */
 p { margin: 6px 0; }
