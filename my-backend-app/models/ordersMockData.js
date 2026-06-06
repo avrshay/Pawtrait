@@ -29,15 +29,15 @@ const items_orders = [
     orderId: 1, //foreign key to orders table
     productId: 1, //foreign key to products table
     quantity: 1,
-    petImageUrl: "http://localhost:3000/images/clients/order1-line1-pet.jpg",
-    aiDesignImageUrl: "",
+    petImageUrl: "http://localhost:3000/images/clients/dog1-original.jpg",
+    aiDesignImageUrl: "http://localhost:3000/images/catalog/products/pillow-design-dog3.png",
   },
   {
     id: 2,
     orderId: 2,
     productId: 2,
     quantity: 1,
-    petImageUrl: "http://localhost:3000/images/clients/order2-line1-pet.jpg",
+    petImageUrl: "http://localhost:3000/images/clients/dog2-original.jpg",
     aiDesignImageUrl: "http://localhost:3000/images/catalog/products/bag-design-dog2.png",
   },
   {
@@ -45,8 +45,8 @@ const items_orders = [
     orderId: 3,
     productId: 3,
     quantity: 2,
-    petImageUrl: "http://localhost:3000/images/clients/order3-line1-pet.jpg",
-    aiDesignImageUrl: "",
+    petImageUrl: "http://localhost:3000/images/clients/dog3-original.jpg",
+    aiDesignImageUrl: "http://localhost:3000/images/catalog/products/pillow-design-dog3.png",
   }
 ];
 

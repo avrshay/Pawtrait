@@ -8,6 +8,7 @@ export default function EditOrder() {
   const navigate = useNavigate();
 
   const [status, setStatus] = useState("");
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -22,6 +23,7 @@ export default function EditOrder() {
 
         const order = await getOrderById(orderId);
         setStatus(order.status);
+        setUserId(order.userId);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -46,7 +48,7 @@ export default function EditOrder() {
     try {
       setSaving(true);
 
-      await updateOrder(orderId, {status,});
+      await updateOrder(userId, orderId, { status });
 
       setSuccess("Order updated successfully");
 

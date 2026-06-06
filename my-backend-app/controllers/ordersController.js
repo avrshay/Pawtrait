@@ -25,8 +25,8 @@ function getItemsOfOrder(req, res) {
 }
 
 function getOrderById(req, res) {
-  const orderId = req.params.id;
-  const order = orders.getOrder(orderId);
+  const orderId = req.params.orderId;
+  const order = orders.getOrderById(orderId);
   if (!order) {
     return sendError(
       res,

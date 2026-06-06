@@ -77,7 +77,7 @@ function RegisterUser(firstName, lastName, email,phone_number, password){
   return geyUserById(users.length);
 }
 
-function createUser(firstName, lastName, userRole){
+function createUser(firstName, lastName, email, phone_number, userRole){
   const newUser = {
     userId: users.length+1,
     firstName,
@@ -85,23 +85,25 @@ function createUser(firstName, lastName, userRole){
     userRole,
     createDate: new Date(),
     updateDate: new Date(),
-    email: "",
-    phone_number: "",  
+    email: email || "",
+    phone_number: phone_number || "",
     password: ""
   };
   users.push(newUser);
   return users.length;
 }
-function updateById(id,firstName, lastName, userRole){
+function updateById(id, firstName, lastName, email, phone_number, userRole){
   const user = users.find(u => u.userId === Number(id));
   if (!user) {
     return false;
   }
-  user.firstName=firstName;
-  user.lastName=lastName;
-  user.userRole=userRole;
+  user.firstName = firstName;
+  user.lastName = lastName;
+  user.email = email;
+  user.phone_number = phone_number;
+  user.userRole = userRole;
   user.updateDate = new Date();
-  return true
+  return true;
 }
 
 function updateDetailsById(id,firstName,lastName,email,phone_number){

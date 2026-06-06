@@ -76,7 +76,7 @@ export default function AdminDashboard() {
     }
   }
   // delete order (admin only)
-  async function handleDeleteOrder(orderId) {
+  async function handleDeleteOrder(userId, orderId) {
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this order?"
   );
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
   if (!confirmDelete) return;
 
   try {
-    await deleteOrder(orderId);
+    await deleteOrder(userId, orderId);
 
     setOrders((prev) =>prev.filter((o) => o.orderId !== orderId));
     setSelectedOrderId(null);
@@ -103,7 +103,7 @@ async function handleDeleteProduct(productId) {
     await deleteProduct(productId);
 
     setProducts((prev) =>
-      prev.filter((p) => p.productId !== productId)
+      prev.filter((p) => p.product_id !== productId)
     );
   } catch (err) {
     alert(err.message);
@@ -122,8 +122,12 @@ async function handleDeleteProduct(productId) {
           + Add User
         </button>
       <Table
-        data={users}
-        columns={["userId","firstName", "lastName", "email","phone_number", "userRole"]}
+        data={users.map((u) => ({
+          ...u,
+          "phone number": u.phone_number,
+          Role: u.userRole,
+        }))}
+        columns={["userId","firstName", "lastName", "email","phone number", "Role"]}
         renderActions={(user) => (
           <>
             <button onClick={() => navigate(`/admin/users/${user.userId}`)}>
@@ -145,8 +149,19 @@ async function handleDeleteProduct(productId) {
       {ordersError && (<p style={{ color: "red" }}>{ordersError}</p>)}
       {itemsError && (<p style={{ color: "red" }}>{itemsError}</p>)}
       <Table
-        data={orders}
-        columns={["orderId", "status", "createDate"]}
+        data={orders.map((order) => {
+          const owner = users.find((u) => u.userId === order.userId);
+          return {
+            ...order,
+            userName: owner ? `${owner.firstName} ${owner.lastName}` : "—",
+            "Create Date": order.createDate
+              ? new Date(order.createDate).toLocaleDateString("en-US", {
+                  year: "numeric", month: "short", day: "numeric",
+                })
+              : "—",
+          };
+        })}
+        columns={["orderId", "userName", "status", "Create Date"]}
         renderActions={(order) => ( <>
           <button onClick={() => handleLoadItems(order.userId,order.orderId)}>
             View Items
@@ -203,17 +218,26 @@ async function handleDeleteProduct(productId) {
         </button>
 
       <Table
-        data={products}
-        columns={["productId", "name","original image","custom product", "price"]}
+        data={products.map((p) => ({
+          ...p,
+          productId: p.product_id,
+          "original image": p.original_pet_image_url ? (
+            <img src={p.original_pet_image_url} style={{ width: 80 }} alt="" />
+          ) : "—",
+          "custom product": p.custom_product_image_url ? (
+            <img src={p.custom_product_image_url} style={{ width: 80 }} alt="" />
+          ) : "—",
+        }))}
+        columns={["productId", "name", "original image", "custom product", "price"]}
         renderActions={(product) => (
           <>
             <button
               onClick={() =>
-                navigate(`/admin/products/${product.productId}`)}>
+                navigate(`/admin/products/${product.product_id}`)}>
               Edit
             </button>
             {CurrUser?.userRole === "admin" && (
-              <button onClick={() => handleDeleteProduct(product.productId)}>
+              <button onClick={() => handleDeleteProduct(product.product_id)}>
                 Delete
               </button>
             )}

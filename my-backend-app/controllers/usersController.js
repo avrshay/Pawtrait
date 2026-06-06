@@ -34,9 +34,9 @@ function getById(req, res) {
 
 function newUser(req, res) {
 
-  const { firstName, lastName, userRole } = req.body;
+  const { firstName, lastName, email, phone_number, userRole } = req.body;
 
-  const id = users.createUser(firstName, lastName, userRole);
+  const id = users.createUser(firstName, lastName, email, phone_number, userRole);
 
   return sendSuccess(res, { userId: id }, 201);
 
@@ -56,9 +56,9 @@ function updateUser(req, res) {
 
   }
 
-  const { firstName, lastName, userRole } = req.body;
+  const { firstName, lastName, email, phone_number, userRole } = req.body;
 
-  users.updateById(id, firstName, lastName, userRole);
+  users.updateById(id, firstName, lastName, email, phone_number, userRole);
 
   return sendSuccess(res, { userId: Number(id) });
 

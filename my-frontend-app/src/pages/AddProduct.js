@@ -14,6 +14,17 @@ export default function AddProduct() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
+  function handleImageUpload(setter) {
+    return (e) => {
+      setStatus("");
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => setter(ev.target.result);
+      reader.readAsDataURL(file);
+    };
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -22,26 +33,21 @@ export default function AddProduct() {
       setError("Name is required");
       return;
     }
-
     if (!Number.isFinite(Number(price)) || Number(price) < 0) {
-    setError("Price must be a valid number");
-    return;
+      setError("Price must be a valid number");
+      return;
     }
-
-    if (!/^https?:\/\/.+\..+/.test(original_pet_image_url)) {
-        setError("Invalid original image URL");
-        return;
+    if (!original_pet_image_url) {
+      setError("Original pet image is required");
+      return;
     }
-
-    
-    if (!/^https?:\/\/.+\..+/.test(custom_product_image_url)) {
-        setError("Invalid custom product image URL");
-        return;
+    if (!custom_product_image_url) {
+      setError("Custom product image is required");
+      return;
     }
 
     try {
       setLoading(true);
-
       await createProduct({
         name,
         original_pet_image_url,
@@ -58,36 +64,47 @@ export default function AddProduct() {
 
   return (
     <section>
-        <BackButton label="← Back" />
-        <h1>Add Product</h1>
+      <BackButton label="← Back" />
+      <h1>Add Product</h1>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
       {status && <p style={{ color: "green" }}>{status}</p>}
+
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Product name"
           value={name}
-          onChange={(e) => {setName(e.target.value);
-  setStatus("");}}
+          onChange={(e) => { setName(e.target.value); setStatus(""); }}
         />
-        <input
-          placeholder="custom product image"
-          value={custom_product_image_url}
-          onChange={(e) => {setCustom_product_image_url(e.target.value);
-  setStatus("");}}
-        />
-        <input
-          placeholder="original pet image"
-          value={original_pet_image_url}
-          onChange={(e) => {setOriginal_pet_image_url(e.target.value);
-  setStatus("");}}
-        />        
         <input
           placeholder="Price"
           value={price}
-          onChange={(e) => {setPrice(e.target.value);
-  setStatus("");}}
+          onChange={(e) => { setPrice(e.target.value); setStatus(""); }}
         />
+
+        <div>
+          <label>Original Pet Image</label>
+          {original_pet_image_url && (
+            <img src={original_pet_image_url} alt="Original pet" style={{ width: 120, display: "block" }} />
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload(setOriginal_pet_image_url)}
+          />
+        </div>
+
+        <div>
+          <label>Custom Product Image</label>
+          {custom_product_image_url && (
+            <img src={custom_product_image_url} alt="Custom product" style={{ width: 120, display: "block" }} />
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload(setCustom_product_image_url)}
+          />
+        </div>
 
         <button disabled={loading}>
           {loading ? "Creating..." : "Create"}
