@@ -84,8 +84,8 @@ src/
 | Screen | Path | Description |
 |--------|------|-------------|
 | Admin Panel | `/admin` | Manage all users, products, and orders |
-| Add Product | `/admin/products/add` | Create a new product |
-| Edit Product | `/admin/products/edit/:id` | Update product details |
-| Add User | `/admin/users/add` | Create a new user |
-| Edit User | `/admin/users/edit/:id` | Update user details |
-| Edit Order | `/admin/orders/edit/:id` | Update order status |
+| Add Product | `/admin/products/new` | Create a new product |
+| Edit Product | `/admin/products/productId` | Update product details |
+| Add User | `/admin/users/new` | Create a new user |
+| Edit User | `/admin/users/:id` | Update user details |
+| Edit Order | `/admin/orders/orderId` | Update order status |
