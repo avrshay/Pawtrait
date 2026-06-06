@@ -53,3 +53,39 @@ src/
 ├── pages/        # Page components (Login, Register, Dashboard, Cart, etc.)
 └── services/     # API service functions (auth, orders, cart, etc.)
 ```
+
+---
+
+## About the App
+
+**Pawtrait** is an e-commerce platform for personalized pet products. Users can upload a photo of their pet and receive AI-generated designs printed on merchandise.
+
+---
+
+## Screens Overview
+
+### Public
+| Screen | Path | Description |
+|--------|------|-------------|
+| Login | `/login` | Email + password login |
+| Register | `/register` | Create a new user account |
+
+### User (logged in)
+| Screen | Path | Description |
+|--------|------|-------------|
+| Dashboard / Gallery | `/` | Browse available products |
+| Product Details | `/products/:id` | View product info and add to cart |
+| Cart | `/cart` | Review items before purchase |
+| Checkout | `/checkout` | Complete the order |
+| Personal Area | `/personal-area` | View past orders and their items |
+| Profile Settings | `/settings` | Edit name, email, and phone number |
+
+### Admin / Manager
+| Screen | Path | Description |
+|--------|------|-------------|
+| Admin Panel | `/admin` | Manage all users, products, and orders |
+| Add Product | `/admin/products/add` | Create a new product |
+| Edit Product | `/admin/products/edit/:id` | Update product details |
+| Add User | `/admin/users/add` | Create a new user |
+| Edit User | `/admin/users/edit/:id` | Update user details |
+| Edit Order | `/admin/orders/edit/:id` | Update order status |
