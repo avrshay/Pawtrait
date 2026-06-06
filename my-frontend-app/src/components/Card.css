@@ -1,52 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
-
-/* Product card — blueprint / brutalist look: white card, hard 2px black borders,
-   two images side by side (pet original + custom product), subtle hover offset. */
+/* ── Pawtrait Product Card (Stitch style) ─────────────────────── */
 .card {
   display: flex;
-  flex-wrap: wrap;
-  width: 280px;
+  flex-direction: column;
   background: #ffffff;
-  border: 2px solid #000000;
-  font-family: 'Inter', sans-serif;
-  color: #1a1c1c;
-  transition: transform 0.15s ease;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px -2px rgba(148, 72, 61, 0.08);
+  font-family: 'Nunito Sans', sans-serif;
+  color: #1b1c1c;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-  transform: translate(2px, -2px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -4px rgba(148, 72, 61, 0.14);
 }
 
-.card img {
-  flex: 0 0 50%;
-  width: 50%;
-  aspect-ratio: 1 / 1;
+/* Hide original pet photo — show only the styled product image */
+.card img:first-of-type {
+  display: none;
+}
+
+/* Product image: full width, 4:3 ratio, zooms on hover */
+.card img:last-of-type {
+  width: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
-  border-bottom: 2px solid #000000;
+  background: #f6f3f2;
+  transition: transform 0.5s ease;
+  flex-shrink: 0;
 }
 
-.card img:first-of-type {
-  border-right: 2px solid #000000;
+.card:hover img:last-of-type {
+  transform: scale(1.05);
 }
 
+/* Card body */
 .card h3 {
-  flex: 0 0 100%;
   margin: 0;
-  padding: 16px 16px 4px;
-  font-size: 18px;
-  font-weight: 600;
+  padding: 16px 20px 4px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1b1c1c;
+  line-height: 1.3;
 }
 
 .card p {
-  flex: 0 0 100%;
   margin: 0;
-  padding: 0 16px 16px;
+  padding: 4px 20px 20px;
+  font-family: 'Quicksand', sans-serif;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #94483d;
 }
 
-/* Render the price with a leading currency mark. */
 .card p::before {
   content: "$";
+}
+
+/* Link wrapper */
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }

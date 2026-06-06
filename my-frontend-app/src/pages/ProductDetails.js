@@ -125,8 +125,10 @@ export default function ProductDetails() {
         <div className="product-details">
           <BackButton label="← Back to Gallery" />
           <h2>{product.name}</h2>
-          <img src={product.original_pet_image_url} alt={product.name} />
-          <img src={product.custom_product_image_url} alt={product.name} />
+          <div className="product-images">
+            <img src={product.original_pet_image_url} alt={product.name} />
+            <img src={product.custom_product_image_url} alt={product.name} />
+          </div>
           <p>${product.price}</p>
 
           <label htmlFor="petImage">Upload your pet image</label>

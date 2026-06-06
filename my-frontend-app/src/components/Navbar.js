@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { getCurrentUser, logout } from "../services/authService";
 
 export default function Navbar() {
@@ -11,10 +11,7 @@ export default function Navbar() {
       setUser(getCurrentUser());
     }
     window.addEventListener("pawtrait-auth-change", syncUser);
-
-    return () => {
-      window.removeEventListener("pawtrait-auth-change", syncUser);
-    };
+    return () => window.removeEventListener("pawtrait-auth-change", syncUser);
   }, []);
 
   function handleLogout() {
@@ -25,19 +22,24 @@ export default function Navbar() {
   return (
     <nav className="navbar">
 
-      <div className="navbar-logo">
-        <img src="/logo192.png" alt="PawTrait Logo" />
+      <NavLink to="/" className="navbar-logo">
+        <img src="/logo.svg" alt="PawTrait Logo" />
         <h2>PawTrait</h2>
-      </div>
+      </NavLink>
 
       {!user && (
         <ul className="navbar-links">
           <li>
-            <Link to="/login">Login</Link>
+            <NavLink to="/login">
+              <span className="material-symbols-outlined">login</span>
+              Login
+            </NavLink>
           </li>
-
           <li>
-            <Link to="/register">Register</Link>
+            <NavLink to="/register">
+              <span className="material-symbols-outlined">person_add</span>
+              Register
+            </NavLink>
           </li>
         </ul>
       )}
@@ -45,55 +47,63 @@ export default function Navbar() {
       {user && (
         <>
           <div className="navbar-user">
-            <p>
-              {user.firstName} {user.lastName}
-            </p>
-
+            <span className="material-symbols-outlined navbar-user-icon">account_circle</span>
+            <p>{user.firstName} {user.lastName}</p>
           </div>
 
           <ul className="navbar-links">
-
             {user.userRole === "user" && (
               <>
                 <li>
-                  <Link to="/">Gallery</Link>
+                  <NavLink to="/">
+                    <span className="material-symbols-outlined">gallery_thumbnail</span>
+                    Gallery
+                  </NavLink>
                 </li>
-
                 <li>
-                  <Link to="/cart">My Cart</Link>
+                  <NavLink to="/cart">
+                    <span className="material-symbols-outlined">shopping_cart</span>
+                    My Cart
+                  </NavLink>
                 </li>
-
                 <li>
-                  <Link to="/personal-area">My Orders</Link>
+                  <NavLink to="/personal-area">
+                    <span className="material-symbols-outlined">receipt_long</span>
+                    My Orders
+                  </NavLink>
                 </li>
               </>
             )}
 
             {user.userRole === "manager" && (
               <li>
-                <Link to="/manager">
+                <NavLink to="/manager">
+                  <span className="material-symbols-outlined">dashboard</span>
                   Manager Dashboard
-                </Link>
+                </NavLink>
               </li>
             )}
 
             {user.userRole === "admin" && (
               <li>
-                <Link to="/admin">
+                <NavLink to="/admin">
+                  <span className="material-symbols-outlined">admin_panel_settings</span>
                   Admin Dashboard
-                </Link>
+                </NavLink>
               </li>
             )}
 
             <li>
-              <Link to="/settings">
+              <NavLink to="/settings">
+                <span className="material-symbols-outlined">manage_accounts</span>
                 Settings
-              </Link>
+              </NavLink>
             </li>
           </ul>
 
           <div className="navbar-logout">
             <button onClick={handleLogout}>
+              <span className="material-symbols-outlined">logout</span>
               Logout
             </button>
           </div>

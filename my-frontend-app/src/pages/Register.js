@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { register, saveCurrentUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/back-button";
 
 // POST /auth/register.
 export default function Register() {
@@ -58,6 +59,7 @@ export default function Register() {
     }
 return (
   <section>
+    <BackButton label="← Back" />
     <h1>Register</h1>
     <form onSubmit={handleRegister}>
     <input

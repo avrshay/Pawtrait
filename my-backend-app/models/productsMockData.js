@@ -4,28 +4,28 @@
 const Products = [
     {
       product_id: 1, //primary key
-      name: "designed cup",
+      name: "Designed Cup",
       original_pet_image_url: "http://localhost:3000/images/clients/dog1-original.jpg",
       custom_product_image_url: "http://localhost:3000/images/catalog/products/cup-design-dog1.png",
       price: 50,
     },
     {
       product_id: 2,
-      name: "tote bag",
+      name: "Tote Bag",
       original_pet_image_url: "http://localhost:3000/images/clients/dog2-original.jpg",
       custom_product_image_url: "http://localhost:3000/images/catalog/products/bag-design-dog2.png",
       price: 35,
     },
     {
       product_id: 3,
-      name: "soft pillow",
+      name: "Soft Pillow",
       original_pet_image_url: "http://localhost:3000/images/clients/dog3-original.jpg",
       custom_product_image_url: "http://localhost:3000/images/catalog/products/pillow-design-dog3.png",
       price: 65,
     },
     {
       product_id: 4,
-      name: "baseball cap",
+      name: "Baseball Cap",
       original_pet_image_url: "http://localhost:3000/images/clients/dog4-original.jpg",
       custom_product_image_url: "http://localhost:3000/images/catalog/products/cap-design-dog4.png",
       price: 55,

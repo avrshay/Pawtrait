@@ -1,55 +1,83 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
-
-/* Left sidebar — matches the Stitch mockup: fixed column, white, 2px black border. */
+/* ── Pawtrait Sidebar (Stitch style) ──────────────────────────── */
 .navbar {
   flex: 0 0 256px;
   width: 256px;
-  min-height: 100vh;
+  height: 100vh;
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  gap: 8px;
+  padding: 32px 16px;
+  gap: 4px;
   background: #ffffff;
-  border-right: 2px solid #000000;
-  font-family: 'Inter', sans-serif;
+  border-right: 1px solid #dac1bd;
+  font-family: 'Nunito Sans', sans-serif;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
+/* Logo */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px 28px;
+  margin-bottom: 8px;
+  text-decoration: none !important;
+  background: none !important;
+}
+
+.navbar-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.navbar-logo h2 {
+  margin: 0;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #94483d;
+  letter-spacing: -0.01em;
+}
+
+/* User block */
 .navbar-user {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-bottom: 12px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
   margin-bottom: 8px;
-  border-bottom: 2px solid #000000;
+  background: #f6f3f2;
+  border-radius: 9999px;
 }
 
-.navbar-user button {
-  width: 100%;
-  padding: 10px 12px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  background: #ffffff;
-  color: #000000;
-  border: 2px solid #000000;
-  cursor: pointer;
+.navbar-user-icon {
+  font-size: 28px;
+  color: #94483d;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-.navbar-user button:hover {
-  background: #000000;
-  color: #ffffff;
+.navbar-user p {
+  margin: 0;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1b1c1c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Nav links */
 .navbar-links {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   flex: 1;
 }
 
@@ -61,25 +89,71 @@
 .navbar-links a {
   display: flex;
   align-items: center;
-  padding: 12px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  gap: 12px;
+  padding: 11px 16px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
   text-decoration: none;
-  color: #000000;
-  border: 2px solid transparent;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  color: #544340;
+  border-radius: 9999px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navbar-links a .material-symbols-outlined {
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 .navbar-links a:hover {
-  background: #e3e2e2;
-  border-color: #000000;
+  background: #ffdad4;
+  color: #94483d;
+  text-decoration: none;
 }
 
 .navbar-links a.active {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
+  background: #ffdad4;
+  color: #94483d;
+}
+
+/* Logout */
+.navbar-logout {
+  padding-top: 16px;
+  margin-top: auto;
+  border-top: 1px solid #dac1bd;
+}
+
+.navbar-logout button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 16px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  background: transparent;
+  color: #544340;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-shadow: none;
+  text-align: left;
+}
+
+.navbar-logout button .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.navbar-logout button:hover {
+  background: #ffdad4;
+  color: #94483d;
+  transform: none;
+  box-shadow: none;
+}
+
+.navbar-logout button:active {
+  transform: none;
+  box-shadow: none;
 }

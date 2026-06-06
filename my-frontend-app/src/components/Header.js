@@ -31,6 +31,11 @@ export default function Header({ username }) {
           </>
         )}
       </h1>
+      {name === "Guest" && (
+        <p className="header-subtitle">
+          <strong>Let's create something beautiful for your furry friend today.</strong>
+        </p>
+      )}
     </header>
   );
 }

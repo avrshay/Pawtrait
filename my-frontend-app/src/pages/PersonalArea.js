@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "../services/authService";
 import { getOrdersOfUser, getOrderItems } from "../services/ordersService";
+import { getAllProducts } from "../services/galleryService";
 import Table from "../components/Table";
 import BackButton from "../components/back-button";
 
@@ -9,6 +10,7 @@ export default function PersonalArea() {
   const user = getCurrentUser();
   const [orders, setOrders] = useState([]);
   const [items, setItems] = useState([]);
+  const [productImageMap, setProductImageMap] = useState({});
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [loadingItems, setLoadingItems] = useState(false);
@@ -29,6 +31,14 @@ export default function PersonalArea() {
       }
     }
     loadOrders();
+  }, []);
+
+  useEffect(() => {
+    getAllProducts().then((products) => {
+      const map = {};
+      (products || []).forEach((p) => { map[p.product_id] = p.custom_product_image_url; });
+      setProductImageMap(map);
+    });
   }, []);
 
   // Load items when order is selected
@@ -94,29 +104,28 @@ export default function PersonalArea() {
           <Table
             data={items.map((line) => ({
               ...line,
+              product: productImageMap[line.productId] ? (
+                <img
+                  src={productImageMap[line.productId]}
+                  alt="Product"
+                  className="cart-pet-image"
+                  style={{ maxWidth: 100, maxHeight: 100, objectFit: "cover", borderRadius: 8 }}
+                />
+              ) : (
+                "—"
+              ),
               pet: line.petImageUrl ? (
                 <img
                   src={line.petImageUrl}
                   alt="Your pet"
                   className="cart-pet-image"
-                  style={{ maxWidth: 100, maxHeight: 100, objectFit: "cover" }}
+                  style={{ maxWidth: 100, maxHeight: 100, objectFit: "cover", borderRadius: 8 }}
                 />
               ) : (
                 "—"
               ),
-              aiDesign:
-                line.aiDesignImageUrl && String(line.aiDesignImageUrl).trim() ? (
-                  <img
-                    src={line.aiDesignImageUrl}
-                    alt="AI design"
-                    className="cart-pet-image"
-                    style={{ maxWidth: 100, maxHeight: 100, objectFit: "cover" }}
-                  />
-                ) : (
-                  "—"
-                ),
             }))}
-            columns={["productId", "quantity", "pet", "aiDesign"]}
+            columns={["product", "quantity", "pet"]}
           />
         </>
       )}

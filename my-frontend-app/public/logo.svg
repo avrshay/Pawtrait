@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Rounded square background -->
+  <rect x="10" y="10" width="180" height="180" rx="38" ry="38"
+        fill="#FFF8F2" stroke="#c0695c" stroke-width="7"/>
+
+  <!-- Paw print (terracotta outline) -->
+  <!-- Top-left toe -->
+  <ellipse cx="72" cy="62" rx="13" ry="16" fill="none" stroke="#c0695c" stroke-width="6.5"/>
+  <!-- Top-right toe -->
+  <ellipse cx="108" cy="58" rx="13" ry="16" fill="none" stroke="#c0695c" stroke-width="6.5"/>
+  <!-- Left toe -->
+  <ellipse cx="50" cy="82" rx="11" ry="14" fill="none" stroke="#c0695c" stroke-width="6.5"/>
+
+  <!-- Main paw pad (filled terracotta) -->
+  <path d="M68 95 Q60 78 68 72 Q80 62 100 70 Q122 78 118 95 Q115 118 100 128 Q82 136 68 118 Z"
+        fill="#c0695c" stroke="none"/>
+
+  <!-- Paint palette (olive green) -->
+  <path d="M95 115 Q130 95 148 118 Q158 135 142 148 Q128 160 110 150 Q90 140 95 115 Z"
+        fill="none" stroke="#6b8a5e" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- Paint dot on palette -->
+  <circle cx="130" cy="138" r="6" fill="#6b8a5e"/>
+  <circle cx="143" cy="128" r="5" fill="#c0695c"/>
+  <circle cx="138" cy="148" r="4.5" fill="#6b8a5e"/>
+
+  <!-- Brush handle -->
+  <line x1="110" y1="108" x2="150" y2="72" stroke="#6b8a5e" stroke-width="6" stroke-linecap="round"/>
+  <!-- Brush tip -->
+  <ellipse cx="155" cy="67" rx="8" ry="5" transform="rotate(-45 155 67)"
+           fill="#c0695c"/>
+</svg>
