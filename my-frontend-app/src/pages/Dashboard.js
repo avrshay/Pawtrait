@@ -26,7 +26,9 @@ export default function Dashboard() {
       case "mid":
         return price > 40 && price <= 60;
       case "high":
-        return price > 60;
+        return price > 60 && price <= 100;
+      case "premium":
+        return price > 100;
       default:
         return true;
     }
@@ -48,7 +50,8 @@ export default function Dashboard() {
           <option value="all">All prices</option>
           <option value="low">Up to $40</option>
           <option value="mid">$40 – $60</option>
-          <option value="high">Over $60</option>
+          <option value="high">$60 – $100</option>
+          <option value="premium">Over $100</option>
         </select>
       </div>
 
