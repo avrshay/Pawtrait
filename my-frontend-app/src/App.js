@@ -34,7 +34,7 @@ export default function App() {
           <Route path="/login"              element={<Login />} />
           <Route path="/admin"              element={<Admin />} />
           <Route path="/register"           element={<Register />} />
-          <Route path="/personalArea"       element={<PersonalArea />} />
+          <Route path="/personal-area"      element={<PersonalArea />} />
           <Route path="/admin/orders/:orderId" element={<EditOrder/>} />
           <Route path="/admin/products/new" element={<AddProduct />} />
           <Route path="/admin/products/:productId" element={<EditProduct />} />

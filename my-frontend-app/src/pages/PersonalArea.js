@@ -69,8 +69,15 @@ export default function PersonalArea() {
       {ordersError && <p style={{ color: "red" }}>{ordersError}</p>}
       {itemsError && <p style={{ color: "red" }}>{itemsError}</p>}
       <Table
-        data={orders}
-        columns={["orderId", "status", "createDate"]}
+        data={orders.map((o) => ({
+          ...o,
+          "Create Date": o.createDate
+            ? new Date(o.createDate).toLocaleDateString("en-US", {
+                year: "numeric", month: "short", day: "numeric",
+              })
+            : "—",
+        }))}
+        columns={["orderId", "status", "Create Date"]}
         renderActions={(order) => (
           <button onClick={() => handleLoadItems(order.orderId)}>
             View Items

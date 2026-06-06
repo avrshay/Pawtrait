@@ -11,7 +11,7 @@ export function getOrdersOfUser(userId) {
 }
 
 export function getOrderById(orderId) {
-  return apiRequest(`/orders/${orderId}`, { auth: true });
+  return apiRequest(`/orders/order/${orderId}`, { auth: true });
 }
 // GET /orders/:id/:orderId — line items of one order.
 export function getOrderItems(userId, orderId) {

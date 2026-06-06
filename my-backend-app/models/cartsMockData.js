@@ -33,7 +33,7 @@ const cart_items = [
   },
   {
     cart_item_id: 3,
-    id: 3,
+    id: 2,
     orderId: 2,
     productId: 1,
     quantity: 1,

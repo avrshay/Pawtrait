@@ -31,7 +31,7 @@ export default function ProductDetails() {
 
   const [petImageFile, setPetImageFile] = useState(null); //the file the user uploads
   const [petImagePreview, setPetImagePreview] = useState(null); //local preview URL (blob)
-  const [quantity, setQuantity] = useState(1); //how many the user wants
+  const [quantity, setQuantity] = useState("1"); //how many the user wants
   const [cartMessage, setCartMessage] = useState(null); //feedback after adding to cart
   const [addedPetImageUrl, setAddedPetImageUrl] = useState(null); //pet image to show after successful add
   const [AIMessage, setAIMessage] = useState(null); //feedback after showing the AI image
@@ -88,7 +88,7 @@ export default function ProductDetails() {
       setAddedPetImageUrl(null);
       return;
     }
-    if (!quantity || quantity < 1) {
+    if (!quantity || Number(quantity) < 1) {
       setCartMessage("Quantity must be at least 1");
       setAddedPetImageUrl(null);
       return;
@@ -102,7 +102,7 @@ export default function ProductDetails() {
       const dataUrl = await readFileAsDataUrl(petImageFile);
       const uploadResult = await uploadPetImage(dataUrl); //save file on server, get real URL string
       const petImageUrl = uploadResult.petImageUrl; //e.g. http://localhost:3000/images/clients/pet-user3-....jpg
-      await addItem({ productId, quantity, petImageUrl });
+      await addItem({ productId, quantity: Number(quantity), petImageUrl });
       setCartMessage("Added to cart!");
       setAddedPetImageUrl(petImageUrl); //show the saved image path after success
       setAIMessage("hi! we are working on your image...");
@@ -153,7 +153,7 @@ export default function ProductDetails() {
             type="number"
             min="1"
             value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
+            onChange={(e) => setQuantity(e.target.value)}
           />
 
           <button type="button" className="add-to-cart" onClick={handleAddToCart}>

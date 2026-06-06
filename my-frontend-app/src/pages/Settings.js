@@ -93,8 +93,8 @@ return (
     {status && <p style={{ color: "green" }}>{status}</p>}
 
     <form onSubmit={handleUpdate}>
-      <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-      <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
+      <input value={firstName} onChange={(e) => { if (/^[a-zA-Zא-ת\s]*$/.test(e.target.value)) setFirstName(e.target.value); }} />
+      <input value={lastName} onChange={(e) => { if (/^[a-zA-Zא-ת\s]*$/.test(e.target.value)) setLastName(e.target.value); }} />
       <input value={email} onChange={(e) => setEmail(e.target.value)} />
       <input value={phone_number} onChange={(e) => setPhone_number(e.target.value)} />
 

@@ -216,7 +216,7 @@ export default function Checkout() {
           <p>Card ending in {cardNumber.replace(/\s/g, "").slice(-4)} charged (mock).</p>
           <p style={{ color: "green" }}>Payment confirmed. AI is processing your designs.</p>
           <p>
-            <Link to="/personalArea">View my orders</Link>
+            <Link to="/personal-area">View my orders</Link>
           </p>
         </div>
       )}
