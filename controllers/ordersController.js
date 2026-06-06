@@ -184,6 +184,7 @@ function getAllOrder(req, res) {
 module.exports = {
   getOrdersOfUserById,
   getItemsOfOrder,
+  getOrderById,
   createOrder,
   updateOrder,
   deleteOrder,

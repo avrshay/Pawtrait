@@ -4,12 +4,16 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const PORT= 3000
-// Allow larger JSON bodies for pet image upload (base64); cart requests stay small (URL only).
+
 app.use(express.json({ limit: "12mb" }));
+
+//Logger middleware to log the request and response
+const logger = require("./middleware/logger");
+app.use(logger);
 
 // CORS: allow the React frontend to call this API.
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, x-user-id, x-user-role");
   if (req.method === "OPTIONS") {
@@ -17,10 +21,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-//Logger middleware to log the request and response
-const logger = require("./middleware/logger");
-app.use(logger);
 
 const { sendSuccess } = require("./middleware/errorHandler");
 
