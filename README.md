@@ -2,20 +2,32 @@
 
 ## Getting Started
 
-### Install dependencies
-```bash
-npm install
-```
+Run the project in two steps: first the backend, then the frontend.
 
-### Start the development server
+### 1) Start the backend
+Open a terminal in the backend folder:
+
 ```bash
+cd my-backend-app
+npm install
 npm start
 ```
 
-The app will open at **http://localhost:5173** in your browser.
+The backend will run at **http://localhost:3000**.
+
+### 2) Start the frontend
+Open a second terminal in the frontend folder:
+
+```bash
+cd my-frontend-app
+npm install
+npm start
+```
+
+The frontend will open at **http://localhost:5173** in your browser.
 
 > The frontend communicates with the backend API at **http://localhost:3000**.  
-> Make sure the backend server is running before using the app.
+> Make sure the backend is running before using the app.
 
 ---
 
