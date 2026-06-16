@@ -1,6 +1,7 @@
 import Navbar from "./Navbar";
 import Header from "./Header";
 import Footer from "./Footer";
+import ChatBot from "./ChatBot";
 
 // This is the layout component that is shared by every screen:
 //   - Navbar: the sidebar on the left.
@@ -18,6 +19,7 @@ export default function Layout({ username , children }) {
         <main className="main-content">{children}</main>
         <Footer />
       </div>
+      <ChatBot />
     </div>
   );
 }
