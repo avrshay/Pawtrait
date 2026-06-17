@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SocketProvider } from "./context/SocketContext";
 import Layout from "./components/Layout";
 
 
@@ -21,6 +22,7 @@ import AddProduct from "./pages/AddProduct";
 
 export default function App() {
   return (
+    <SocketProvider>
     <BrowserRouter>
       <Layout title="Pawtrait">
         <Routes> 
@@ -43,5 +45,6 @@ export default function App() {
         </Routes>
       </Layout>
     </BrowserRouter>
+    </SocketProvider>
   );
 }

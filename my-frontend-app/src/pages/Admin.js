@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Table from "../components/Table";
 import { getAllUsers,deleteUser } from "../services/usersService";
 import { getAllOrders, getOrderItems,deleteOrder } from "../services/ordersService";
@@ -6,6 +6,7 @@ import { getAllProducts } from "../services/galleryService";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../services/authService";
 import { deleteProduct } from "../services/galleryService";
+import { useSocket } from "../context/SocketContext";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -19,6 +20,98 @@ export default function AdminDashboard() {
   const [itemsError, setItemsError] = useState("");
   const CurrUser = getCurrentUser();
   const navigate = useNavigate();
+
+  //for the live chat support panel
+  const [pendingChats, setPendingChats] = useState({});
+  const [activeChat, setActiveChat]   = useState(null); // clientSocketId
+  const [chatMessages, setChatMessages] = useState({}); // { [clientSocketId]: [{from,text}] }
+  const [adminInput, setAdminInput]   = useState("");
+  const [isTyping, setIsTyping]       = useState(false);
+  const chatBottomRef = useRef(null);
+  const { managerSocket: adminSocket } = useSocket();
+
+  useEffect(() => {
+    adminSocket.connect();
+
+    adminSocket.on("human_handoff", ({ clientSocketId, userName, history }) => {
+      setPendingChats((prev) => ({
+        ...prev,
+        [clientSocketId]: { userName: userName || "Guest", history, accepted: false },
+      }));
+      const converted = history.map((m) => ({
+        from: m.role === "user" ? "user" : "bot",
+        text: m.content,
+      }));
+      setChatMessages((prev) => ({ ...prev, [clientSocketId]: converted }));
+    });
+
+    adminSocket.on("receiveMessage", ({ clientSocketId, text }) => {
+      setChatMessages((prev) => ({
+        ...prev,
+        [clientSocketId]: [...(prev[clientSocketId] ?? []), { from: "user", text }],
+      }));
+    });
+
+    adminSocket.on("client_disconnected", ({ clientSocketId }) => {
+      setPendingChats((prev) => {
+        const next = { ...prev };
+        delete next[clientSocketId];
+        return next;
+      });
+      setActiveChat((prev) => (prev === clientSocketId ? null : prev));
+    });
+
+    adminSocket.on("joined_room", ({ clientSocketId }) => {
+      setPendingChats((prev) => ({
+        ...prev,
+        [clientSocketId]: { ...prev[clientSocketId], accepted: true },
+      }));
+      setActiveChat(clientSocketId);
+    });
+
+    return () => {
+      adminSocket.off("human_handoff");
+      adminSocket.off("receiveMessage");
+      adminSocket.off("client_disconnected");
+      adminSocket.off("joined_room");
+      adminSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (chatBottomRef.current) {
+      chatBottomRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [chatMessages, activeChat]);
+
+  function acceptChat(clientSocketId) {
+    adminSocket.emit("handoff_accepted", { clientSocketId });
+  }
+
+  function sendAdminMessage() {
+    if (!adminInput.trim() || !activeChat) return;
+    adminSocket.emit("sendMessage", { clientSocketId: activeChat, text: adminInput.trim() });
+    setChatMessages((prev) => ({
+      ...prev,
+      [activeChat]: [...(prev[activeChat] ?? []), { from: "admin", text: adminInput.trim() }],
+    }));
+    setAdminInput("");
+  }
+
+  function handleAdminTyping(e) {
+    setAdminInput(e.target.value);
+    if (!activeChat) return;
+    if (!isTyping) {
+      setIsTyping(true);
+      adminSocket.emit("typing", { clientSocketId: activeChat, isTyping: true });
+    }
+    clearTimeout(handleAdminTyping._timer);
+    handleAdminTyping._timer = setTimeout(() => {
+      setIsTyping(false);
+      adminSocket.emit("typing", { clientSocketId: activeChat, isTyping: false });
+    }, 5500);
+  }
+
 
   useEffect(() => {
     async function loadData() {
@@ -113,6 +206,77 @@ async function handleDeleteProduct(productId) {
 
   return (
     <section>
+
+    {/*Live Chat Panel */}
+    <h2>💬 Live Chat Support</h2>
+    <div style={{ display: "flex", gap: 16, marginBottom: 32 }}>
+
+      {/* Pending requests list */}
+      <div style={{ minWidth: 220, border: "1px solid var(--outline-variant)", borderRadius: "var(--radius-md)", padding: 12 }}>
+        <strong>Pending Requests</strong>
+        {Object.keys(pendingChats).length === 0 && (
+          <p style={{ color: "var(--outline)", fontSize: 13 }}>No active requests</p>
+        )}
+        {Object.entries(pendingChats).map(([id, chat]) => (
+          <div key={id} style={{ marginTop: 10, padding: 8, background: "var(--surface-low)", borderRadius: "var(--radius-sm)" }}>
+            <div style={{ fontSize: 12, color: "var(--outline)" }}>{chat.userName}</div>
+            {!chat.accepted ? (
+              <button onClick={() => acceptChat(id)} style={{ marginTop: 6, background: "var(--primary)", color: "#fff", border: "none", borderRadius: "var(--radius-full)", padding: "4px 12px", cursor: "pointer" }}>
+                Accept
+              </button>
+            ) : (
+              <button onClick={() => setActiveChat(id)} style={{ marginTop: 6, background: "var(--secondary)", color: "#fff", border: "none", borderRadius: "var(--radius-full)", padding: "4px 12px", cursor: "pointer" }}>
+                Open Chat
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Active chat window */}
+      {activeChat ? (
+        <div style={{ flex: 1, border: "1px solid var(--outline-variant)", borderRadius: "var(--radius-md)", display: "flex", flexDirection: "column" }}>
+          <div style={{ padding: "10px 14px", background: "var(--primary)", color: "#fff", borderRadius: "var(--radius-md) var(--radius-md) 0 0", fontWeight: 700 }}>
+            Chat with {pendingChats[activeChat]?.userName ?? activeChat.slice(0,8)}
+          </div>
+          <div style={{ flex: 1, padding: 12, overflowY: "auto", maxHeight: 300, display: "flex", flexDirection: "column", gap: 8, background: "var(--background)" }}>
+            {(chatMessages[activeChat] ?? []).map((msg, i) => (
+              <div key={i} style={{
+                alignSelf: msg.from === "admin" ? "flex-end" : "flex-start",
+                background: msg.from === "admin" ? "var(--primary)" : msg.from === "bot" ? "var(--primary-container)" : "var(--surface-container)",
+                color: msg.from === "admin" || msg.from === "bot" ? "#fff" : "var(--on-surface)",
+                padding: "8px 12px",
+                borderRadius: "var(--radius-md)",
+                maxWidth: "75%",
+                fontSize: 14,
+              }}>
+                {msg.from === "bot" && <em style={{ fontSize: 11, opacity: 0.8 }}>🤖 AI · </em>}
+                {msg.text}
+              </div>
+            ))}
+            <div ref={chatBottomRef} />
+          </div>
+          <div style={{ display: "flex", gap: 8, padding: 10, borderTop: "1px solid var(--outline-variant)" }}>
+            <input
+              value={adminInput}
+              onChange={handleAdminTyping}
+              onKeyDown={(e) => e.key === "Enter" && sendAdminMessage()}
+              placeholder="Reply to customer..."
+              style={{ flex: 1, padding: "8px 12px", borderRadius: "var(--radius-full)", border: "1.5px solid var(--outline-variant)", outline: "none" }}
+            />
+            <button type="button" onClick={sendAdminMessage} style={{ background: "var(--primary)", color: "#fff", border: "none", borderRadius: "var(--radius-full)", padding: "8px 16px", cursor: "pointer" }}>
+              Send
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--outline)", border: "1px dashed var(--outline-variant)", borderRadius: "var(--radius-md)" }}>
+          Select a chat to respond
+        </div>
+      )}
+    </div>
+    {/* ─────────────────────────────────────────────────────────── */}
+
     <h1>
       {CurrUser?.userRole === "admin" ? "Admin Dashboard" : "Manager Dashboard"}
     </h1>

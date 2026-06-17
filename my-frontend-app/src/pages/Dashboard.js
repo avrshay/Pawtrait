@@ -39,7 +39,7 @@ export default function Dashboard() {
   return (
     <section className="dashboard">
       <h1 className="dashboard__title">Our Products</h1>
-      <p className="dashboard__tagline">Turn your pet's photo into a one-of-a-kind masterpiece — crafted with AI, made with love.</p>
+      <p className="dashboard__tagline">Turn your pet's photo into a one-of-a-kind masterpiece - crafted with AI, made with love.</p>
       <div className="dashboard__filter">
         <label htmlFor="priceRange">Filter by price: </label>
         <select

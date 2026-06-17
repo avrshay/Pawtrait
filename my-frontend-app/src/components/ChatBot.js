@@ -1,10 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSocket } from "../context/SocketContext";
+import { getCurrentUser } from "../services/authService";
 import "./ChatBot.css";
 
 const QUICK_REPLIES = ["ORDER STATUS", "UPLOAD PHOTOS", "STYLES"];
+const INITIAL_MSG = { from: "bot", text: "Hi! I'm Paw Assistant 🐾 How can I help you today?" };
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([INITIAL_MSG]);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [mode, setMode] = useState("ai"); // "ai" | "human"
+  const bottomRef = useRef(null);
+  const { userSocket: socket } = useSocket();
+
+  useEffect(() => {
+    socket.connect();
+
+    socket.on("receiveMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+      setIsTyping(false);
+    });
+
+    socket.on("typing", ({ isTyping }) => setIsTyping(isTyping));
+
+    socket.on("handoff_accepted", () => {
+      setMode("human");
+      setMessages((prev) => [
+        ...prev,
+        { from: "bot", text: "✅ You are now connected to the manager." },
+      ]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+      socket.off("typing");
+      socket.off("handoff_accepted");
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping]);
+
+  function send(text) {
+    const trimmed = (text ?? input).trim();
+    if (!trimmed) return;
+    setMessages((prev) => [...prev, { from: "user", text: trimmed }]);
+    socket.emit("sendMessage", { text: trimmed });
+    setInput("");
+  }
+
+  function requestHuman() {
+    const user = getCurrentUser();
+    const userName = user ? `${user.firstName} ${user.lastName}` : "Guest";
+    socket.emit("human_handoff", { userName });
+    setMessages((prev) => [
+      ...prev,
+      { from: "user", text: "I'd like to speak with the manager." },
+    ]);
+  }
 
   return (
     <div className="chatbot">
@@ -15,30 +72,53 @@ export default function ChatBot() {
               <span className="chatbot__paw">🐾</span>
               <div>
                 <div className="chatbot__title">Paw Assistant</div>
-                <div className="chatbot__status">ONLINE TO HELP</div>
+                <div className="chatbot__status">
+                  {mode === "human" ? "Manager" : "AI • ONLINE"}
+                </div>
               </div>
             </div>
             <button className="chatbot__close" onClick={() => setOpen(false)}>✕</button>
           </div>
 
           <div className="chatbot__messages">
-            <div className="chatbot__msg chatbot__msg--bot">
-              Hi! How can I help you today?
-            </div>
-            <div className="chatbot__msg chatbot__msg--bot">
-              Are you looking for a specific pet portrait style or need help with your order?
-            </div>
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`chatbot__msg chatbot__msg--${msg.from === "user" ? "user" : "bot"}`}
+              >
+                {msg.text}
+              </div>
+            ))}
+            {isTyping && (
+              <div className="chatbot__msg chatbot__msg--bot chatbot__typing">
+                <span /><span /><span />
+              </div>
+            )}
+            <div ref={bottomRef} />
           </div>
 
           <div className="chatbot__quick-replies">
             {QUICK_REPLIES.map((label) => (
-              <button key={label} className="chatbot__quick-btn">{label}</button>
+              <button key={label} className="chatbot__quick-btn" onClick={() => send(label)}>
+                {label}
+              </button>
             ))}
+            {mode === "ai" && (
+              <button className="chatbot__quick-btn chatbot__quick-btn--human" onClick={requestHuman}>
+                👤 Manager
+              </button>
+            )}
           </div>
 
           <div className="chatbot__input-row">
-            <input className="chatbot__input" placeholder="Type a message..." />
-            <button className="chatbot__send">&#9658;</button>
+            <input
+              className="chatbot__input"
+              placeholder="Type a message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && send()}
+            />
+            <button className="chatbot__send" onClick={() => send()}>&#9658;</button>
           </div>
         </div>
       )}
