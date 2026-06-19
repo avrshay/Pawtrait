@@ -50,7 +50,7 @@ async function updateUser(req, res) {
 
   const id = req.params.id;
 
-  const existing =  await userService.geyUserById(id);
+  const existing =  await userService.getUserById(id);
 
   if (!existing) {
 
@@ -72,7 +72,7 @@ async function updateDetails(req, res) {
 
   const id = req.params.id;
 
-  const existing = await userService.geyUserById(id);
+  const existing = await userService.getUserById(id);
 
   if (!existing) {
 
@@ -94,7 +94,7 @@ async function deleteUser(req, res) {
 
   const id = req.params.id;
 
-  const existing =  await userService.geyUserById(id);
+  const existing =  await userService.getUserById(id);
 
   if (!existing) {
 

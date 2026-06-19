@@ -1,12 +1,12 @@
-const products = require("../models/productsMockData");
-const orders = require("../models/ordersMockData");
+const productService = require("../services/productService");
+const orderService = require("../services/orderService");
 
 /**
  * Mock AI: turns the pet photo into a product design URL.
  * Replace this with a real HTTP call to your AI provider when ready.
  */
 async function generateDesignForLineItem({ petImageUrl, productId }) {
-  const product = products.getProductById(productId);
+  const product = await productService.getProductById(productId);
   if (product && product.custom_product_image_url) {
     return product.custom_product_image_url;
   }
@@ -15,7 +15,7 @@ async function generateDesignForLineItem({ petImageUrl, productId }) {
 }
 
 async function processOrderItems(orderId) {
-  const lines = orders.getItemsByOrderId(orderId);
+  const lines = await orderService.getItemsByOrderId(orderId);
   for (const line of lines) {
     const current =
       line.aiDesignImageUrl != null ? String(line.aiDesignImageUrl).trim() : "";
@@ -26,7 +26,7 @@ async function processOrderItems(orderId) {
       petImageUrl: line.petImageUrl,
       productId: line.productId,
     });
-    orders.setAiDesignImageUrl(line.id, designUrl);
+    await orderService.setAiDesignImageUrl(line.id, designUrl);
   }
 }
 

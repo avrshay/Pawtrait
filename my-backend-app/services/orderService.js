@@ -34,7 +34,7 @@ async function createOrder(order) {
   if (!order.userId || !order.status) {
     return null;
   }
-  return await Order.create({userId: Number(order.userId),status: order.status});
+  return await Order.create({userId: Number(order.userId),status: order.status, createdAt: new Date()});
 }
 
 // Append a new order line; assigns the next line id. Requires orderId, productId, quantity, petImageUrl (non-empty string).

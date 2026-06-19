@@ -1,12 +1,12 @@
 // controllers/paymentController.js — mock Bit payment flow
 
 const paymentData = require("../models/paymentData");
-const orders = require("../models/ordersMockData");
+const orderService = require("../services/orderService");
 const aiController = require("./aiController");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 //startPayment function to initiate a payment
-function startPayment(req, res) {
+async function startPayment(req, res) {
   const { userId, totalAmount, orderId } = req.body || {};
   if (userId == null || totalAmount == null || orderId == null) {
     return sendError(res, 400, "BAD_REQUEST", "Missing payment details", {
@@ -17,7 +17,7 @@ function startPayment(req, res) {
     return sendError(res, 400, "BAD_REQUEST", "invalid orderId", { field: "orderId" });
   }
 
-  const order = orders.getOrderById(orderId);
+  const order = await orderService.getOrderById(orderId);
   if (!order) {
     return sendError(res, 404, "NOT_FOUND", "order not found", { orderId: Number(orderId) });
   }

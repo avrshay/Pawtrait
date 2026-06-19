@@ -1,5 +1,5 @@
 const { sendError } = require("./errorHandler");
-const users = require("../models/usersMockData");
+const userService = require("../services/userService");
 
 //authorize the user by the role
 function authorize(allowedRoles) {
@@ -32,7 +32,7 @@ function authorizeSelf(req, res, next) {
  * - admin/manager: only require a finite numeric header (no user-table check).
  * - user: must be positive integer and exist in users mock.
  */
-function requireCartUserIdHeader(req, res, next) {
+async function requireCartUserIdHeader(req, res, next) {
   const uid = Number(req.headers["x-user-id"]);
   if (!Number.isFinite(uid)) {
     return sendError(res, 400, "BAD_REQUEST", "x-user-id header is required (numeric cart owner)", {
@@ -51,7 +51,7 @@ function requireCartUserIdHeader(req, res, next) {
       value: uid,
     });
   }
-  if (!users.geyUserById(uid)) {
+  if (!await userService.getUserById(uid)) {
     return sendError(res, 404, "NOT_FOUND", "no user with that id", { field: "x-user-id", userId: uid });
   }
   next();

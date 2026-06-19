@@ -65,8 +65,8 @@ async function updateProduct(id, data) {
   }
   await product.update({
     name,
-    original_pet_image_url: original,
-    custom_product_image_url: custom,
+    original_pet_image_url,
+    custom_product_image_url,
     price,
   });
   return true;

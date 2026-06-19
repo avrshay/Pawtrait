@@ -50,16 +50,17 @@ async function getCartItemWithOwner(cartItemId) {
 
 // Add a new cart item to the cart: return the new item if successful, otherwise null.
 async function addCartItem(userId, { productId, quantity, petImageUrl }) {
-  const cart = await ensureCartForUser(userId);
-  if (!cart) {
-    return null;
-  }
-  const q = Number(quantity);
   const pid = Number(productId);
+  const q = Number(quantity);
   const pet = petImageUrl?.trim();
-  if (!Number.isFinite(q) || q < 1 || !Number.isFinite(pid) || !pet) {
+
+  if (!Number.isFinite(pid) || !Number.isFinite(q) || q < 1 || !pet) {
     return null;
   }
+  const product = await Product.findByPk(pid);
+  if (!product) return null;
+  const cart = await ensureCartForUser(userId);
+  if (!cart) return null;
   return await CartItem.create({
     cartId: cart.id,
     productId: pid,
@@ -70,7 +71,7 @@ async function addCartItem(userId, { productId, quantity, petImageUrl }) {
 
 // Update the quantity of a cart item: return the updated item if successful, otherwise null.
 async function updateCartItemQuantity(cartItemId, quantity) {
-  const item = await CartItem.findByPk(cartItemId);
+  const item = await CartItem.findByPk(cartItemId, {include: [Product]});  
   if (!item) {
     return null;
   }
@@ -98,3 +99,13 @@ async function clearCartByUserId(userId) {
   }
   return await CartItem.destroy({where: { cartId: cart.id }});
 }
+
+module.exports = {
+  ensureCartForUser,
+  getCartPayloadByUserId,
+  getCartItemWithOwner,
+  addCartItem,
+  updateCartItemQuantity,
+  deleteCartItem,
+  clearCartByUserId,
+};
