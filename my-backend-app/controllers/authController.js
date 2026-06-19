@@ -1,18 +1,18 @@
-const users = require("../models/usersMockData");
+const userService = require("../services/userService");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
-function register(req, res) {
+async function register(req, res) {
   const { firstName, lastName, email, phone_number, password } = req.body;
-  const user=users.RegisterUser(firstName, lastName, email, phone_number, password);
+  const user=await userService.RegisterUser(firstName, lastName, email, phone_number, password);
   if (!user) {
     return sendError(res,400,"BAD_REQUEST","Email already exists",{ field: "email" });
   }
   return sendSuccess(res,user,201);
 }
 
-function login(req, res) {
+async function login(req, res) {
   const { email, password } = req.body;
-  const user = users.getUserByEmailAndPassword(email, password);
+  const user = await userService.getUserByEmailAndPassword(email, password);
   if (!user) {
     return sendError(res, 400, "BAD_REQUEST", "Invalid email or password", { field: "credentials" });
   }

@@ -1,4 +1,4 @@
-const carts = require("../models/cartsMockData");
+const cart = require("../models/cartsMockData");
 const products = require("../models/productsMockData");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 

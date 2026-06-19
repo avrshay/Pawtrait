@@ -1,17 +1,17 @@
-const orders = require("../models/ordersMockData");
-const products = require("../models/productsMockData");
+const orderService = require("../services/orderService");
+const productService = require("../services/productService");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
-function getOrdersOfUserById(req, res) {
+async function getOrdersOfUserById(req, res) {
   const id = req.params.id;
-  const allOrders = orders.getAllOrdersById(id);
+  const allOrders = await orderService.getAllOrdersById(id);
   return sendSuccess(res, allOrders);
 }
 
-function getItemsOfOrder(req, res) {
+async function getItemsOfOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
-  const lines = orders.getAllItemsOrdersById(userId, orderId);
+  const lines = await orderService.getAllItemsOrdersById(userId, orderId);
   if (!Array.isArray(lines) || lines.length === 0) {
     return sendError(
       res,
@@ -24,9 +24,9 @@ function getItemsOfOrder(req, res) {
   return sendSuccess(res, lines);
 }
 
-function getOrderById(req, res) {
+async function getOrderById(req, res) {
   const orderId = req.params.orderId;
-  const order = orders.getOrderById(orderId);
+  const order = await orderService.getOrderById(orderId);
   if (!order) {
     return sendError(
       res,
@@ -39,7 +39,7 @@ function getOrderById(req, res) {
   return sendSuccess(res, order);
 }
 
-function createOrder(req, res) {
+async function createOrder(req, res) {
   const userId = req.params.id;
 
   const body = req.body || {};
@@ -73,7 +73,7 @@ function createOrder(req, res) {
         { field: "items.petImageUrl" }
       );
     }
-    const product = products.getProductById(pid);
+    const product =await productService.getProductById(pid);
     if (!product) {
       return sendError(res, 404, "NOT_FOUND", `product not found: ${pid}`, {
         field: "items.productId",
@@ -83,7 +83,7 @@ function createOrder(req, res) {
   }
 
   const status = "processing";
-  const newOrder = orders.createOrder({
+  const newOrder = await orderService.createOrder({
     userId: Number(userId),
     status,
     createDate: new Date(),
@@ -96,15 +96,15 @@ function createOrder(req, res) {
   for (const line of items) {
     const qty = Number(line.quantity ?? line.amount);
     const petImageUrl = String(line.petImageUrl).trim();
-    const itemRow = orders.createItemOrder({
-      orderId: newOrder.orderId,
+    const itemRow = await orderService.createItemOrder({
+      orderId: newOrder.id,
       productId: Number(line.productId),
       quantity: qty,
       petImageUrl,
     });
     if (!itemRow) {
-      orders.deleteItemsByOrderId(newOrder.orderId);
-      orders.deleteOrder(newOrder.orderId);
+      await orderService.deleteItemsByOrderId(newOrder.id);
+      await orderService.deleteOrder(newOrder.id);
       return sendError(res, 500, "INTERNAL_SERVER_ERROR", "failed to persist line items", {});
     }
   }
@@ -112,11 +112,11 @@ function createOrder(req, res) {
   return sendSuccess(res, newOrder, 201);
 }
 
-function updateOrder(req, res) {
+async function updateOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
 
-  const list = orders.getAllOrdersById(userId);
+  const list = await orderService.getAllOrdersById(userId);
   const existing = list.find((o) => o.orderId === Number(orderId));
   if (!existing) {
     return sendError(res, 404, "NOT_FOUND", "order not found", { orderId });
@@ -137,12 +137,12 @@ function updateOrder(req, res) {
     return sendError(res, 400, "BAD_REQUEST", "status is required", { field: "status" });
   }
 
-  const ok = orders.updateOrder(orderId, merged);
+  const ok = await orderService.updateOrder(orderId, merged);
   if (!ok) {
     return sendError(res, 500, "INTERNAL_SERVER_ERROR", "update failed", {});
   }
 
-  const allHeaders = orders.getAllOrder();
+  const allHeaders = await orderService.getAllOrder();
   const updated = Array.isArray(allHeaders)
     ? allHeaders.find((o) => o.orderId === Number(orderId))
     : null;
@@ -154,18 +154,18 @@ function updateOrder(req, res) {
   return sendSuccess(res, updated);
 }
 
-function deleteOrder(req, res) {
+async function deleteOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
 
-  const list = orders.getAllOrdersById(userId);
+  const list = await orderService.getAllOrdersById(userId);
   const existing = list.find((o) => o.orderId === Number(orderId));
   if (!existing) {
     return sendError(res, 404, "NOT_FOUND", "order not found", { orderId });
   }
 
-  orders.deleteItemsByOrderId(orderId);
-  const removed = orders.deleteOrder(orderId);
+  await orderService.deleteItemsByOrderId(orderId);
+  const removed = await orderService.deleteOrder(orderId);
   if (!removed) {
     return sendError(res, 500, "INTERNAL_SERVER_ERROR", "failed to delete order", {});
   }
@@ -173,8 +173,8 @@ function deleteOrder(req, res) {
   return sendSuccess(res, { orderId: Number(orderId) });
 }
 
-function getAllOrder(req, res) {
-  const allOrders = orders.getAllOrder();
+async function getAllOrder(req, res) {
+  const allOrders = await orderService.getAllOrder();
   if (!Array.isArray(allOrders)) {
     return sendError(res, 500, "INTERNAL_SERVER_ERROR", "could not load orders", {});
   }
@@ -188,5 +188,5 @@ module.exports = {
   createOrder,
   updateOrder,
   deleteOrder,
-  getAllOrder,
+  getAllOrder
 };

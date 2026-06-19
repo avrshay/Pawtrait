@@ -115,9 +115,15 @@ function validateOrderRouteParams(req, res, next) {
 }
 
 function validateCreateUser(req, res, next) {
-  const { firstName, lastName, userRole } = req.body;
+  const { firstName, lastName,email, phone_number, userRole } = req.body;
   if (!isNonEmptyString(firstName) || !isNonEmptyString(lastName)) {
     return badRequest(res, "Invalid name", { fields: ["firstName", "lastName"] });
+  }
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+    return badRequest(res, "Invalid Email", { field: "email" });
+  }
+  if (!isNonEmptyString(phone_number)) {
+    return badRequest(res, "Invalid phone number", { field: "phone_number" });
   }
   if (!userRole || typeof userRole !== "string" || !["user", "manager", "admin"].includes(userRole)) {
     return badRequest(res, "Invalid userRole", { field: "userRole" });

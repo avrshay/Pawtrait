@@ -1,21 +1,21 @@
-const products = require("../models/productsMockData");
+const productService = require("../services/productService");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
-function getAllProducts(req, res) {
-  const allProducts = products.getAllProducts();
+async function getAllProducts(req, res) {
+  const allProducts = await productService.getAllProducts();
   return sendSuccess(res, allProducts.length === 0 ? [] : allProducts);
 }
 
-function getProductById(req, res) {
+async function getProductById(req, res) {
   const product_id = req.params.product_id;
-  const product = products.getProductById(product_id);
+  const product = await productService.getProductById(product_id);
   if (!product) {
     return sendError(res, 404, "NOT_FOUND", "product not found", { product_id });
   }
   return sendSuccess(res, product);
 }
 
-function createProduct(req, res) {
+async function createProduct(req, res) {
   const product = req.body;
   if (
     !product.name ||
@@ -28,14 +28,14 @@ function createProduct(req, res) {
       fields: ["name", "original_pet_image_url", "custom_product_image_url", "price"],
     });
   }
-  const newProduct = products.createProduct(product);
+  const newProduct = await productService.createProduct(product);
   if (!newProduct) {
     return sendError(res, 500, "INTERNAL_SERVER_ERROR", "failed to create product", {});
   }
   return sendSuccess(res, newProduct, 201);
 }
 
-function updateProduct(req, res) {
+async function updateProduct(req, res) {
   const product_id = req.params.product_id;
   const product = req.body;
   if (
@@ -49,16 +49,16 @@ function updateProduct(req, res) {
       fields: ["name", "original_pet_image_url", "custom_product_image_url", "price"],
     });
   }
-  const updatedProduct = products.updateProduct(product_id, product);
+  const updatedProduct = await productService.updateProduct(product_id, product);
   if (!updatedProduct) {
     return sendError(res, 404, "NOT_FOUND", "product not found", { product_id });
   }
-  return sendSuccess(res, products.getProductById(product_id));
+  return sendSuccess(res, await productService.getProductById(product_id));
 }
 
-function deleteProduct(req, res) {
+async function deleteProduct(req, res) {
   const product_id = req.params.product_id;
-  const deletedProduct = products.deleteProduct(product_id);
+  const deletedProduct = await productService.deleteProduct(product_id);
   if (!deletedProduct) {
     return sendError(res, 404, "NOT_FOUND", "product not found", { product_id });
   }

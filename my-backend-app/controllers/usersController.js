@@ -1,12 +1,12 @@
-const users = require("../models/usersMockData");
+const userService = require("../services/userService");
 
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 
 
-function getAll(req, res) {
+async function getAll(req, res) {
 
-  const allUsers = users.getAllUsers();
+  const allUsers = await userService.getAllUsers();
 
   return sendSuccess(res, allUsers);
 
@@ -14,11 +14,11 @@ function getAll(req, res) {
 
 
 
-function getById(req, res) {
+async function getById(req, res) {
 
   const id = req.params.id;
 
-  const user = users.geyUserById(id);
+  const user = await userService.getUserById(id);
 
   if (!user) {
 
@@ -32,23 +32,25 @@ function getById(req, res) {
 
 
 
-function newUser(req, res) {
+async function newUser(req, res) {
 
   const { firstName, lastName, email, phone_number, userRole } = req.body;
 
-  const id = users.createUser(firstName, lastName, email, phone_number, userRole);
-
+  const id = await userService.createUser({firstName, lastName, email, phone_number, userRole});
+    if (!id) {
+    return sendError(res,400,"BAD_REQUEST","Email already exists",{ field: "email" });
+  }
   return sendSuccess(res, { userId: id }, 201);
 
 }
 
 
 
-function updateUser(req, res) {
+async function updateUser(req, res) {
 
   const id = req.params.id;
 
-  const existing = users.geyUserById(id);
+  const existing =  await userService.geyUserById(id);
 
   if (!existing) {
 
@@ -58,7 +60,7 @@ function updateUser(req, res) {
 
   const { firstName, lastName, email, phone_number, userRole } = req.body;
 
-  users.updateById(id, firstName, lastName, email, phone_number, userRole);
+  await userService.updateById(id,{firstName, lastName, email, phone_number, userRole});
 
   return sendSuccess(res, { userId: Number(id) });
 
@@ -66,11 +68,11 @@ function updateUser(req, res) {
 
 
 
-function updateDetails(req, res) {
+async function updateDetails(req, res) {
 
   const id = req.params.id;
 
-  const existing = users.geyUserById(id);
+  const existing = await userService.geyUserById(id);
 
   if (!existing) {
 
@@ -80,7 +82,7 @@ function updateDetails(req, res) {
 
   const { firstName, lastName, email, phone_number } = req.body;
 
-  users.updateDetailsById(id, firstName, lastName, email, phone_number);
+  await userService.updateDetailsById(id, {firstName, lastName, email, phone_number});
 
   return sendSuccess(res, { userId: Number(id) });
 
@@ -88,11 +90,11 @@ function updateDetails(req, res) {
 
 
 
-function deleteUser(req, res) {
+async function deleteUser(req, res) {
 
   const id = req.params.id;
 
-  const existing = users.geyUserById(id);
+  const existing =  await userService.geyUserById(id);
 
   if (!existing) {
 
@@ -100,7 +102,7 @@ function deleteUser(req, res) {
 
   }
 
-  users.deleteById(id);
+   await userService.deleteById(id);
 
   return sendSuccess(res, { userId: Number(id) });
 

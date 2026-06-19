@@ -1,0 +1,103 @@
+const { User } = require("../models");
+//functions of user
+
+//get all users
+async function getAllUsers() {
+  const users = await User.findAll({
+    attributes: { exclude: ["password"] },
+  });
+  return users;
+}
+
+//get User By Id
+async function getUserById(id) {
+  const user = await User.findByPk(id, {
+    attributes: { exclude: ["password"] },
+  });
+  return user;
+}
+
+// get User By Email And Password
+async function getUserByEmailAndPassword(email, password) {
+  const user = await User.findOne({
+    where: { email, password },
+    attributes: { exclude: ["password"] },
+  });
+  return user;
+}
+
+//Register User
+async function RegisterUser(data) {
+  const existingUser = await User.findOne({where: { email: data.email },}); // not impossible some users wuth the same email
+  if (existingUser) {
+    return null; 
+  }
+  const newUser = await User.create({
+    firstName: data.firstName,
+    lastName: data.lastName,
+    userRole: "user",
+    email: data.email,
+    phone_number: data.phone_number,
+    password: data.password,
+  });
+  return newUser;
+}
+
+//create User
+async function createUser(data) {
+    const existingUser = await User.findOne({where: { email: data.email },}); // not impossible some users wuth the same email
+    if (existingUser) {
+        return null; 
+    }
+  const newUser = await User.create({
+    firstName: data.firstName,
+    lastName: data.lastName,
+    userRole: data.userRole,
+    email:  data.email || "",
+    phone_number: data.phone_number||"",
+    password: "example123",
+  });
+  return newUser.id;
+}
+
+// update user By Id
+async function updateById(id, data) {
+  const user = await User.findByPk(id);
+  if (!user) {
+    return null;
+  }
+  await user.update({
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    phone_number: data.phone_number,
+    userRole: data.userRole,
+  });
+  return true;
+}
+
+// update Details user By user
+async function updateDetailsById(id, data) {
+  const user = await User.findByPk(id);
+  if (!user) {
+    return null;
+  }
+  await user.update({
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    phone_number: data.phone_number,
+  });
+  return true;
+}
+
+async function deleteById(id) {
+  const user = await User.findByPk(id);
+  if (!user) {
+    return false;
+  }
+  await  User.destroy({ where: { id } });
+  return true;
+}
+
+module.exports = {getAllUsers,getUserById,getUserByEmailAndPassword,RegisterUser,createUser,updateById,deleteById,updateDetailsById} //Allows another file to use the users variable

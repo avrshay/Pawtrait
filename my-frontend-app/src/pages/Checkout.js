@@ -148,6 +148,8 @@ export default function Checkout() {
           <Table
             data={items.map((line) => ({
               ...line,
+              product_name: line.Product?.name || "—",
+              price: line.Product?.price || "—",
               pet: line.petImageUrl ? (
                 <img
                   src={line.petImageUrl}

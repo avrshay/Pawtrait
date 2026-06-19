@@ -352,6 +352,8 @@ async function handleDeleteProduct(productId) {
           <Table
             data={items.map((line) => ({
               ...line,
+              productName: line.Product?.name || "—",
+              productPrice: line.Product?.price || "—",
               pet: line.petImageUrl ? (
                 <img
                   src={line.petImageUrl}
@@ -369,7 +371,7 @@ async function handleDeleteProduct(productId) {
                     "—"
                   ),
             }))}
-            columns={["productId", "quantity", "pet", "aiDesign"]}
+            columns={["productId","productName","productPrice", "quantity", "pet", "aiDesign"]}
           />
         </>
       )}

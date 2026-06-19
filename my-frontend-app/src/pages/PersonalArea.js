@@ -104,6 +104,8 @@ export default function PersonalArea() {
           <Table
             data={items.map((line) => ({
               ...line,
+              productName: line.Product?.name || "—",
+              productPrice: line.Product?.price || "—",
               product: productImageMap[line.productId] ? (
                 <img
                   src={productImageMap[line.productId]}
@@ -125,7 +127,7 @@ export default function PersonalArea() {
                 "—"
               ),
             }))}
-            columns={["product", "quantity", "pet"]}
+            columns={["product","productName","productPrice", "quantity", "pet"]}
           />
         </>
       )}
