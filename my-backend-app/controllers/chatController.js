@@ -1,7 +1,7 @@
 const { getAiReply } = require("../chat/aiAgent");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
-// In-memory conversation history per session (resets on server restart).
+//(resets on server restart).
 const conversations = {};
 
 async function sendMessage(req, res) {

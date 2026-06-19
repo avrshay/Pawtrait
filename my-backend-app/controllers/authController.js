@@ -3,7 +3,7 @@ const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 async function register(req, res) {
   const { firstName, lastName, email, phone_number, password } = req.body;
-  const user=await userService.RegisterUser(firstName, lastName, email, phone_number, password);
+  const user = await userService.RegisterUser({ firstName, lastName, email, phone_number, password });
   if (!user) {
     return sendError(res,400,"BAD_REQUEST","Email already exists",{ field: "email" });
   }

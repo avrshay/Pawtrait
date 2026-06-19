@@ -1,7 +1,7 @@
 
-const Anthropic = require("@anthropic-ai/sdk");
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Local Ollama server — no API key, never reaches the frontend.
+const OLLAMA_URL = process.env.OLLAMA_URL || "http://localhost:11434/api/chat";
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3.2";
 
 const SYSTEM_PROMPT = `You are Paw Assistant, a friendly support agent for Pawtrait — a pet portrait studio that creates custom painted/illustrated portraits of pets.
 You help customers:
@@ -12,13 +12,22 @@ You help customers:
 Keep answers short, warm, and helpful. Use occasional pet-related emojis 🐾🐶🐱.`;
 
 async function getAiReply(history) {
-  const response = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 300,
-    system: SYSTEM_PROMPT,
-    messages: history,
+  const response = await fetch(OLLAMA_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: OLLAMA_MODEL,
+      stream: false,
+      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...history],
+    }),
   });
-  return response.content[0].text;
+
+  if (!response.ok) {
+    throw new Error(`Ollama request failed (${response.status})`);
+  }
+
+  const data = await response.json();
+  return data.message.content;
 }
 
 module.exports = { getAiReply };
