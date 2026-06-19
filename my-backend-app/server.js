@@ -36,6 +36,7 @@ app.use("/auth",     require("./routes/auth"));
 app.use("/gallery",  require("./routes/productsGallery.js"));
 app.use("/payments", require("./routes/paymentRoutes"));
 app.use("/upload",   require("./routes/petImageUpload"));
+app.use("/chat",     require("./routes/chat"));
 
 //create HTTP server and initialize Socket.IO for AI chat agent:
 const server = http.createServer(app);

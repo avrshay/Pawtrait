@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
-const { getAiReply } = require("./aiAgent");
 
+// AI replies are now served over REST (POST /chat/message); this socket layer
+// only handles the live human-handoff channel between a client and a manager.
 // roomId → { managerSocketId | null, history: [{role, content}] }
 const chatRooms = {};
 
@@ -56,30 +57,20 @@ async function handleClient(socket, io) {
   chatRooms[socket.id] = { managerSocketId: null, history: [] };
   socket.join(socket.id);
 
-  // Client → Server: client sends via sendMessage
-  socket.on("sendMessage", async ({ text }) => {
+  // Client → Server: once a manager has accepted the handoff, messages are
+  // relayed live over this socket. AI replies go through the REST endpoint instead.
+  socket.on("sendMessage", ({ text }) => {
     const room = chatRooms[socket.id];
-    if (!room) return;
+    if (!room || !room.managerSocketId) return;
 
     room.history.push({ role: "user", content: text });
-
-    if (room.managerSocketId) {
-      // Route to human manager
-      io.to("manager_room").emit("receiveMessage", { clientSocketId: socket.id, from: "user", text });
-    } else {
-      // Route to AI
-      try {
-        const reply = await getAiReply(room.history);
-        room.history.push({ role: "assistant", content: reply });
-        socket.emit("receiveMessage", { from: "bot", text: reply });
-      } catch (err) {
-        console.error("AI error:", err.message);
-        socket.emit("receiveMessage", { from: "bot", text: "Sorry, I'm having trouble right now. Please try again shortly 🐾" });
-      }
-    }
+    io.to("manager_room").emit("receiveMessage", { clientSocketId: socket.id, from: "user", text });
   });
 
-  socket.on("human_handoff", ({ userName } = {}) => {
+  socket.on("human_handoff", ({ userName, history } = {}) => {
+    if (Array.isArray(history)) {
+      chatRooms[socket.id].history = history;
+    }
     io.to("manager_room").emit("human_handoff", {
       clientSocketId: socket.id,
       userName: userName || "Guest",
