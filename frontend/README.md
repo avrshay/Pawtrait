@@ -8,7 +8,7 @@ Run the project in two steps: first the backend, then the frontend.
 Open a terminal in the backend folder:
 
 ```bash
-cd my-backend-app
+cd backend
 npm install
 npm start
 ```
@@ -19,7 +19,7 @@ The backend will run at **http://localhost:3000**.
 Open a second terminal in the frontend folder:
 
 ```bash
-cd my-frontend-app
+cd frontend
 npm install
 npm start
 ```

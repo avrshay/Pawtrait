@@ -22,11 +22,13 @@ This repo is **Assignment 2**: a Node.js + Express REST API with **mock data in 
 
 | Path | Role |
 |------|------|
-| **`server.js`** | Starts Express, loads middleware and routes, serves static images under `/models/images` |
-| **`routes/`** | URL paths and HTTP methods; wires auth, validation, and controllers |
-| **`controllers/`** | Request logic: read/write mock data, return JSON |
-| **`models/`** | In-memory mock “database” (arrays and helper functions) |
-| **`middleware/`** | Cross-cutting logic used on many routes |
+| **`src/server.js`** | Starts Express, loads middleware and routes, serves static images under `/models/images` |
+| **`src/routes/`** | URL paths and HTTP methods; wires auth, validation, and controllers |
+| **`src/controllers/`** | Request logic: read/write mock data, return JSON |
+| **`src/middleware/`** | Cross-cutting logic used on many routes |
+| **`src/chat/`** | AI chat agent and Socket.IO live-chat handler |
+| **`models/`** | Sequelize models (ORM) |
+| **`migrations/`** | Sequelize database migrations |
 | **`docs/`** | API reference (`API.md`), Postman collection, screenshots for submission |
 
 ### `routes/`
@@ -98,7 +100,7 @@ npm start
 Or:
 
 ```bash
-node server.js
+node src/server.js
 ```
 
 ## Where the API runs
