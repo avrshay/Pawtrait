@@ -2,7 +2,7 @@
 
 ## Project Purpose
 
-**Pawtrait** is an e-commerce platform for custom pet products (mugs, tote bags, pillows, baseball caps, and similar items). Customers upload a photo of their pet, choose a product, and place an order. After payment is confirmed (mock **Bit** flow), a step fills in a finished design image for each order line (`aiDesignImageUrl`) - **this step is currently mocked** ([`backend/src/controllers/aiController.js`](backend/src/controllers/aiController.js) just reuses the product's existing image or builds a placeholder URL; no real image-generation model runs). The separate **AI chat assistant** described below is real and does call a live model - see [AI Feature](#ai-feature).
+**Pawtrait** is an e-commerce platform for custom pet products (mugs, tote bags, pillows, baseball caps, and similar items). Customers upload a photo of their pet, choose a product, and place an order. After payment is confirmed (mock **Bit** flow), a step fills in a finished design image for each order line (`aiDesignImageUrl`) - **this step is mocked** ([`backend/src/controllers/aiController.js`](backend/src/controllers/aiController.js) just reuses the product's existing image or builds a placeholder URL, no real image-generation model runs). The separate **AI chat assistant** described below is real and does call a live model - see [AI Feature](#ai-feature).
 
 The repo is split into two apps:
 
