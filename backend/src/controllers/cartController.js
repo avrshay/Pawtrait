@@ -23,7 +23,7 @@ function canAccessCartItem(req, cart) {
     return true;
   }
   const userId = Number(req.headers["x-user-id"]);
-  return Number.isFinite(userId) && cart.user_id === userId;
+  return Number.isFinite(userId) && cart.userId === userId;
 }
 
 async function getCart(req, res) {
@@ -39,9 +39,9 @@ async function getCart(req, res) {
   }
   const joined = item_cart.map((line) => enrichLine(line));
   return sendSuccess(res, {
-    user_id: cart.user_id,
-    cartId: cart.cartId,
-    createDate: cart.createDate,
+    user_id: cart.userId,
+    cartId: cart.id,
+    createDate: cart.createdAt,
     item_cart: joined,
   });
 }

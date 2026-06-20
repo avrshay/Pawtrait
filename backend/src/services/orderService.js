@@ -1,11 +1,21 @@
-const { Order, OrderItem } = require("../../models");
+const { Order, OrderItem, Product } = require("../../models");
+
+// The frontend expects "orderId" (primary key) and "createDate" (created timestamp) —
+// names from when this project still used mock data — but the Sequelize columns
+// are "id" and "createdAt". Translate at the boundary.
+function toOrderDTO(order) {
+  if (!order) return order;
+  const { id, createdAt, updatedAt, ...rest } = order.toJSON();
+  return { orderId: id, createDate: createdAt, ...rest };
+}
 
 // All order headers for a given user id; empty array if id is missing.
 async function getAllOrdersById(id) {
   if (!id) {
     return [];
   }
-  return await Order.findAll({where: { userId: Number(id) }});
+  const orders = await Order.findAll({where: { userId: Number(id) }});
+  return orders.map(toOrderDTO);
 }
 
 // get order by id
@@ -13,7 +23,7 @@ async function getOrderById(orderId) {
   if (orderId == null) {
     return null;
   }
-  return await Order.findByPk(orderId);
+  return toOrderDTO(await Order.findByPk(orderId));
 }
 
 // Line items for an order that belongs to userId (validates ownership via orders table, then filters by orderId).
@@ -34,7 +44,8 @@ async function createOrder(order) {
   if (!order.userId || !order.status) {
     return null;
   }
-  return await Order.create({userId: Number(order.userId),status: order.status, createdAt: new Date()});
+  const newOrder = await Order.create({userId: Number(order.userId),status: order.status, createdAt: new Date()});
+  return toOrderDTO(newOrder);
 }
 
 // Append a new order line; assigns the next line id. Requires orderId, productId, quantity, petImageUrl (non-empty string).
@@ -61,7 +72,8 @@ async function createItemOrder(itemOrder) {
 
 //admin/manager can see all orders
 async function getAllOrder() {
-  return await Order.findAll();
+  const orders = await Order.findAll();
+  return orders.map(toOrderDTO);
 }
 
 // Replace an existing order row when orderId exists; merges with previous row (order has no amount field).

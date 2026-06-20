@@ -97,14 +97,14 @@ async function createOrder(req, res) {
     const qty = Number(line.quantity ?? line.amount);
     const petImageUrl = String(line.petImageUrl).trim();
     const itemRow = await orderService.createItemOrder({
-      orderId: newOrder.id,
+      orderId: newOrder.orderId,
       productId: Number(line.productId),
       quantity: qty,
       petImageUrl,
     });
     if (!itemRow) {
-      await orderService.deleteItemsByOrderId(newOrder.id);
-      await orderService.deleteOrder(newOrder.id);
+      await orderService.deleteItemsByOrderId(newOrder.orderId);
+      await orderService.deleteOrder(newOrder.orderId);
       return sendError(res, 500, "INTERNAL_SERVER_ERROR", "failed to persist line items", {});
     }
   }

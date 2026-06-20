@@ -1,8 +1,7 @@
 const { User } = require("../../models");
 //functions of user
 
-// The frontend expects the primary key as "userId" (set when this project still used
-// mock data), but the Sequelize model's column is "id" — translate at the boundary.
+// The frontend expects the primary key as "userId"
 function toUserDTO(user) {
   if (!user) return user;
   const { id, ...rest } = user.toJSON();

@@ -1,9 +1,17 @@
 const { Product } = require("../../models");
 
+// The frontend expects the primary key as "product_id" (set when this project still used
+// mock data), but the Sequelize model's column is "id" — translate at the boundary.
+function toProductDTO(product) {
+  if (!product) return product;
+  const { id, ...rest } = product.toJSON();
+  return { product_id: id, ...rest };
+}
 
 // Returns the full Products array (same references the server holds in memory).
 async function getAllProducts() {
-  return await Product.findAll();
+  const products = await Product.findAll();
+  return products.map(toProductDTO);
 }
 
 
@@ -12,7 +20,7 @@ async function getProductById(id) {
   if (!id) {
     return false;
   }
-  return await Product.findByPk(id);
+  return toProductDTO(await Product.findByPk(id));
 }
 
 
@@ -37,7 +45,7 @@ async function createProduct(data) {
     custom_product_image_url,
     price,
   });
-  return newProduct;
+  return toProductDTO(newProduct);
 }
 
 
