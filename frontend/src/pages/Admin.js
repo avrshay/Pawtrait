@@ -53,12 +53,18 @@ export default function AdminDashboard() {
     });
 
     adminSocket.on("client_disconnected", ({ clientSocketId }) => {
+      setChatMessages((prev) => ({
+        ...prev,
+        [clientSocketId]: [
+          ...(prev[clientSocketId] ?? []),
+          { from: "system", text: "⚠️ The customer has left the chat." },
+        ],
+      }));
       setPendingChats((prev) => {
         const next = { ...prev };
         delete next[clientSocketId];
         return next;
       });
-      setActiveChat((prev) => (prev === clientSocketId ? null : prev));
     });
 
     adminSocket.on("joined_room", ({ clientSocketId }) => {
@@ -236,23 +242,42 @@ async function handleDeleteProduct(productId) {
       {/* Active chat window */}
       {activeChat ? (
         <div style={{ flex: 1, border: "1px solid var(--outline-variant)", borderRadius: "var(--radius-md)", display: "flex", flexDirection: "column" }}>
-          <div style={{ padding: "10px 14px", background: "var(--primary)", color: "#fff", borderRadius: "var(--radius-md) var(--radius-md) 0 0", fontWeight: 700 }}>
-            Chat with {pendingChats[activeChat]?.userName ?? activeChat.slice(0,8)}
+          <div style={{ padding: "10px 14px", background: "var(--primary)", color: "#fff", borderRadius: "var(--radius-md) var(--radius-md) 0 0", fontWeight: 700, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>Chat with {pendingChats[activeChat]?.userName ?? activeChat.slice(0,8)}</span>
+            <button
+              onClick={() => setActiveChat(null)}
+              title="Close chat"
+              style={{ background: "transparent", border: "none", color: "#fff", fontSize: 16, cursor: "pointer", lineHeight: 1 }}
+            >
+              ✕
+            </button>
           </div>
           <div style={{ flex: 1, padding: 12, overflowY: "auto", maxHeight: 300, display: "flex", flexDirection: "column", gap: 8, background: "var(--background)" }}>
             {(chatMessages[activeChat] ?? []).map((msg, i) => (
-              <div key={i} style={{
-                alignSelf: msg.from === "admin" ? "flex-end" : "flex-start",
-                background: msg.from === "admin" ? "var(--primary)" : msg.from === "bot" ? "var(--primary-container)" : "var(--surface-container)",
-                color: msg.from === "admin" || msg.from === "bot" ? "#fff" : "var(--on-surface)",
-                padding: "8px 12px",
-                borderRadius: "var(--radius-md)",
-                maxWidth: "75%",
-                fontSize: 14,
-              }}>
-                {msg.from === "bot" && <em style={{ fontSize: 11, opacity: 0.8 }}>🤖 AI · </em>}
-                {msg.text}
-              </div>
+              msg.from === "system" ? (
+                <div key={i} style={{
+                  alignSelf: "center",
+                  color: "var(--outline)",
+                  fontSize: 12,
+                  fontStyle: "italic",
+                  textAlign: "center",
+                }}>
+                  {msg.text}
+                </div>
+              ) : (
+                <div key={i} style={{
+                  alignSelf: msg.from === "admin" ? "flex-end" : "flex-start",
+                  background: msg.from === "admin" ? "var(--primary)" : msg.from === "bot" ? "var(--primary-container)" : "var(--surface-container)",
+                  color: msg.from === "admin" || msg.from === "bot" ? "#fff" : "var(--on-surface)",
+                  padding: "8px 12px",
+                  borderRadius: "var(--radius-md)",
+                  maxWidth: "75%",
+                  fontSize: 14,
+                }}>
+                  {msg.from === "bot" && <em style={{ fontSize: 11, opacity: 0.8 }}>🤖 AI · </em>}
+                  {msg.text}
+                </div>
+              )
             ))}
             <div ref={chatBottomRef} />
           </div>

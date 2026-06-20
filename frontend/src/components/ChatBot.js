@@ -11,9 +11,14 @@ const INITIAL_MSG = { from: "bot", text: "Hi! I'm Paw Assistant 🐾 How can I h
 function getSessionId() {
   let id = sessionStorage.getItem("pawtrait_chat_session");
   if (!id) {
-    id = `sess_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    sessionStorage.setItem("pawtrait_chat_session", id);
+    id = newSessionId();
   }
+  return id;
+}
+
+function newSessionId() {
+  const id = `sess_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  sessionStorage.setItem("pawtrait_chat_session", id);
   return id;
 }
 
@@ -53,6 +58,22 @@ export default function ChatBot() {
     };
   }, []);
 
+  // On login/logout, start a brand-new chat for whoever is now using this browser tab:
+  // dropping the socket lets the server tell the manager the previous customer left
+  // (if a human chat was active), and a fresh session id starts a clean AI conversation.
+  useEffect(() => {
+    function handleAuthChange() {
+      socket.disconnect();
+      socket.connect();
+      sessionId.current = newSessionId();
+      setMode("ai");
+      setMessages([INITIAL_MSG]);
+      setIsTyping(false);
+    }
+    window.addEventListener("pawtrait-auth-change", handleAuthChange);
+    return () => window.removeEventListener("pawtrait-auth-change", handleAuthChange);
+  }, [socket]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
@@ -72,9 +93,10 @@ export default function ChatBot() {
     // AI channel: goes through the backend REST endpoint (never calls the AI provider directly).
     setIsTyping(true);
     try {
+      const user = getCurrentUser();
       const data = await apiRequest("/chat/message", {
         method: "POST",
-        body: { sessionId: sessionId.current, message: trimmed },
+        body: { sessionId: sessionId.current, message: trimmed, userId: user?.userId ?? null },
       });
       setMessages((prev) => [...prev, { from: "bot", text: data.reply }]);
     } catch (err) {
