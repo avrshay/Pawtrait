@@ -41,19 +41,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    createDate: {
-    type: DataTypes.DATE
-  },
-  updateDate: {
-    type: DataTypes.DATE
-  }
   }, {
     sequelize,
     modelName: 'User',
     tableName: 'users',
     timestamps: true,
-    createdAt: "createDate",
-    updatedAt: "updateDate",
   });
   return User;
 };

@@ -1,12 +1,20 @@
 const { User } = require("../../models");
 //functions of user
 
+// The frontend expects the primary key as "userId" (set when this project still used
+// mock data), but the Sequelize model's column is "id" — translate at the boundary.
+function toUserDTO(user) {
+  if (!user) return user;
+  const { id, ...rest } = user.toJSON();
+  return { userId: id, ...rest };
+}
+
 //get all users
 async function getAllUsers() {
   const users = await User.findAll({
     attributes: { exclude: ["password"] },
   });
-  return users;
+  return users.map(toUserDTO);
 }
 
 //get User By Id
@@ -14,7 +22,7 @@ async function getUserById(id) {
   const user = await User.findByPk(id, {
     attributes: { exclude: ["password"] },
   });
-  return user;
+  return toUserDTO(user);
 }
 
 // get User By Email And Password
@@ -23,14 +31,14 @@ async function getUserByEmailAndPassword(email, password) {
     where: { email, password },
     attributes: { exclude: ["password"] },
   });
-  return user;
+  return toUserDTO(user);
 }
 
 //Register User
 async function RegisterUser(data) {
   const existingUser = await User.findOne({where: { email: data.email },}); // not impossible some users wuth the same email
   if (existingUser) {
-    return null; 
+    return null;
   }
   const newUser = await User.create({
     firstName: data.firstName,
@@ -40,7 +48,7 @@ async function RegisterUser(data) {
     phone_number: data.phone_number,
     password: data.password,
   });
-  return newUser;
+  return toUserDTO(newUser);
 }
 
 //create User
