@@ -1,4 +1,4 @@
-const { Cart, CartItem, Product } = require("../models");
+const { Cart, CartItem, Product } = require("../../models");
 
 //mapping
 function enrichLine(line) {

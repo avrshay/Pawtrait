@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
   return sendSuccess(res, { message: "Welcome to Pawtrait API! The server is up and running." });
 });
 
-app.use("/images", express.static(path.join(__dirname, "models", "images")));
+app.use("/images", express.static(path.join(__dirname, "..", "models", "images")));
 
 app.use("/users",    require("./routes/users"));
 app.use("/orders",   require("./routes/orders"));

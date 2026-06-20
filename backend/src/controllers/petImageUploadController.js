@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
-const clientsDir = path.join(__dirname, "..", "models", "images", "clients");
+const clientsDir = path.join(__dirname, "..", "..", "models", "images", "clients");
 
 const MIME_TO_EXT = {
   "image/png": "png",

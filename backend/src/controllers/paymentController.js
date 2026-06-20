@@ -1,6 +1,6 @@
 // controllers/paymentController.js — mock Bit payment flow
 
-const paymentData = require("../models/paymentData");
+const paymentData = require("../../models/paymentData");
 const orderService = require("../services/orderService");
 const aiController = require("./aiController");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");

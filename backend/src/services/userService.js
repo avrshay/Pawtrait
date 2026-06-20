@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User } = require("../../models");
 //functions of user
 
 //get all users

@@ -1,10 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { useSocket } from "../context/SocketContext";
 import { getCurrentUser } from "../services/authService";
+import { apiRequest, getErrorMessage } from "../services/api";
 import "./ChatBot.css";
 
 const QUICK_REPLIES = ["ORDER STATUS", "UPLOAD PHOTOS", "STYLES"];
 const INITIAL_MSG = { from: "bot", text: "Hi! I'm Paw Assistant 🐾 How can I help you today?" };
+
+// One id per browser session — keeps the AI conversation history tied
+// together across messages sent to POST /chat/message.
+function getSessionId() {
+  let id = sessionStorage.getItem("pawtrait_chat_session");
+  if (!id) {
+    id = `sess_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    sessionStorage.setItem("pawtrait_chat_session", id);
+  }
+  return id;
+}
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
@@ -14,6 +26,7 @@ export default function ChatBot() {
   const [mode, setMode] = useState("ai"); // "ai" | "human"
   const bottomRef = useRef(null);
   const { userSocket: socket } = useSocket();
+  const sessionId = useRef(getSessionId());
 
   useEffect(() => {
     socket.connect();
@@ -45,18 +58,41 @@ export default function ChatBot() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  function send(text) {
+  async function send(text) {
     const trimmed = (text ?? input).trim();
     if (!trimmed) return;
     setMessages((prev) => [...prev, { from: "user", text: trimmed }]);
-    socket.emit("sendMessage", { text: trimmed });
     setInput("");
+
+    if (mode === "human") {
+      // Live channel: manager is already connected, relay over the socket.
+      socket.emit("sendMessage", { text: trimmed });
+      return;
+    }
+
+    // AI channel: goes through the backend REST endpoint (never calls the AI provider directly).
+    setIsTyping(true);
+    try {
+      const data = await apiRequest("/chat/message", {
+        method: "POST",
+        body: { sessionId: sessionId.current, message: trimmed },
+      });
+      setMessages((prev) => [...prev, { from: "bot", text: data.reply }]);
+    } catch (err) {
+      setMessages((prev) => [...prev, { from: "bot", text: getErrorMessage(err) }]);
+    } finally {
+      setIsTyping(false);
+    }
   }
 
   function requestHuman() {
     const user = getCurrentUser();
     const userName = user ? `${user.firstName} ${user.lastName}` : "Guest";
-    socket.emit("human_handoff", { userName });
+    const history = messages.map((m) => ({
+      role: m.from === "user" ? "user" : "assistant",
+      content: m.text,
+    }));
+    socket.emit("human_handoff", { userName, history });
     setMessages((prev) => [
       ...prev,
       { from: "user", text: "I'd like to speak with the manager." },

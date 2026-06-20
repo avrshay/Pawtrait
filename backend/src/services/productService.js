@@ -1,4 +1,4 @@
-const { Product } = require("../models");
+const { Product } = require("../../models");
 
 
 // Returns the full Products array (same references the server holds in memory).
