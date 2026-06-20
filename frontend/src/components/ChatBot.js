@@ -4,7 +4,6 @@ import { getCurrentUser } from "../services/authService";
 import { apiRequest, getErrorMessage } from "../services/api";
 import "./ChatBot.css";
 
-const QUICK_REPLIES = ["ORDER STATUS", "UPLOAD PHOTOS", "STYLES"];
 const INITIAL_MSG = { from: "bot", text: "Hi! I'm Paw Assistant 🐾 How can I help you today?" };
 
 // One id per browser session — keeps the AI conversation history tied
@@ -134,14 +133,9 @@ export default function ChatBot() {
           </div>
 
           <div className="chatbot__quick-replies">
-            {QUICK_REPLIES.map((label) => (
-              <button key={label} className="chatbot__quick-btn" onClick={() => send(label)}>
-                {label}
-              </button>
-            ))}
             {mode === "ai" && (
               <button className="chatbot__quick-btn chatbot__quick-btn--human" onClick={requestHuman}>
-                👤 Manager
+                👤 Talk to the manager
               </button>
             )}
           </div>
