@@ -358,7 +358,7 @@ async function handleDeleteProduct(productId) {
           <button onClick={() => navigate(`/admin/orders/${order.orderId}`)}>
             Edit
           </button>
-        {CurrUser.userRole === "admin" && (
+        {CurrUser?.userRole === "admin" && (
           <button onClick={() => handleDeleteOrder(order.userId,order.orderId)}>
             Delete
           </button>
