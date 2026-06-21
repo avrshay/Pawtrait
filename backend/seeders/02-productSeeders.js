@@ -25,11 +25,13 @@ module.exports = {
         name: "Baseball Cap",
         original_pet_image_url: "http://localhost:3000/images/clients/dog4-original.jpg",
         custom_product_image_url: "http://localhost:3000/images/catalog/products/cap-design-dog4.png",
-        price: 40,
+        price: 55,
       },
     ]);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Products", null, {});
+    if (await queryInterface.tableExists("Products")) {
+      await queryInterface.bulkDelete("Products", null, {});
+    }
   },
 };

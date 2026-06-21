@@ -2,15 +2,15 @@ const cartService = require("../services/cartService");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 function enrichLine(line) {
-  const base = { ...line };
+  const plain = line?.toJSON ? line.toJSON() : line;
+  const base = plain && typeof plain === "object" ? { ...plain } : {};
 
   return {
     ...base,
-    cart_item_id: line.id,
-
-    product_name: line.Product?.name || null,
-    product_image: line.Product?.custom_product_image_url || null,
-    price: line.Product?.price || null,
+    cart_item_id: plain?.id ?? line?.id,
+    product_name: plain?.Product?.name || null,
+    product_image: plain?.Product?.custom_product_image_url || null,
+    price: plain?.Product?.price || null,
   };
 }
 

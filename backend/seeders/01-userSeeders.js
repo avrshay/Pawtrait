@@ -36,6 +36,8 @@ module.exports = {
     ]);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Users", null, {});
+    if (await queryInterface.tableExists("Users")) {
+      await queryInterface.bulkDelete("Users", null, {});
+    }
   },
 };

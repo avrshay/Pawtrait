@@ -16,6 +16,8 @@ module.exports = {
     ]);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Carts", null, {});
+    if (await queryInterface.tableExists("Carts")) {
+      await queryInterface.bulkDelete("Carts", null, {});
+    }
   },
 };

@@ -1,12 +1,5 @@
 const { Cart, CartItem, Product } = require("../../models");
-
-//mapping
-function enrichLine(line) {
-  return {
-    ...line.dataValues ? line.dataValues : line,
-    cart_item_id: line.id
-  };
-}
+const { enrichLine } = require("../../models/mapper/cartMapper");
 
 // Get cart payload by user id: return the cart and all items in the cart.
 async function getCartPayloadByUserId(userId) {
@@ -71,7 +64,7 @@ async function addCartItem(userId, { productId, quantity, petImageUrl }) {
 
 // Update the quantity of a cart item: return the updated item if successful, otherwise null.
 async function updateCartItemQuantity(cartItemId, quantity) {
-  const item = await CartItem.findByPk(cartItemId, {include: [Product]});  
+  const item = await CartItem.findByPk(cartItemId);
   if (!item) {
     return null;
   }
@@ -80,7 +73,7 @@ async function updateCartItemQuantity(cartItemId, quantity) {
     return null;
   }
   await item.update({ quantity: q });
-  return item;
+  return await CartItem.findByPk(cartItemId, { include: [Product] });
 }
 
 // Delete a cart item: return true if successful, otherwise false.

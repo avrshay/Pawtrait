@@ -15,9 +15,17 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        userId: 3,
+        status: "processing",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Orders", null, {});
+    if (await queryInterface.tableExists("Orders")) {
+      await queryInterface.bulkDelete("Orders", null, {});
+    }
   },
 };

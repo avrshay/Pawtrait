@@ -1,12 +1,6 @@
 const { User } = require("../../models");
+const { toUserDTO } = require("../../models/mapper/userMapper");
 //functions of user
-
-// The frontend expects the primary key as "userId"
-function toUserDTO(user) {
-  if (!user) return user;
-  const { id, ...rest } = user.toJSON();
-  return { userId: id, ...rest };
-}
 
 //get all users
 async function getAllUsers() {

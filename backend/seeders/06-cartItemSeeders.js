@@ -7,7 +7,7 @@ module.exports = {
         cartId: 1,
         productId: 2,
         quantity: 1,
-        petImageUrl: "...",
+        petImageUrl: "http://localhost:3000/images/clients/dog2-original.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -15,7 +15,7 @@ module.exports = {
         cartId: 1,
         productId: 3,
         quantity: 2,
-        petImageUrl: "...",
+        petImageUrl: "http://localhost:3000/images/clients/dog2-original.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -23,13 +23,15 @@ module.exports = {
         cartId: 2,
         productId: 1,
         quantity: 1,
-        petImageUrl: "...",
+        petImageUrl: "http://localhost:3000/images/clients/dog2-original.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     ]);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("CartItems", null, {});
+    if (await queryInterface.tableExists("CartItems")) {
+      await queryInterface.bulkDelete("CartItems", null, {});
+    }
   },
 };
