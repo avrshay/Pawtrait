@@ -2,20 +2,18 @@
 const {
   Model
 } = require('sequelize');
+// Cart model: represents one shopping cart, owned by one user.
 module.exports = (sequelize, DataTypes) => {
   class Cart extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+
+    // Defines how Cart relates to other tables.
     static associate(models) {
-        Cart.belongsTo(models.User, {foreignKey: "userId"});
-        Cart.hasMany(models.CartItem, {foreignKey: "cartId"});
+        Cart.belongsTo(models.User, {foreignKey: "userId"}); // each cart belongs to one user
+        Cart.hasMany(models.CartItem, {foreignKey: "cartId"}); // a cart can have many items
     }
   }
   Cart.init({
-      userId: {
+      userId: { // id of the user who owns this cart
         type: DataTypes.INTEGER,
         allowNull: false
       }

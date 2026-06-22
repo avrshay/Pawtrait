@@ -1,6 +1,6 @@
-// The frontend expects "orderId" (primary key) and "createDate" (created timestamp) —
-// names from when this project still used mock data — but the Sequelize columns
-// are "id" and "createdAt". Translate at the boundary.
+
+// Converts an Order DB object into a simpler object for the frontend:
+// renames "id" to "orderId" and "createdAt" to "createDate", and drops "updatedAt".
 function toOrderDTO(order) {
   if (!order) return order;
   const { id, createdAt, updatedAt, ...rest } = order.toJSON();

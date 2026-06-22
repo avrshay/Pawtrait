@@ -1,5 +1,6 @@
-// The frontend expects the primary key as "product_id" (set when this project still used
-// mock data), but the Sequelize model's column is "id" — translate at the boundary.
+
+// Converts a Product DB object into a simpler object for the frontend:
+// renames "id" to "product_id".
 function toProductDTO(product) {
   if (!product) return product;
   const { id, ...rest } = product.toJSON();

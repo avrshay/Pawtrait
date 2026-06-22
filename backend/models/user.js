@@ -2,42 +2,40 @@
 const {
 Model
 } = require('sequelize');
+// User model: represents one registered user (customer or admin).
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+
+    // Defines how User relates to other tables.
     static associate(models) {
-      User.hasMany(models.Order, {foreignKey: "userId"});    
-      User.hasOne(models.Cart, {foreignKey: "userId"});
+      User.hasMany(models.Order, {foreignKey: "userId"}); // a user can have many orders
+      User.hasOne(models.Cart, {foreignKey: "userId"}); // a user has exactly one cart
     }
 
   }
   User.init({
-    firstName: {
+    firstName: { // user's first name
       type: DataTypes.STRING,
       allowNull: false
     },
-    lastName: {
+    lastName: { // user's last name
       type: DataTypes.STRING,
       allowNull: false
     },
-    userRole: {
+    userRole: { // role of the user, e.g. "customer" or "admin"
       type: DataTypes.STRING,
       allowNull: false
     },
-    email: {
+    email: { // user's email, must be unique
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
     },
-    phone_number: {
+    phone_number: { // user's phone number
       type: DataTypes.STRING,
       allowNull: false
     },
-    password: {
+    password: { // user's hashed password
       type: DataTypes.STRING,
       allowNull: false
     },

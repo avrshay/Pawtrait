@@ -2,31 +2,29 @@
 const {
   Model
 } = require('sequelize');
+// CartItem model: one product line inside a cart (with quantity and the pet image used for it).
 module.exports = (sequelize, DataTypes) => {
   class CartItem extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+
+    // Defines how CartItem relates to other tables.
     static associate(models) {
-      CartItem.belongsTo(models.Cart, {foreignKey: "cartId"});
-      CartItem.belongsTo(models.Product, {foreignKey: "productId"});    }
+      CartItem.belongsTo(models.Cart, {foreignKey: "cartId"}); // each item belongs to one cart
+      CartItem.belongsTo(models.Product, {foreignKey: "productId"});    } // each item refers to one product
   }
   CartItem.init({
-    cartId: {
+    cartId: { // id of the cart this item is in
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    productId: {
+    productId: { // id of the product being bought
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    quantity: {
+    quantity: { // how many of this product
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    petImageUrl: {
+    petImageUrl: { // link to the pet photo used for this item
       type: DataTypes.STRING,
       allowNull: false
     }

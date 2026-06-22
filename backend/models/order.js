@@ -2,28 +2,26 @@
 const {
   Model
 } = require('sequelize');
+// Order model: represents one purchase made by a user.
 module.exports = (sequelize, DataTypes) => {
   class Order extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+
+    // Defines how Order relates to other tables.
     static associate(models) {
-      Order.belongsTo(models.User, {foreignKey: "userId"});
-      Order.hasMany(models.OrderItem, {foreignKey: "orderId"});
+      Order.belongsTo(models.User, {foreignKey: "userId"}); // each order belongs to one user
+      Order.hasMany(models.OrderItem, {foreignKey: "orderId"}); // an order can have many items
     }
   }
   Order.init({
-    userId: {
+    userId: { // id of the user who placed the order
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    status: {
+    status: { // current state of the order
       type: DataTypes.ENUM(
         "processing",
         "completed"
-       ),      
+       ),
       allowNull: false,
       defaultValue: "processing"
     }
