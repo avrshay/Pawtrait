@@ -10,6 +10,36 @@
       "key": "baseUrl",
       "value": "http://localhost:3000",
       "type": "string"
+    },
+    {
+      "key": "lastPaymentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lastUserId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lastProductId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lastOrderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lastCartItemId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lastRegisteredEmail",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -19,6 +49,31 @@
       "item": [
         {
           "name": "Register - Success Example",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"lastRegisteredEmail\", `liam.brown.${Date.now()}@example.com`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"userId\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -29,7 +84,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Liam\",\n  \"lastName\": \"Brown\",\n  \"email\": \"liam.brown@example.com\",\n  \"phone_number\": \"0501234567\",\n  \"password\": \"StrongPass123!\"\n}"
+              "raw": "{\n  \"firstName\": \"Liam\",\n  \"lastName\": \"Brown\",\n  \"email\": \"{{lastRegisteredEmail}}\",\n  \"phone_number\": \"0501234567\",\n  \"password\": \"StrongPass123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
@@ -46,6 +101,22 @@
         },
         {
           "name": "Login - Success Example",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"userRole\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -56,7 +127,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"liam.brown@example.com\",\n  \"password\": \"StrongPass123!\"\n}"
+              "raw": "{\n  \"email\": \"{{lastRegisteredEmail}}\",\n  \"password\": \"StrongPass123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -73,6 +144,22 @@
         },
         {
           "name": "Login - Validation Failure Example",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Response envelope is failure\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.error.code).to.eql(\"BAD_REQUEST\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -106,6 +193,22 @@
       "item": [
         {
           "name": "Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success with an array\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -132,6 +235,22 @@
         },
         {
           "name": "Get User By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"userId\", 1);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -159,6 +278,25 @@
         },
         {
           "name": "Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"userId\");",
+                  "});",
+                  "if (pm.response.json().success) {",
+                  "  pm.collectionVariables.set(\"lastUserId\", pm.response.json().data.userId);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -177,7 +315,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Maya\",\n  \"lastName\": \"Levi\",\n  \"email\": \"maya.levi@example.com\",\n  \"phone_number\": \"0529876543\",\n  \"userRole\": \"manager\"\n}"
+              "raw": "{\n  \"firstName\": \"Maya\",\n  \"lastName\": \"Levi\",\n  \"email\": \"maya.levi-{{$timestamp}}@example.com\",\n  \"phone_number\": \"0529876543\",\n  \"userRole\": \"manager\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/users",
@@ -193,6 +331,22 @@
         },
         {
           "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.userId).to.eql(Number(pm.collectionVariables.get(\"lastUserId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -211,16 +365,16 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Maya\",\n  \"lastName\": \"Levi\",\n  \"email\": \"maya.levi@newmail.com\",\n  \"phone_number\": \"0529876543\",\n  \"userRole\": \"admin\"\n}"
+              "raw": "{\n  \"firstName\": \"Maya\",\n  \"lastName\": \"Levi\",\n  \"email\": \"maya.levi-updated-{{$timestamp}}@example.com\",\n  \"phone_number\": \"0529876543\",\n  \"userRole\": \"admin\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/users/2",
+              "raw": "{{baseUrl}}/users/{{lastUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "users",
-                "2"
+                "{{lastUserId}}"
               ]
             },
             "description": "Updates an existing user's profile and role."
@@ -228,6 +382,22 @@
         },
         {
           "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.userId).to.eql(Number(pm.collectionVariables.get(\"lastUserId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
@@ -241,16 +411,68 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/users/2",
+              "raw": "{{baseUrl}}/users/{{lastUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "users",
-                "2"
+                "{{lastUserId}}"
               ]
             },
             "description": "Deletes a user by ID. Requires admin permissions."
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"userId\", 3);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "3"
+              },
+              {
+                "key": "x-user-role",
+                "value": "user"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Maya\",\n  \"lastName\": \"Levi\",\n  \"email\": \"maya.levi@newmail.com\",\n  \"phone_number\": \"0529876543\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/profile/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile",
+                "3"
+              ]
+            },
+            "description": "Lets a logged-in user update their own basic profile details (no role change)."
           }
         }
       ]
@@ -261,6 +483,22 @@
       "item": [
         {
           "name": "Get All Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success with an array\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
@@ -277,6 +515,22 @@
         },
         {
           "name": "Get Product By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"product_id\", 1);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
@@ -294,6 +548,25 @@
         },
         {
           "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"name\", \"Custom Pet Hoodie\");",
+                  "});",
+                  "if (pm.response.json().success) {",
+                  "  pm.collectionVariables.set(\"lastProductId\", pm.response.json().data.product_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -328,6 +601,22 @@
         },
         {
           "name": "Update Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"name\", \"Custom Pet Hoodie Pro\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -349,13 +638,13 @@
               "raw": "{\n  \"name\": \"Custom Pet Hoodie Pro\",\n  \"original_pet_image_url\": \"https://example.com/pet/original-updated.jpg\",\n  \"custom_product_image_url\": \"https://example.com/pet/custom-updated.jpg\",\n  \"price\": 59.99\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/gallery/1",
+              "raw": "{{baseUrl}}/gallery/{{lastProductId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "gallery",
-                "1"
+                "{{lastProductId}}"
               ]
             },
             "description": "Updates a product's details."
@@ -363,6 +652,22 @@
         },
         {
           "name": "Delete Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.product_id).to.eql(Number(pm.collectionVariables.get(\"lastProductId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
@@ -376,13 +681,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/gallery/1",
+              "raw": "{{baseUrl}}/gallery/{{lastProductId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "gallery",
-                "1"
+                "{{lastProductId}}"
               ]
             },
             "description": "Deletes a product from the gallery."
@@ -396,6 +701,22 @@
       "item": [
         {
           "name": "Get All Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success with an array\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -422,6 +743,22 @@
         },
         {
           "name": "Get Order By Order ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"orderId\", 2);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -446,6 +783,22 @@
         },
         {
           "name": "Get Orders By User ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success with an array\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -473,6 +826,22 @@
         },
         {
           "name": "Get Order Items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success with an array\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -501,6 +870,25 @@
         },
         {
           "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"orderId\");",
+                  "});",
+                  "if (pm.response.json().success) {",
+                  "  pm.collectionVariables.set(\"lastOrderId\", pm.response.json().data.orderId);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -536,6 +924,22 @@
         },
         {
           "name": "Update Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"status\", \"completed\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -553,14 +957,14 @@
               "raw": "{\n  \"userId\": 3,\n  \"status\": \"completed\",\n  \"createDate\": \"2026-06-21T12:00:00.000Z\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/orders/3/3",
+              "raw": "{{baseUrl}}/orders/3/{{lastOrderId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "orders",
                 "3",
-                "3"
+                "{{lastOrderId}}"
               ]
             },
             "description": "Updates the status or metadata of an existing order."
@@ -568,6 +972,22 @@
         },
         {
           "name": "Delete Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.orderId).to.eql(Number(pm.collectionVariables.get(\"lastOrderId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
@@ -577,14 +997,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/orders/3/3",
+              "raw": "{{baseUrl}}/orders/3/{{lastOrderId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "orders",
                 "3",
-                "3"
+                "{{lastOrderId}}"
               ]
             },
             "description": "Deletes an order and its related items."
@@ -598,6 +1018,22 @@
       "item": [
         {
           "name": "Get Cart - Success Example",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"item_cart\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -624,6 +1060,25 @@
         },
         {
           "name": "Add Cart Item - Success Example",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"cart_item_id\");",
+                  "});",
+                  "if (pm.response.json().success) {",
+                  "  pm.collectionVariables.set(\"lastCartItemId\", pm.response.json().data.cart_item_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -658,6 +1113,22 @@
         },
         {
           "name": "Add Cart Item - Validation Failure Example",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Response envelope is failure\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.error.code).to.eql(\"BAD_REQUEST\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -692,6 +1163,22 @@
         },
         {
           "name": "Update Cart Item Quantity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"quantity\", 5);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -705,7 +1192,7 @@
               },
               {
                 "key": "x-user-role",
-                "value": "admin"
+                "value": "user"
               }
             ],
             "body": {
@@ -713,13 +1200,13 @@
               "raw": "{\n  \"quantity\": 5\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/cart/3",
+              "raw": "{{baseUrl}}/cart/{{lastCartItemId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "cart",
-                "3"
+                "{{lastCartItemId}}"
               ]
             },
             "description": "Updates the quantity of a cart item."
@@ -727,12 +1214,28 @@
         },
         {
           "name": "Delete Cart Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"deleted\", true);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
               {
                 "key": "x-user-id",
-                "value": "1"
+                "value": "3"
               },
               {
                 "key": "x-user-role",
@@ -740,13 +1243,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/cart/1",
+              "raw": "{{baseUrl}}/cart/{{lastCartItemId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "cart",
-                "1"
+                "{{lastCartItemId}}"
               ]
             },
             "description": "Deletes a specific item from the cart."
@@ -754,12 +1257,28 @@
         },
         {
           "name": "Clear Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"removed\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
               {
                 "key": "x-user-id",
-                "value": "1"
+                "value": "3"
               },
               {
                 "key": "x-user-role",
@@ -782,11 +1301,180 @@
       ]
     },
     {
+      "name": "Payments",
+      "description": "Mock Bit payment flow: starting a payment and the webhook that confirms it.",
+      "item": [
+        {
+          "name": "Start Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Response envelope is success with a Bit payment link\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.paymentId).to.match(/^BIT-/);",
+                  "  pm.expect(json.data).to.have.property(\"bitPaymentUrl\");",
+                  "});",
+                  "if (pm.response.json().success) {",
+                  "  pm.collectionVariables.set(\"lastPaymentId\", pm.response.json().data.paymentId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 3,\n  \"totalAmount\": 130,\n  \"orderId\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "start"
+              ]
+            },
+            "description": "Creates a pending mock payment for an order and returns a fake Bit payment link."
+          }
+        },
+        {
+          "name": "Payment Webhook",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success and acknowledged\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data).to.have.property(\"acknowledged\", true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"{{lastPaymentId}}\",\n  \"status\": \"success\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "webhook"
+              ]
+            },
+            "description": "Mock payment gateway callback. On success, marks the payment completed and triggers AI design processing for the order."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Upload",
+      "description": "Uploading the customer's pet photo.",
+      "item": [
+        {
+          "name": "Upload Pet Image",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Response envelope is success with a petImageUrl\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.petImageUrl).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "3"
+              },
+              {
+                "key": "x-user-role",
+                "value": "user"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dataUrl\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/pet-image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "upload",
+                "pet-image"
+              ]
+            },
+            "description": "Saves a base64 pet image to disk and returns its URL to use as petImageUrl."
+          }
+        }
+      ]
+    },
+    {
       "name": "AI",
       "description": "AI-powered chat endpoint.",
       "item": [
         {
           "name": "Send Chat Message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response envelope is success with a reply\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.reply).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
