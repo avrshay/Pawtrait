@@ -1,6 +1,6 @@
 'use strict';
-// This file loads all the model files in this folder and connects them to the database.
-// It also links models to each other (e.g. Cart belongs to User).
+// This file loads all the model files in this folder and connects them to the database
+// It also links models to each other
 
 const fs = require('fs');
 const path = require('path');

@@ -3,6 +3,7 @@
 const OLLAMA_URL = process.env.OLLAMA_URL || "http://localhost:11434/api/chat";
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3.2";
 
+// The system prompt is prepended to every chat request sent to the AI model. It defines the AI's role and behavior.
 const SYSTEM_PROMPT = `You are Paw Assistant, a friendly support agent for Pawtrait — a pet portrait studio that creates custom painted/illustrated portraits of pets.
 You help customers:
 - Answer questions about orders, shipping, and delivery times

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -12,7 +13,16 @@ import { getCurrentUser } from "../services/authService";
 // The title is the title of the page that is being shown.
 // The children is the actual page body (whatever route is being shown).
 export default function Layout({ username , children }) {
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState(getCurrentUser); // re-read when login/logout happens
+
+  useEffect(() => {
+    function syncUser() {
+      setCurrentUser(getCurrentUser());
+    }
+    window.addEventListener("pawtrait-auth-change", syncUser);
+    return () => window.removeEventListener("pawtrait-auth-change", syncUser);
+  }, []);
+
   const isCustomer = !currentUser?.userRole || currentUser.userRole === "user";
 
   return ( //return the layout component

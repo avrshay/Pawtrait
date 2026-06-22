@@ -1,5 +1,5 @@
 // In-memory pending payments (no DB).
-// This array just lives in memory, not in the database. Data is lost on server restart.
+// This array just lives in memory, not in the database- Data is lost on server restart.
 
 const pendingPayments = [];
 

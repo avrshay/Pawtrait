@@ -92,6 +92,7 @@ async function updateDetailsById(id, data) {
   return true;
 }
 
+// delete user By Id
 async function deleteById(id) {
   const user = await User.findByPk(id);
   if (!user) {
