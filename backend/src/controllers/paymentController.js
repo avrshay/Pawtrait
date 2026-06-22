@@ -5,7 +5,8 @@ const orderService = require("../services/orderService");
 const aiController = require("./aiController");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
-//startPayment function to initiate a payment
+// POST /payments/start — checks the order is valid and belongs to the user,
+// then creates a "pending" mock payment and returns a fake Bit payment link.
 async function startPayment(req, res) {
   const { userId, totalAmount, orderId } = req.body || {};
   if (userId == null || totalAmount == null || orderId == null) {
@@ -47,7 +48,8 @@ async function startPayment(req, res) {
   );
 }
 
-//handleWebhook function to handle the webhook from the payment gateway
+// POST /payments/webhook — called by the (mock) payment gateway when a payment finishes.
+// If status is "success", marks the payment completed and triggers AI design processing for the order.
 function handleWebhook(req, res) {
   const { paymentId, status } = req.body || {};
   if (paymentId == null || String(paymentId).trim() === "") {

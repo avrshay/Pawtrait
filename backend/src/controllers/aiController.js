@@ -14,6 +14,8 @@ async function generateDesignForLineItem({ petImageUrl, productId }) {
   return `http://localhost:3000/models/images/designs/ai-order-${productId}-${stamp}.png`;
 }
 
+// Goes through every line item of an order and generates a design image
+// for any line that doesn't have one yet.
 async function processOrderItems(orderId) {
   const lines = await orderService.getItemsByOrderId(orderId);
   for (const line of lines) {
@@ -30,6 +32,7 @@ async function processOrderItems(orderId) {
   }
 }
 
+// Runs processOrderItems in the background (doesn't block the caller) and logs any error.
 function enqueueOrderAiProcessing(orderId) {
   setImmediate(() => {
     processOrderItems(orderId).catch((err) => {

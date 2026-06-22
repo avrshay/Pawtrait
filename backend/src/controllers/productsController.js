@@ -1,11 +1,13 @@
 const productService = require("../services/productService");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
+// GET /gallery — returns every product in the catalog.
 async function getAllProducts(req, res) {
   const allProducts = await productService.getAllProducts();
   return sendSuccess(res, allProducts.length === 0 ? [] : allProducts);
 }
 
+// GET /gallery/:product_id — returns one product by its id.
 async function getProductById(req, res) {
   const product_id = req.params.product_id;
   const product = await productService.getProductById(product_id);
@@ -15,6 +17,7 @@ async function getProductById(req, res) {
   return sendSuccess(res, product);
 }
 
+// POST /gallery — creates a new product, admin/manager only.
 async function createProduct(req, res) {
   const product = req.body;
   if (
@@ -35,6 +38,7 @@ async function createProduct(req, res) {
   return sendSuccess(res, newProduct, 201);
 }
 
+// PUT /gallery/:product_id — updates an existing product, admin/manager only.
 async function updateProduct(req, res) {
   const product_id = req.params.product_id;
   const product = req.body;
@@ -56,6 +60,7 @@ async function updateProduct(req, res) {
   return sendSuccess(res, await productService.getProductById(product_id));
 }
 
+// DELETE /gallery/:product_id — removes a product, admin only.
 async function deleteProduct(req, res) {
   const product_id = req.params.product_id;
   const deletedProduct = await productService.deleteProduct(product_id);

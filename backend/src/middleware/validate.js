@@ -6,6 +6,7 @@ const validateUserIdParamMin1 = validateParamId("id", "invalid user id", { min: 
 const validateProductIdParam = validateParamId("product_id", "invalid product_id");
 
 
+// Checks the value is a string that isn't empty/just whitespace.
 function isNonEmptyString(value) {
   if (value == null) {
     return false;
@@ -13,11 +14,13 @@ function isNonEmptyString(value) {
   return typeof value === "string" && value.trim() !== "";
 }
 
+// Checks the value is a number that's at least min (default 1).
 function isPositiveNumber(value, min = 1) {
   const n = Number(value);
   return Number.isFinite(n) && n >= min;
 }
 
+// Checks the value can be turned into a valid number (used for ids).
 function isNumericId(value) {
   if (value === undefined || value === null || String(value).trim() === "") {
     return false;
@@ -25,6 +28,7 @@ function isNumericId(value) {
   return Number.isFinite(Number(value));
 }
 
+// Shortcut for sending a 400 BAD_REQUEST error response.
 function badRequest(res, message, details) {
   return sendError(res, 400, "BAD_REQUEST", message, details);
 }
@@ -114,6 +118,7 @@ function validateOrderRouteParams(req, res, next) {
   next();
 }
 
+// Express middleware: checks all required fields for creating a user (admin/manager flow).
 function validateCreateUser(req, res, next) {
   const { firstName, lastName,email, phone_number, userRole } = req.body;
   if (!isNonEmptyString(firstName) || !isNonEmptyString(lastName)) {
@@ -131,6 +136,7 @@ function validateCreateUser(req, res, next) {
   next();
 }
 
+// Express middleware: checks all required fields for self-registration (with password).
 function validateRegister(req, res, next) {
   const { firstName, lastName, email, phone_number, password } = req.body;
   if (!isNonEmptyString(firstName) || !isNonEmptyString(lastName)) {
@@ -148,6 +154,7 @@ function validateRegister(req, res, next) {
   next();
 }
 
+// Express middleware: checks fields when a user updates their own profile (no password/role).
 function validateUpdate(req, res, next) {
   const { firstName, lastName, email, phone_number } = req.body;
   if (!isNonEmptyString(firstName) || !isNonEmptyString(lastName)) {
@@ -162,6 +169,7 @@ function validateUpdate(req, res, next) {
   next();
 }
 
+// Express middleware: checks email and password are present before attempting login.
 function validateLogin(req, res, next) {
   const { email, password } = req.body;
   if (!email || typeof email !== "string" || !email.includes("@")) {

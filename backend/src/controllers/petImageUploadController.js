@@ -15,7 +15,8 @@ const MIME_TO_EXT = {
 };
 
 // POST /upload/pet-image — body: { dataUrl } (from file upload on the frontend).
-// Saves the file under models/images/clients and returns a normal URL string for petImageUrl.
+// Decodes the base64 image, saves it as a real file under models/images/clients,
+// and returns a normal URL string for petImageUrl.
 function uploadPetImage(req, res) {
   const dataUrl = req.body && req.body.dataUrl != null ? String(req.body.dataUrl).trim() : "";
   if (!dataUrl) {

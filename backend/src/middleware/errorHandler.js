@@ -1,6 +1,7 @@
-//send a success envelope” / “send an error envelope.
-//functions you call when you already have res.
+// Helper functions to send consistent JSON responses ({ success, data, error })
+// from any controller, instead of building the response shape by hand each time.
 
+// Sends a successful response with the given data.
 function sendSuccess(res, data, statusCode = 200) {
   const payload = {
     success: true,
@@ -13,6 +14,7 @@ function sendSuccess(res, data, statusCode = 200) {
   return res.status(statusCode).json(payload);
 }
 
+// Sends an error response with a status code, error code, message, and extra details.
 function sendError(res, statusCode, code, message, details = {}) {
   const d =
     details && typeof details === "object" && !Array.isArray(details) ? details : {};

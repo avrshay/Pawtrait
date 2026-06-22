@@ -4,7 +4,7 @@ const productService = require("../services/productService");
 const cartService = require("../services/cartService");
 const orderService = require("../services/orderService");
 
-//(resets on server restart).
+// In-memory chat history per sessionId (resets on server restart).
 const conversations = {};
 
 // Static context: the product catalog, so the assistant can answer "what do you sell" accurately.
@@ -46,6 +46,8 @@ async function buildUserContext(userId) {
   return parts.join("\n\n");
 }
 
+// POST /chat/message — saves the user's message, builds context (products + user info),
+// asks the AI for a reply, saves it too, and returns it.
 async function sendMessage(req, res) {
   const { sessionId, message, userId } = req.body || {};
 

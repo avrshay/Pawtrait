@@ -1,6 +1,8 @@
 const cartService = require("../services/cartService");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
+// Takes a cart item and adds extra display fields (cart_item_id, product name/image/price)
+// so the frontend has everything it needs in one object.
 function enrichLine(line) {
   const plain = line?.toJSON ? line.toJSON() : line;
   const base = plain && typeof plain === "object" ? { ...plain } : {};
@@ -14,6 +16,8 @@ function enrichLine(line) {
   };
 }
 
+// Checks if the current request is allowed to touch this cart:
+// admins/managers can access any cart, regular users only their own.
 function canAccessCartItem(req, cart) {
   if (!cart) {
     return false;
@@ -26,6 +30,7 @@ function canAccessCartItem(req, cart) {
   return Number.isFinite(userId) && cart.userId === userId;
 }
 
+// GET /cart — returns the cart and its items for the user in the x-user-id header.
 async function getCart(req, res) {
   const user_id = req.headers["x-user-id"];
   const { cart, item_cart } =await cartService.getCartPayloadByUserId(user_id);
@@ -46,6 +51,7 @@ async function getCart(req, res) {
   });
 }
 
+// POST /cart — adds a new product line to the user's cart.
 async function addItem(req, res) {
   const body = req.body || {};
   const user_id = req.headers["x-user-id"];
@@ -65,6 +71,7 @@ async function addItem(req, res) {
   return sendSuccess(res, enrichLine(line), 201);
 }
 
+// PUT /cart/:item_id — changes the quantity of one cart line, after checking ownership.
 async function updateItemQuantity(req, res) {
   const item_id = req.params.item_id;
   const ctx = await cartService.getCartItemWithOwner(item_id);
@@ -83,6 +90,7 @@ async function updateItemQuantity(req, res) {
   return sendSuccess(res, enrichLine(updated));
 }
 
+// DELETE /cart/:item_id — removes one cart line, after checking ownership.
 async function deleteItem(req, res) {
   const item_id = req.params.item_id;
   const ctx = await cartService.getCartItemWithOwner(item_id);
@@ -99,6 +107,7 @@ async function deleteItem(req, res) {
   return sendSuccess(res, { cart_item_id: Number(item_id), deleted: true });
 }
 
+// DELETE /cart/clear — removes all items from the user's cart.
 async function clearCart(req, res) {
   const user_id = req.headers["x-user-id"];
   const removed = await cartService.clearCartByUserId(user_id);

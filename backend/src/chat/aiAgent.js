@@ -10,6 +10,8 @@ You help customers:
 - Explain pricing and customization options
 Keep answers short, warm, and helpful. Use occasional pet-related emojis 🐾🐶🐱.`;
 
+// Sends the chat history (+ optional extra context) to the local Ollama AI model
+// and returns the text of its reply.
 async function getAiReply(history, contextText) {
   const systemContent = contextText ? `${SYSTEM_PROMPT}\n\n${contextText}` : SYSTEM_PROMPT;
   const response = await fetch(OLLAMA_URL, {

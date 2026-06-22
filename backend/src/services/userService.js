@@ -1,6 +1,6 @@
 const { User } = require("../../models");
 const { toUserDTO } = require("../../models/mapper/userMapper");
-//functions of user
+// Functions for reading/writing users in the database (password is never returned to callers).
 
 //get all users
 async function getAllUsers() {

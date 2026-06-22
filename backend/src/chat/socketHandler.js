@@ -1,10 +1,9 @@
 const { Server } = require("socket.io");
 
-// AI replies are now served over REST (POST /chat/message); this socket layer
-// only handles the live human-handoff channel between a client and a manager.
-// roomId → { managerSocketId | null, history: [{role, content}] }
-const chatRooms = {};
+const chatRooms = {}; // live chat state per client socket id: { managerSocketId, history }
 
+// Sets up the Socket.IO server and routes each new connection
+// to either the manager-side or the client-side handler.
 function initSocket(server) {
   const io = new Server(server, {
     cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] },
@@ -21,10 +20,12 @@ function initSocket(server) {
   });
 }
 
+// Handles socket events coming from a manager/admin (accepting handoffs, replying to clients).
 function handleManager(socket, io) {
   socket.join("manager_room");
   console.log(`Manager connected: ${socket.id}`);
 
+  // Manager -> Server: manager accepts a handoff request from a client
   socket.on("handoff_accepted", ({ clientSocketId }) => {
     socket.join(clientSocketId);
     if (chatRooms[clientSocketId]) {
@@ -35,7 +36,7 @@ function handleManager(socket, io) {
     console.log(`Manager ${socket.id} accepted handoff for room ${clientSocketId}`);
   });
 
-  // Manager → Client: manager sends via sendMessage, client receives via receiveMessage
+  // Manager -> Client: manager sends via sendMessage, client receives via receiveMessage
   socket.on("sendMessage", ({ clientSocketId, text }) => {
     if (chatRooms[clientSocketId]) {
       chatRooms[clientSocketId].history.push({ role: "assistant", content: text });
@@ -43,15 +44,19 @@ function handleManager(socket, io) {
     io.to(clientSocketId).emit("receiveMessage", { from: "manager", text });
   });
 
+  // Manager -> Client: manager sends via typing, client receives via typing
   socket.on("typing", ({ clientSocketId, isTyping }) => {
     io.to(clientSocketId).emit("typing", { isTyping });
   });
 
+  // Manager -> Client: manager sends via endChat, client receives via chatEnded
   socket.on("disconnect", () => {
     console.log(`Manager disconnected: ${socket.id}`);
   });
 }
 
+// Handles socket events coming from a regular client (chat user): starting a chat,
+// sending messages once a manager joined, and requesting a human handoff.
 async function handleClient(socket, io) {
   console.log(`Client connected: ${socket.id}`);
   chatRooms[socket.id] = { managerSocketId: null, history: [] };
@@ -67,6 +72,7 @@ async function handleClient(socket, io) {
     io.to("manager_room").emit("receiveMessage", { clientSocketId: socket.id, from: "user", text });
   });
 
+  // Client → Server: client requests a human handoff, server relays to all managers
   socket.on("human_handoff", ({ userName, history } = {}) => {
     if (Array.isArray(history)) {
       chatRooms[socket.id].history = history;
@@ -80,6 +86,7 @@ async function handleClient(socket, io) {
     console.log(`Manager was requested by client ${socket.id}`);
   });
 
+  // Client → Server: client sends typing events, server relays to manager
   socket.on("disconnect", () => {
     delete chatRooms[socket.id];
     io.to("manager_room").emit("client_disconnected", { clientSocketId: socket.id });

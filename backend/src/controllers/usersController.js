@@ -4,6 +4,7 @@ const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
 
 
+// GET /users — returns all users, admin/manager only.
 async function getAll(req, res) {
 
   const allUsers = await userService.getAllUsers();
@@ -14,6 +15,7 @@ async function getAll(req, res) {
 
 
 
+// GET /users/:id — returns one user by id (self, admin, or manager).
 async function getById(req, res) {
 
   const id = req.params.id;
@@ -32,6 +34,7 @@ async function getById(req, res) {
 
 
 
+// POST /users — creates a new user, admin/manager only (different from self-registration).
 async function newUser(req, res) {
 
   const { firstName, lastName, email, phone_number, userRole } = req.body;
@@ -46,6 +49,7 @@ async function newUser(req, res) {
 
 
 
+// PUT /users/:id — updates any field including userRole, admin/manager only.
 async function updateUser(req, res) {
 
   const id = req.params.id;
@@ -68,6 +72,7 @@ async function updateUser(req, res) {
 
 
 
+// PUT /users/profile/:id — lets a user update their own basic info (no role change).
 async function updateDetails(req, res) {
 
   const id = req.params.id;
@@ -90,6 +95,7 @@ async function updateDetails(req, res) {
 
 
 
+// DELETE /users/:id — removes a user, admin only.
 async function deleteUser(req, res) {
 
   const id = req.params.id;

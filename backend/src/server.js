@@ -8,11 +8,12 @@ const { initSocket } = require("./chat/socketHandler");
 const app = express();
 const PORT = 3000;
 
-app.use(express.json({ limit: "12mb" }));
+app.use(express.json({ limit: "12mb" })); // parse JSON request bodies (up to 12mb, for images)
 
 const logger = require("./middleware/logger");
-app.use(logger);
+app.use(logger); // log every request
 
+// Allow the frontend (running on localhost:5173) to call this API from the browser.
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
@@ -27,8 +28,9 @@ app.get("/", (req, res) => {
   return sendSuccess(res, { message: "Welcome to Pawtrait API! The server is up and running." });
 });
 
-app.use("/images", express.static(path.join(__dirname, "..", "models", "images")));
+app.use("/images", express.static(path.join(__dirname, "..", "models", "images"))); // serve uploaded/static images
 
+// Mount each feature's routes under its base path.
 app.use("/users",    require("./routes/users"));
 app.use("/orders",   require("./routes/orders"));
 app.use("/cart",     require("./routes/cart"));

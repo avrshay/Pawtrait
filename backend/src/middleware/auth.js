@@ -1,7 +1,7 @@
 const { sendError } = require("./errorHandler");
 const userService = require("../services/userService");
 
-//authorize the user by the role
+// Express middleware factory: blocks the request unless x-user-role header is one of allowedRoles.
 function authorize(allowedRoles) {
   return (req, res, next) => {
     const role = req.headers["x-user-role"];
@@ -13,7 +13,8 @@ function authorize(allowedRoles) {
   };
 }
 
-//authorize the user by the role and the id
+// Express middleware: allows the request if it's an admin/manager, or if the logged-in user
+// (x-user-id header) is the same as the :id in the route.
 function authorizeSelf(req, res, next) {
   const role = req.headers["x-user-role"];
   if (["admin", "manager"].includes(role)) {

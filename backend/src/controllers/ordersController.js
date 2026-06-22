@@ -2,12 +2,14 @@ const orderService = require("../services/orderService");
 const productService = require("../services/productService");
 const { sendSuccess, sendError } = require("../middleware/errorHandler");
 
+// GET /orders/:id — all orders that belong to the given user.
 async function getOrdersOfUserById(req, res) {
   const id = req.params.id;
   const allOrders = await orderService.getAllOrdersById(id);
   return sendSuccess(res, allOrders);
 }
 
+// GET /orders/:id/:orderId — line items of one specific order.
 async function getItemsOfOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
@@ -24,6 +26,7 @@ async function getItemsOfOrder(req, res) {
   return sendSuccess(res, lines);
 }
 
+// GET /orders/order/:orderId — one order by its id (no user check, used by staff).
 async function getOrderById(req, res) {
   const orderId = req.params.orderId;
   const order = await orderService.getOrderById(orderId);
@@ -39,6 +42,8 @@ async function getOrderById(req, res) {
   return sendSuccess(res, order);
 }
 
+// POST /orders/:id — creates a new order (with status "processing") plus its line items.
+// Validates each item first; if saving a line item fails, the whole order is rolled back.
 async function createOrder(req, res) {
   const userId = req.params.id;
 
@@ -112,6 +117,7 @@ async function createOrder(req, res) {
   return sendSuccess(res, newOrder, 201);
 }
 
+// PUT /orders/:id/:orderId — updates an order's fields (e.g. status), staff only.
 async function updateOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
@@ -154,6 +160,7 @@ async function updateOrder(req, res) {
   return sendSuccess(res, updated);
 }
 
+// DELETE /orders/:id/:orderId — deletes an order and all of its line items.
 async function deleteOrder(req, res) {
   const userId = req.params.id;
   const orderId = req.params.orderId;
@@ -173,6 +180,7 @@ async function deleteOrder(req, res) {
   return sendSuccess(res, { orderId: Number(orderId) });
 }
 
+// GET /orders — all orders in the system, admin/manager only.
 async function getAllOrder(req, res) {
   const allOrders = await orderService.getAllOrder();
   if (!Array.isArray(allOrders)) {

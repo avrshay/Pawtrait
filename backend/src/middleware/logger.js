@@ -1,3 +1,4 @@
+// Express middleware: logs each request's method, URL, status code, and how long it took.
 function logger(req, res, next) {
 
   const start_request = Date.now();
