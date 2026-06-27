@@ -1,7 +1,7 @@
 import { createContext, useContext, useRef } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 
 const SocketContext = createContext(null);
 

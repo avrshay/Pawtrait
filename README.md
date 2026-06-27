@@ -87,6 +87,11 @@ cp .env.example .env
 | `DEFAULT_NEW_USER_PASSWORD` | No (has a default) | [`backend/src/services/userService.js`](backend/src/services/userService.js) | Initial password set when an admin/manager creates a new user |
 | `GROQ_API_KEY` | Yes | [`backend/src/chat/aiAgent.js`](backend/src/chat/aiAgent.js) | API key for the Groq AI chat provider |
 | `GROQ_MODEL` | No (has a default) | same | Which Groq-hosted model to use for the AI chat |
+| `FRONTEND_URL` | No (defaults to `http://localhost:5173`) | [`backend/src/server.js`](backend/src/server.js), [`backend/src/chat/socketHandler.js`](backend/src/chat/socketHandler.js) | Allowed CORS / Socket.IO origin — set to the deployed frontend's URL in production |
+| `BACKEND_URL` | No (defaults to `http://localhost:3000`) | [`backend/src/controllers/petImageUploadController.js`](backend/src/controllers/petImageUploadController.js), [`backend/src/controllers/aiController.js`](backend/src/controllers/aiController.js) | This server's own public URL — used to build links to uploaded/generated images |
+| `PORT` | No (defaults to `3000`) | [`backend/src/server.js`](backend/src/server.js) | Port to listen on — most hosts (e.g. Render) set this automatically |
+
+The frontend has its own `frontend/.env` (see [`frontend/.env.example`](frontend/.env.example)) with `REACT_APP_API_URL` — the backend's URL, used by [`frontend/src/services/api.js`](frontend/src/services/api.js) and [`frontend/src/context/SocketContext.js`](frontend/src/context/SocketContext.js). Defaults to `http://localhost:3000` if unset.
 
 ---
 
@@ -183,5 +188,5 @@ The chatbot ("Paw Assistant") is implemented as a required **AI API endpoint**: 
 - **Chat history is in-memory.** Both the AI conversation history (`chatController.js`) and the live Socket.IO room state (`socketHandler.js`) reset whenever the backend restarts. There's no persistence to the database for chat.
 - **Payments are mocked.** `POST /payments/start` / `POST /payments/webhook` simulate a Bit-style flow in memory (`backend/models/paymentData.js`) - no real payment gateway is integrated, and payment records aren't persisted to the DB.
 - **Groq is a hard dependency for the AI feature.** There's no fallback if `GROQ_API_KEY` is missing or the API call fails - the chat will return a clear error, but won't degrade gracefully to a canned response.
-- **Hardcoded ports/URLs.** Backend is always `:3000`, frontend dev server `:5173`, and CORS in `backend/src/server.js` only allows that exact origin. Running on different ports requires editing the code (no env-based config for this yet).
+- **Ports/URLs are env-configurable but default to localhost.** `PORT`, `FRONTEND_URL`, `BACKEND_URL` (backend) and `REACT_APP_API_URL` (frontend) all fall back to the local dev values if unset - when deploying, make sure to actually set them to the real deployed URLs (see [Environment Variables](#environment-variables)), otherwise CORS will silently fail in production.
 - **Migrations and models can drift.** Sequelize does not validate that a model's fields match the actual table columns at startup - a mismatch (e.g. a renamed column) only surfaces as a runtime SQL error the first time that field is queried. If you add a column, update both the migration **and** the model.

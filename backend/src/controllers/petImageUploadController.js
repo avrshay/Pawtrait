@@ -51,7 +51,8 @@ function uploadPetImage(req, res) {
     });
   }
 
-  const petImageUrl = `http://localhost:3000/images/clients/${fileName}`;
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
+  const petImageUrl = `${backendUrl}/images/clients/${fileName}`;
   return sendSuccess(res, { petImageUrl }, 201);
 }
 

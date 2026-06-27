@@ -1,6 +1,6 @@
 // Every backend response uses the envelope: { success, data, error }.
 
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 
 // Auth headers the backend expects for protected routes (see middleware/auth.js).
 // The logged-in user (returned by POST /auth/login) is kept in localStorage.

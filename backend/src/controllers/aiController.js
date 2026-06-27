@@ -11,7 +11,8 @@ async function generateDesignForLineItem({ petImageUrl, productId }) {
     return product.custom_product_image_url;
   }
   const stamp = Date.now();
-  return `http://localhost:3000/models/images/designs/ai-order-${productId}-${stamp}.png`;
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
+  return `${backendUrl}/models/images/designs/ai-order-${productId}-${stamp}.png`;
 }
 
 // Goes through every line item of an order and generates a design image

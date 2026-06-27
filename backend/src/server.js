@@ -6,16 +6,17 @@ const express = require("express");
 const { initSocket } = require("./chat/socketHandler");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 app.use(express.json({ limit: "12mb" })); // parse JSON request bodies (up to 12mb, for images)
 
 const logger = require("./middleware/logger");
 app.use(logger); // log every request
 
-// Allow the frontend (running on localhost:5173) to call this API from the browser.
+// Allow the frontend (FRONTEND_URL, e.g. the deployed Render URL) to call this API from the browser.
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Origin", FRONTEND_URL);
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, x-user-id, x-user-role");
   if (req.method === "OPTIONS") return res.sendStatus(200);
@@ -45,7 +46,7 @@ const server = http.createServer(app);
 initSocket(server); // Initialize Socket.IO for AI chat agent
 
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
 
 server.on("error", (err) => {
