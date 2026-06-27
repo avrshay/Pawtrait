@@ -56,7 +56,7 @@ async function createUser(data) {
     userRole: data.userRole,
     email:  data.email || "",
     phone_number: data.phone_number||"",
-    password: "example123",
+    password: process.env.DEFAULT_NEW_USER_PASSWORD || "Pass123",
   });
   return newUser.id;
 }
