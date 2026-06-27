@@ -84,8 +84,9 @@ cp .env.example .env
 | `DB_USER` | Yes | same | MySQL username |
 | `DB_PASSWORD` | Yes | same | MySQL password |
 | `DB_NAME` | Yes | same | Database name (must already exist - see above) |
-| `OLLAMA_URL` | No (has a default) | [`backend/src/chat/aiAgent.js`](backend/src/chat/aiAgent.js) | Local Ollama chat endpoint |
-| `OLLAMA_MODEL` | No (has a default) | same | Which local model to use for the AI chat |
+| `DEFAULT_NEW_USER_PASSWORD` | No (has a default) | [`backend/src/services/userService.js`](backend/src/services/userService.js) | Initial password set when an admin/manager creates a new user |
+| `GROQ_API_KEY` | Yes | [`backend/src/chat/aiAgent.js`](backend/src/chat/aiAgent.js) | API key for the Groq AI chat provider |
+| `GROQ_MODEL` | No (has a default) | same | Which Groq-hosted model to use for the AI chat |
 
 ---
 
@@ -163,8 +164,8 @@ Live human support chat runs over **Socket.IO**, set up in [`backend/src/chat/so
 
 The chatbot ("Paw Assistant") is implemented as a required **AI API endpoint**: `POST /chat/message` ([`backend/src/controllers/chatController.js`](backend/src/controllers/chatController.js)), which the frontend calls like any other REST endpoint - the AI provider is never exposed to the browser.
 
-- **Model**: a **local [Ollama](https://ollama.com/)** server (`http://localhost:11434` by default). [`backend/src/chat/aiAgent.js`](backend/src/chat/aiAgent.js) calls Ollama's `/api/chat` endpoint directly with `fetch`.
-  - **You must have Ollama installed and running locally**, with the model pulled (`ollama pull llama3.2`, or whatever you set `OLLAMA_MODEL` to), for this feature to work. If Ollama isn't running, `/chat/message` returns a `502 AI_PROVIDER_ERROR`.
+- **Model**: the **[Groq](https://console.groq.com) cloud API** (OpenAI-compatible). [`backend/src/chat/aiAgent.js`](backend/src/chat/aiAgent.js) calls Groq's `/openai/v1/chat/completions` endpoint directly with `fetch`.
+  - **Requires a `GROQ_API_KEY`** in `backend/.env` (see [Environment Variables](#environment-variables)). If it's missing or invalid, or the request fails, `/chat/message` returns a `502 AI_PROVIDER_ERROR`.
 - **Context injection (RAG-lite)**: rather than hoping the model "knows" about Pawtrait, the controller builds real context from the database before every call:
   - **Always**: the current product catalog (name + price for every product).
   - **When the request includes a `userId`** (i.e. the customer is logged in): that user's current cart contents and order history.
@@ -176,11 +177,11 @@ The chatbot ("Paw Assistant") is implemented as a required **AI API endpoint**: 
 
 ## Known Limitations
 
-- **The per-order "AI design" is mocked, not generated.** `aiDesignImageUrl` is set by [`backend/src/controllers/aiController.js`](backend/src/controllers/aiController.js) to either the product's existing `custom_product_image_url` or a placeholder path - no model actually processes the uploaded pet photo. Don't confuse this with the AI chat assistant below, which does call a real local model.
+- **The per-order "AI design" is mocked, not generated.** `aiDesignImageUrl` is set by [`backend/src/controllers/aiController.js`](backend/src/controllers/aiController.js) to either the product's existing `custom_product_image_url` or a placeholder path - no model actually processes the uploaded pet photo. Don't confuse this with the AI chat assistant below, which does call a real cloud model.
 - **No real authentication.** `x-user-id` / `x-user-role` are plain, unsigned headers - anyone can call the API with any id/role using curl/Postman. Fine for a course assignment, not production-safe.
 - **AI chat context trusts the client.** The `userId` sent to `/chat/message` is not verified against any session - a malicious client could pass another user's id and get their cart/order context back. Same trust model as the rest of the API (see above), just worth knowing.
 - **Chat history is in-memory.** Both the AI conversation history (`chatController.js`) and the live Socket.IO room state (`socketHandler.js`) reset whenever the backend restarts. There's no persistence to the database for chat.
 - **Payments are mocked.** `POST /payments/start` / `POST /payments/webhook` simulate a Bit-style flow in memory (`backend/models/paymentData.js`) - no real payment gateway is integrated, and payment records aren't persisted to the DB.
-- **Ollama is a hard dependency for the AI feature.** There's no fallback if it isn't installed/running - the chat will return a clear error, but won't degrade gracefully to a canned response.
+- **Groq is a hard dependency for the AI feature.** There's no fallback if `GROQ_API_KEY` is missing or the API call fails - the chat will return a clear error, but won't degrade gracefully to a canned response.
 - **Hardcoded ports/URLs.** Backend is always `:3000`, frontend dev server `:5173`, and CORS in `backend/src/server.js` only allows that exact origin. Running on different ports requires editing the code (no env-based config for this yet).
 - **Migrations and models can drift.** Sequelize does not validate that a model's fields match the actual table columns at startup - a mismatch (e.g. a renamed column) only surfaces as a runtime SQL error the first time that field is queried. If you add a column, update both the migration **and** the model.
