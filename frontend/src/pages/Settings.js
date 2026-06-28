@@ -55,7 +55,7 @@ async function handleUpdate(e) {
     return;
   }
 
-  if (!email||(!email.includes("@"))) {
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     setError("Invalid Email");
     return;
   }

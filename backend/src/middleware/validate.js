@@ -1,5 +1,8 @@
 const { sendError } = require("./errorHandler");
 
+// Shared email format check (local part + "@" + domain + "." + tld), used by every validator below.
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const validateCartItemIdParam = validateParamId("item_id", "invalid item_id");
 const validateUserIdParam = validateParamId("id", "invalid user id");
 const validateUserIdParamMin1 = validateParamId("id", "invalid user id", { min: 1 });
@@ -124,7 +127,7 @@ function validateCreateUser(req, res, next) {
   if (!isNonEmptyString(firstName) || !isNonEmptyString(lastName)) {
     return badRequest(res, "Invalid name", { fields: ["firstName", "lastName"] });
   }
-    if (!email || typeof email !== "string" || !email.includes("@")) {
+    if (!email || typeof email !== "string" || !EMAIL_REGEX.test(email)) {
     return badRequest(res, "Invalid Email", { field: "email" });
   }
   if (!/^\d{10}$/.test(phone_number || "")) {
@@ -142,7 +145,7 @@ function validateRegister(req, res, next) {
   if (!isNonEmptyString(firstName) || !isNonEmptyString(lastName)) {
     return badRequest(res, "Invalid name", { fields: ["firstName", "lastName"] });
   }
-  if (!email || typeof email !== "string" || !email.includes("@")) {
+  if (!email || typeof email !== "string" || !EMAIL_REGEX.test(email)) {
     return badRequest(res, "Invalid Email", { field: "email" });
   }
   if (!isNonEmptyString(phone_number)) {
@@ -160,7 +163,7 @@ function validateUpdate(req, res, next) {
   if (!isNonEmptyString(firstName) || !isNonEmptyString(lastName)) {
     return badRequest(res, "Invalid name", { fields: ["firstName", "lastName"] });
   }
-  if (!email || typeof email !== "string" || !email.includes("@")) {
+  if (!email || typeof email !== "string" || !EMAIL_REGEX.test(email)) {
     return badRequest(res, "Invalid Email", { field: "email" });
   }
   if (!isNonEmptyString(phone_number)) {
@@ -172,7 +175,7 @@ function validateUpdate(req, res, next) {
 // Express middleware: checks email and password are present before attempting login.
 function validateLogin(req, res, next) {
   const { email, password } = req.body;
-  if (!email || typeof email !== "string" || !email.includes("@")) {
+  if (!email || typeof email !== "string" || !EMAIL_REGEX.test(email)) {
     return badRequest(res, "Invalid Email", { field: "email" });
   }
   if (!password || typeof password !== "string" || password.length < 6) {

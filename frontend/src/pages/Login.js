@@ -16,7 +16,7 @@ export default function Login() {
       e.preventDefault();
       setError(""); //clean
 
-      if (!email||(!email.includes("@"))) {
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setError("Invalid Email");
         return;
       }
