@@ -127,8 +127,8 @@ function validateCreateUser(req, res, next) {
     if (!email || typeof email !== "string" || !email.includes("@")) {
     return badRequest(res, "Invalid Email", { field: "email" });
   }
-  if (!isNonEmptyString(phone_number)) {
-    return badRequest(res, "Invalid phone number", { field: "phone_number" });
+  if (!/^\d{10}$/.test(phone_number || "")) {
+    return badRequest(res, "Phone number must contain exactly 10 digits", { field: "phone_number" });
   }
   if (!userRole || typeof userRole !== "string" || !["user", "manager", "admin"].includes(userRole)) {
     return badRequest(res, "Invalid userRole", { field: "userRole" });

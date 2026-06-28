@@ -50,8 +50,8 @@ export default function EditUser() {
       setError("A valid email is required");
       return;
     }
-    if (!phone_number.trim()) {
-      setError("Phone number is required");
+    if (!/^\d{10}$/.test(phone_number)) {
+      setError("Phone number must contain exactly 10 digits");
       return;
     }
     if (!userRole || !["user", "manager", "admin"].includes(userRole)) {
