@@ -311,11 +311,13 @@ async function handleDeleteProduct(productId) {
           + Add User
         </button>
       <Table
-        data={users.map((u) => ({
-          ...u,
-          "phone number": u.phone_number,
-          Role: u.userRole,
-        }))}
+        data={users
+          .filter((u) => u.userId !== CurrUser?.userId)
+          .map((u) => ({
+            ...u,
+            "phone number": u.phone_number,
+            Role: u.userRole,
+          }))}
         columns={["userId","firstName", "lastName", "email","phone number", "Role"]}
         renderActions={(user) => (
           <>
