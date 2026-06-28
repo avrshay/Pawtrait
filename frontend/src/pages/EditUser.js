@@ -91,7 +91,7 @@ export default function EditUser() {
           onChange={(e) => { setLastName(e.target.value); setStatus(""); }}
         />
         <input
-          type="email"
+          type="text"
           placeholder="Email"
           value={email}
           onChange={(e) => { setEmail(e.target.value); setStatus(""); }}
