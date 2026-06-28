@@ -1,4 +1,6 @@
 'use strict';
+require("dotenv").config();
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -7,7 +9,7 @@ module.exports = {
         cartId: 1,
         productId: 2,
         quantity: 1,
-        petImageUrl: "http://localhost:3000/images/clients/dog2-original.jpg",
+        petImageUrl: `${BACKEND_URL}/images/clients/dog2-original.jpg`,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -15,7 +17,7 @@ module.exports = {
         cartId: 1,
         productId: 3,
         quantity: 2,
-        petImageUrl: "http://localhost:3000/images/clients/dog2-original.jpg",
+        petImageUrl: `${BACKEND_URL}/images/clients/dog2-original.jpg`,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -23,7 +25,7 @@ module.exports = {
         cartId: 2,
         productId: 1,
         quantity: 1,
-        petImageUrl: "http://localhost:3000/images/clients/dog2-original.jpg",
+        petImageUrl: `${BACKEND_URL}/images/clients/dog2-original.jpg`,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
